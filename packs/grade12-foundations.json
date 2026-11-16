@@ -1,0 +1,252 @@
+{
+    "packId": "grade12-ap-mastery",
+    "title": "12th Grade AP Mastery — C1 Essay Synthesis, Source Citations & Subjunctive Nuance",
+    "gradeLevel": 12,
+    "level": 3,
+    "description": "Senior-year AP exam mastery pack featuring C1 argumentative transitions, source-integration frames for Task 2 (Argumentative Essay), subtle subjunctive triggers, and cultural synthesis phrases across all 7 AP themes.",
+    "cards": [
+        {
+            "id": "g12-001",
+            "level": 3,
+            "theme": "Argument & Connectors",
+            "sentence": "Cabe destacar que, según la primera fuente, la inversión en educación técnica reduce el desempleo juvenil.",
+            "target": "Cabe destacar que, según",
+            "hint": "It is worth highlighting that, according to",
+            "notes": "Premier source-citation opener for the AP Argumentative Essay (Task 2)."
+        },
+        {
+            "id": "g12-002",
+            "level": 3,
+            "theme": "Argument & Connectors",
+            "sentence": "Tal como se evidencia en el gráfico de la segunda fuente, el consumo de energías limpias se ha duplicado.",
+            "target": "Tal como se evidencia en",
+            "hint": "Just as is evidenced in",
+            "notes": "Designed specifically for citing Source 2 (the chart/graph) on the AP exam."
+        },
+        {
+            "id": "g12-003",
+            "level": 3,
+            "theme": "Argument & Connectors",
+            "sentence": "Por el contrario, el locutor de la fuente auditiva sostiene que las medidas actuales resultan insuficientes.",
+            "target": "sostiene que",
+            "hint": "maintains / argues that",
+            "notes": "Precise reporting verb for referencing Source 3 (the audio report)."
+        },
+        {
+            "id": "g12-004",
+            "level": 3,
+            "theme": "Argument & Connectors",
+            "sentence": "A pesar de que algunos críticos aleguen lo contrario, los datos respaldan la eficacia del programa.",
+            "target": "A pesar de que algunos críticos aleguen",
+            "hint": "Even though some critics may claim (+ subjunctive)",
+            "notes": "'A pesar de que' + subjunctive ('aleguen') concedes a hypothetical objection before refuting it."
+        },
+        {
+            "id": "g12-005",
+            "level": 3,
+            "theme": "Argument & Connectors",
+            "sentence": "En última instancia, la solución radica en combinar políticas estatales con la responsabilidad individual.",
+            "target": "la solución radica en",
+            "hint": "the solution lies in",
+            "notes": "'Radicar en' = to lie in / stem from (C1 academic verb)."
+        },
+        {
+            "id": "g12-006",
+            "level": 3,
+            "theme": "Argument & Connectors",
+            "sentence": "Lejos de constituir un obstáculo, la diversidad lingüística representa un activo estratégico para cualquier nación.",
+            "target": "representa un activo estratégico",
+            "hint": "represents a strategic asset",
+            "notes": "High-register synthesis phrasing."
+        },
+        {
+            "id": "g12-007",
+            "level": 3,
+            "theme": "Argument & Connectors",
+            "sentence": "No se trata únicamente de aumentar el presupuesto, sino de garantizar su distribución transparente.",
+            "target": "No se trata únicamente de ... sino de",
+            "hint": "It is not merely a matter of ... but rather of",
+            "notes": "Reframes a debate with C1 precision."
+        },
+        {
+            "id": "g12-008",
+            "level": 3,
+            "theme": "Argument & Connectors",
+            "sentence": "A modo de conclusión, resulta innegable que el progreso auténtico exige equidad y sostenibilidad.",
+            "target": "A modo de conclusión, resulta innegable que",
+            "hint": "By way of conclusion, it is undeniable that",
+            "notes": "Commanding final-paragraph thesis restatement."
+        },
+        {
+            "id": "g12-009",
+            "level": 3,
+            "theme": "Global Challenges",
+            "sentence": "La explotación indiscriminada de los recursos naturales acarrea consecuencias irreversibles para la biodiversidad.",
+            "target": "acarrea consecuencias irreversibles",
+            "hint": "entails / brings about irreversible consequences",
+            "notes": "'Acarrear' = to entail/bring about serious consequences."
+        },
+        {
+            "id": "g12-010",
+            "level": 3,
+            "theme": "Global Challenges",
+            "sentence": "Los derechos de la Madre Tierra, consagrados en la legislación boliviana, otorgan protección jurídica a la naturaleza.",
+            "target": "otorgan protección jurídica",
+            "hint": "grant legal protection",
+            "notes": "Refers to Bolivia's Ley de Derechos de la Madre Tierra (Pachamama)."
+        },
+        {
+            "id": "g12-011",
+            "level": 3,
+            "theme": "Global Challenges",
+            "sentence": "La brecha socioeconómica se profundiza cuando las poblaciones vulnerables carecen de servicios básicos.",
+            "target": "La brecha socioeconómica se profundiza",
+            "hint": "The socioeconomic gap widens / deepens",
+            "notes": "High-impact Global Challenges analysis."
+        },
+        {
+            "id": "g12-012",
+            "level": 3,
+            "theme": "Global Challenges",
+            "sentence": "Urge que los organismos internacionales coordinen estrategias vinculantes para frenar la crisis hídrica.",
+            "target": "estrategias vinculantes",
+            "hint": "binding strategies / policies",
+            "notes": "'Vinculante' = legally binding."
+        },
+        {
+            "id": "g12-013",
+            "level": 3,
+            "theme": "Science & Technology",
+            "sentence": "La obsolescencia programada fomenta un ciclo insostenible de desechos electrónicos en todo el planeta.",
+            "target": "La obsolescencia programada",
+            "hint": "Planned obsolescence",
+            "notes": "Classic AP Science & Technology / Global Challenges crossover concept."
+        },
+        {
+            "id": "g12-014",
+            "level": 3,
+            "theme": "Science & Technology",
+            "sentence": "Sin una regulación ética adecuada, la inteligencia artificial podría perpetuar sesgos existentes en la sociedad.",
+            "target": "podría perpetuar sesgos",
+            "hint": "could perpetuate biases",
+            "notes": "'Sesgo' = bias (algorithmic, media, or social)."
+        },
+        {
+            "id": "g12-015",
+            "level": 3,
+            "theme": "Science & Technology",
+            "sentence": "La soberanía tecnológica permite que los países desarrollen soluciones propias adaptadas a sus realidades locales.",
+            "target": "La soberanía tecnológica",
+            "hint": "Technological sovereignty",
+            "notes": "C1 policy term used in Latin American innovation debates."
+        },
+        {
+            "id": "g12-016",
+            "level": 3,
+            "theme": "Science & Technology",
+            "sentence": "El acceso abierto al conocimiento científico democratiza la investigación y acelera el bienestar colectivo.",
+            "target": "democratiza la investigación",
+            "hint": "democratizes research",
+            "notes": "Strong synthesis point for open-science prompts."
+        },
+        {
+            "id": "g12-017",
+            "level": 3,
+            "theme": "Contemporary Life",
+            "sentence": "La gentrificación de los barrios históricos suele desplazar a los residentes tradicionales debido al alza de los alquileres.",
+            "target": "el alza de los alquileres",
+            "hint": "the rise in rents",
+            "notes": "Relevant to urban changes in Buenos Aires (Palermo/San Telmo) and global cities."
+        },
+        {
+            "id": "g12-018",
+            "level": 3,
+            "theme": "Contemporary Life",
+            "sentence": "La economía informal representa una fuente crucial de sustento para millones de familias latinoamericanas.",
+            "target": "La economía informal",
+            "hint": "The informal economy",
+            "notes": "Essential socioeconomic concept for accurate cultural comparisons."
+        },
+        {
+            "id": "g12-019",
+            "level": 3,
+            "theme": "Contemporary Life",
+            "sentence": "El ocio saludable no es un lujo prescindible, sino un componente indispensable para la salud mental.",
+            "target": "un lujo prescindible",
+            "hint": "an expendable / optional luxury",
+            "notes": "'Prescindible' = dispensable/optional; 'imprescindible' = indispensable."
+        },
+        {
+            "id": "g12-020",
+            "level": 3,
+            "theme": "Personal & Public Identities",
+            "sentence": "La revitalización lingüística demuestra que una lengua solo perdura cuando se transmite activamente entre generaciones.",
+            "target": "La revitalización lingüística",
+            "hint": "Linguistic revitalization",
+            "notes": "Applies to indigenous languages in Bolivia as well as heritage Spanish in the U.S."
+        },
+        {
+            "id": "g12-021",
+            "level": 3,
+            "theme": "Personal & Public Identities",
+            "sentence": "La identidad cultural no es un concepto estático, sino un diálogo constante entre la tradición y el cambio.",
+            "target": "un diálogo constante entre la tradición y el cambio",
+            "hint": "a constant dialogue between tradition and change",
+            "notes": "Memorable thesis sentence for any Personal & Public Identities prompt."
+        },
+        {
+            "id": "g12-022",
+            "level": 3,
+            "theme": "Personal & Public Identities",
+            "sentence": "El reconocimiento de la plurinacionalidad en Bolivia busca integrar diversas cosmovisiones dentro de un mismo Estado.",
+            "target": "diversas cosmovisiones",
+            "hint": "diverse worldviews",
+            "notes": "'Cosmovisión' = worldview (frequently used in Andean cultural analysis)."
+        },
+        {
+            "id": "g12-023",
+            "level": 3,
+            "theme": "Families & Communities",
+            "sentence": "La cohesión social de un vecindario se fortalece mediante espacios públicos inclusivos y accesibles para todos.",
+            "target": "La cohesión social",
+            "hint": "Social cohesion",
+            "notes": "C1 sociological term ideal for community comparison prompts."
+        },
+        {
+            "id": "g12-024",
+            "level": 3,
+            "theme": "Families & Communities",
+            "sentence": "La transmisión intergeneracional de la memoria histórica evita que las sociedades repitan los errores del pasado.",
+            "target": "la memoria histórica",
+            "hint": "historical memory",
+            "notes": "Deeply resonant theme in Argentine and Latin American civic culture."
+        },
+        {
+            "id": "g12-025",
+            "level": 3,
+            "theme": "Beauty & Aesthetics",
+            "sentence": "El arte comprometido trasciende lo meramente decorativo para cuestionar las injusticias y despertar la conciencia cívica.",
+            "target": "despertar la conciencia cívica",
+            "hint": "to awaken civic awareness / conscience",
+            "notes": "C1 analytical phrase for Beauty & Aesthetics."
+        },
+        {
+            "id": "g12-026",
+            "level": 3,
+            "theme": "Beauty & Aesthetics",
+            "sentence": "La apropiación cultural ocurre cuando elementos artísticos tradicionales se comercializan sin reconocer ni beneficiar a sus creadores.",
+            "target": "La apropiación cultural",
+            "hint": "Cultural appropriation",
+            "notes": "Sophisticated debate topic surrounding traditional Andean textiles and music."
+        },
+        {
+            "id": "g12-027",
+            "level": 3,
+            "theme": "Beauty & Aesthetics",
+            "sentence": "La arquitectura bioclimática integra saberes ancestrales con innovación moderna para reducir el impacto ambiental.",
+            "target": "integra saberes ancestrales",
+            "hint": "integrates ancestral knowledge",
+            "notes": "Bridges Beauty & Aesthetics, Science & Technology, and Global Challenges."
+        }
+    ]
+}

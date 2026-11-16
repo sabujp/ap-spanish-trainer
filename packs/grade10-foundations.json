@@ -1,0 +1,459 @@
+{
+    "packId": "grade10-intermediate",
+    "title": "10th Grade Intermediate — Past Narration, Opinions & Subjunctive Triggers",
+    "gradeLevel": 10,
+    "level": 2,
+    "description": "Bridges everyday 9th-grade foundations into B1/B2 intermediate Spanish across all 7 AP themes, focusing on preterite vs. imperfect narration, intermediate connectors, and introductory subjunctive clauses.",
+    "cards": [
+        {
+            "id": "g10-001",
+            "level": 2,
+            "theme": "Argument & Connectors",
+            "sentence": "Por lo tanto, es fundamental que los estudiantes participen activamente en clase.",
+            "target": "Por lo tanto",
+            "hint": "Therefore / Consequently",
+            "notes": "Upgrades casual 'por eso' into a crisp intermediate/AP essay transition."
+        },
+        {
+            "id": "g10-002",
+            "level": 2,
+            "theme": "Argument & Connectors",
+            "sentence": "En cambio, muchas personas mayores prefieren leer el periódico impreso por la mañana.",
+            "target": "En cambio",
+            "hint": "On the other hand / By contrast",
+            "notes": "Great contrast marker for comparing two generations or cultures."
+        },
+        {
+            "id": "g10-003",
+            "level": 2,
+            "theme": "Argument & Connectors",
+            "sentence": "A pesar de las dificultades económicas, la comunidad logró construir un centro cultural.",
+            "target": "A pesar de",
+            "hint": "Despite / In spite of",
+            "notes": "Followed directly by a noun or infinitive ('a pesar de + noun/infinitive')."
+        },
+        {
+            "id": "g10-004",
+            "level": 2,
+            "theme": "Argument & Connectors",
+            "sentence": "Dado que el transporte público es eficiente en Buenos Aires, muchos residentes no tienen auto.",
+            "target": "Dado que",
+            "hint": "Given that / Since",
+            "notes": "More formal and persuasive than 'porque' in essays and presentations."
+        },
+        {
+            "id": "g10-005",
+            "level": 2,
+            "theme": "Argument & Connectors",
+            "sentence": "Tanto los jóvenes como los adultos se benefician de los espacios verdes en la ciudad.",
+            "target": "Tanto ... como",
+            "hint": "Both ... and",
+            "notes": "Clean parallel structure for pairing two groups or ideas."
+        },
+        {
+            "id": "g10-006",
+            "level": 2,
+            "theme": "Argument & Connectors",
+            "sentence": "Es necesario que todos hagamos un esfuerzo para reducir el consumo de plástico.",
+            "target": "Es necesario que",
+            "hint": "It is necessary that (+ subjunctive)",
+            "notes": "Impersonal expression of necessity triggers the present subjunctive ('hagamos')."
+        },
+        {
+            "id": "g10-007",
+            "level": 2,
+            "theme": "Argument & Connectors",
+            "sentence": "Mientras que en mi ciudad usamos mucho el coche, en muchas ciudades hispanas la gente camina más.",
+            "target": "Mientras que",
+            "hint": "Whereas / While (contrasting)",
+            "notes": "Essential comparison connector for AP Speaking Task 4."
+        },
+        {
+            "id": "g10-008",
+            "level": 2,
+            "theme": "Argument & Connectors",
+            "sentence": "No cabe duda de que la educación bilingüe ofrece ventajas cognitivas y profesionales.",
+            "target": "No cabe duda de que",
+            "hint": "There is no doubt that (+ indicative)",
+            "notes": "Expresses certainty, so the following verb stays in the indicative ('ofrece')."
+        },
+        {
+            "id": "g10-009",
+            "level": 2,
+            "theme": "Argument & Connectors",
+            "sentence": "A medida que pasan los años, nuestras prioridades y metas personales van cambiando.",
+            "target": "A medida que",
+            "hint": "As / Over time as",
+            "notes": "Describes gradual change over time."
+        },
+        {
+            "id": "g10-010",
+            "level": 2,
+            "theme": "Argument & Connectors",
+            "sentence": "En cuanto a la alimentación saludable, los hábitos familiares juegan un papel clave.",
+            "target": "En cuanto a",
+            "hint": "Regarding / As for",
+            "notes": "Smooth topic-shifting transition for paragraphs and oral responses."
+        },
+        {
+            "id": "g10-011",
+            "level": 2,
+            "theme": "Contemporary Life",
+            "sentence": "Cuando llegamos al aeropuerto, nos dimos cuenta de que el vuelo ya había salido.",
+            "target": "ya había salido",
+            "hint": "had already left",
+            "notes": "Pluperfect ('había + past participle') for an action completed before another past event."
+        },
+        {
+            "id": "g10-012",
+            "level": 2,
+            "theme": "Contemporary Life",
+            "sentence": "Llevo tres meses entrenando para correr mi primera carrera de cinco kilómetros.",
+            "target": "Llevo tres meses entrenando",
+            "hint": "I have been training for three months",
+            "notes": "'Llevar + time + gerund (-ando/-iendo)' is the most natural way to say 'have been doing for X time'."
+        },
+        {
+            "id": "g10-013",
+            "level": 2,
+            "theme": "Contemporary Life",
+            "sentence": "Muchos estudiantes buscan un equilibrio entre sus estudios, los deportes y el descanso.",
+            "target": "buscan un equilibrio entre",
+            "hint": "seek a balance between",
+            "notes": "High-utility phrase for Contemporary Life prompts on youth stress and time management."
+        },
+        {
+            "id": "g10-014",
+            "level": 2,
+            "theme": "Contemporary Life",
+            "sentence": "En varias ciudades latinoamericanas, las ciclovías dominicales fomentan el ejercicio al aire libre.",
+            "target": "fomentan el ejercicio",
+            "hint": "promote / encourage exercise",
+            "notes": "'Fomentar' = to promote/foster (used constantly on AP exams)."
+        },
+        {
+            "id": "g10-015",
+            "level": 2,
+            "theme": "Contemporary Life",
+            "sentence": "Si tuviera más tiempo libre durante la semana, aprendería a tocar el piano.",
+            "target": "Si tuviera más tiempo",
+            "hint": "If I had more time",
+            "notes": "Introduces the imperfect subjunctive + conditional ('Si tuviera..., aprendería...')."
+        },
+        {
+            "id": "g10-016",
+            "level": 2,
+            "theme": "Contemporary Life",
+            "sentence": "El turismo sostenible busca proteger la cultura local sin dañar los ecosistemas naturales.",
+            "target": "El turismo sostenible",
+            "hint": "Sustainable tourism",
+            "notes": "Key topic in Contemporary Life and Global Challenges."
+        },
+        {
+            "id": "g10-017",
+            "level": 2,
+            "theme": "Contemporary Life",
+            "sentence": "Mis padres me aconsejan que administre bien mi dinero desde que soy joven.",
+            "target": "me aconsejan que administre",
+            "hint": "advise me to manage (+ subjunctive)",
+            "notes": "Verbs of advice ('aconsejar que') trigger the present subjunctive."
+        },
+        {
+            "id": "g10-018",
+            "level": 2,
+            "theme": "Contemporary Life",
+            "sentence": "Hoy en día, el teletrabajo permite que muchas personas trabajen desde casa.",
+            "target": "el teletrabajo",
+            "hint": "remote work / telecommuting",
+            "notes": "Essential modern workplace vocabulary."
+        },
+        {
+            "id": "g10-019",
+            "level": 2,
+            "theme": "Families & Communities",
+            "sentence": "En la cultura hispana, la sobremesa es un momento valioso para conversar después de comer.",
+            "target": "la sobremesa",
+            "hint": "after-meal table conversation",
+            "notes": "Iconic cultural concept across Argentina, Bolivia, and Spain."
+        },
+        {
+            "id": "g10-020",
+            "level": 2,
+            "theme": "Families & Communities",
+            "sentence": "Los lazos familiares se fortalecen cuando varias generaciones comparten las tradiciones.",
+            "target": "Los lazos familiares",
+            "hint": "Family ties / bonds",
+            "notes": "Elevates 'relaciones de familia' to B2/AP register."
+        },
+        {
+            "id": "g10-021",
+            "level": 2,
+            "theme": "Families & Communities",
+            "sentence": "El trabajo voluntario enseña a los adolescentes a ser más empáticos y solidarios.",
+            "target": "empáticos y solidarios",
+            "hint": "empathetic and supportive/community-minded",
+            "notes": "'Solidario' describes active solidarity and helping others in need."
+        },
+        {
+            "id": "g10-022",
+            "level": 2,
+            "theme": "Families & Communities",
+            "sentence": "Aunque mis primos viven en otra ciudad, mantenemos el contacto por videollamada cada semana.",
+            "target": "mantenemos el contacto",
+            "hint": "we stay in touch",
+            "notes": "Natural collocation: 'mantener el contacto'."
+        },
+        {
+            "id": "g10-023",
+            "level": 2,
+            "theme": "Families & Communities",
+            "sentence": "En muchos barrios de La Paz y El Alto, las juntas vecinales organizan mejoras comunitarias.",
+            "target": "las juntas vecinales",
+            "hint": "neighborhood councils / associations",
+            "notes": "Civic participation vocabulary directly relevant to Bolivian society."
+        },
+        {
+            "id": "g10-024",
+            "level": 2,
+            "theme": "Families & Communities",
+            "sentence": "Mis padres me criaron con valores como la honestidad, el respeto y la perseverancia.",
+            "target": "me criaron con valores",
+            "hint": "raised me with values",
+            "notes": "'Criar' = to raise/bring up children (distinct from 'crecer' = to grow up)."
+        },
+        {
+            "id": "g10-025",
+            "level": 2,
+            "theme": "Families & Communities",
+            "sentence": "Es admirable que los jóvenes dediquen parte de su verano a enseñar a leer a los niños.",
+            "target": "Es admirable que los jóvenes dediquen",
+            "hint": "It is admirable that young people dedicate",
+            "notes": "Value judgment + 'que' triggers the present subjunctive ('dediquen')."
+        },
+        {
+            "id": "g10-026",
+            "level": 2,
+            "theme": "Science & Technology",
+            "sentence": "Las redes sociales han transformado la manera en que los jóvenes se informan sobre el mundo.",
+            "target": "han transformado la manera en que",
+            "hint": "have transformed the way in which",
+            "notes": "Present perfect ('han transformado') connects past innovation to present reality."
+        },
+        {
+            "id": "g10-027",
+            "level": 2,
+            "theme": "Science & Technology",
+            "sentence": "El uso excesivo de pantallas puede afectar negativamente la concentración y el sueño.",
+            "target": "El uso excesivo de pantallas",
+            "hint": "Excessive screen use",
+            "notes": "Frequently tested theme on AP email and essay prompts."
+        },
+        {
+            "id": "g10-028",
+            "level": 2,
+            "theme": "Science & Technology",
+            "sentence": "Los avances médicos permiten diagnosticar enfermedades mucho antes que hace veinte años.",
+            "target": "Los avances médicos",
+            "hint": "Medical advances / breakthroughs",
+            "notes": "'Avances científicos / tecnológicos / médicos' are core AP nouns."
+        },
+        {
+            "id": "g10-029",
+            "level": 2,
+            "theme": "Science & Technology",
+            "sentence": "Es importante que los usuarios protejan su privacidad digital al navegar por Internet.",
+            "target": "su privacidad digital",
+            "hint": "their digital privacy",
+            "notes": "Key cybersecurity term."
+        },
+        {
+            "id": "g10-030",
+            "level": 2,
+            "theme": "Science & Technology",
+            "sentence": "En las zonas rurales, todavía existe una brecha digital que dificulta el acceso a clases en línea.",
+            "target": "una brecha digital",
+            "hint": "a digital divide",
+            "notes": "High-scoring AP term for inequality in technology access."
+        },
+        {
+            "id": "g10-031",
+            "level": 2,
+            "theme": "Science & Technology",
+            "sentence": "La inteligencia artificial sirve como una herramienta útil si se emplea con responsabilidad.",
+            "target": "como una herramienta útil",
+            "hint": "as a useful tool",
+            "notes": "'Herramienta' = tool (physical or digital)."
+        },
+        {
+            "id": "g10-032",
+            "level": 2,
+            "theme": "Global Challenges",
+            "sentence": "La deforestación en la cuenca amazónica amenaza tanto la biodiversidad como a las comunidades indígenas.",
+            "target": "amenaza tanto la biodiversidad",
+            "hint": "threatens both biodiversity",
+            "notes": "Directly connects South American geography to Global Challenges."
+        },
+        {
+            "id": "g10-033",
+            "level": 2,
+            "theme": "Global Challenges",
+            "sentence": "Los gobiernos deben invertir más en energías renovables como la solar y la eólica.",
+            "target": "energías renovables",
+            "hint": "renewable energies",
+            "notes": "'Energía eólica' = wind energy; 'energía solar' = solar energy."
+        },
+        {
+            "id": "g10-034",
+            "level": 2,
+            "theme": "Global Challenges",
+            "sentence": "La escasez de agua potable obliga a muchas ciudades a desarrollar sistemas de conservación.",
+            "target": "La escasez de agua",
+            "hint": "Water scarcity / shortage",
+            "notes": "'Escasez' = scarcity/shortage."
+        },
+        {
+            "id": "g10-035",
+            "level": 2,
+            "theme": "Global Challenges",
+            "sentence": "Es urgente que tomemos medidas concretas para frenar el calentamiento global.",
+            "target": "tomemos medidas concretas",
+            "hint": "we take concrete measures/steps",
+            "notes": "'Tomar medidas' = to take action/measures (not 'hacer medidas')."
+        },
+        {
+            "id": "g10-036",
+            "level": 2,
+            "theme": "Global Challenges",
+            "sentence": "El reciclaje y la reutilización de materiales disminuyen la cantidad de residuos en los vertederos.",
+            "target": "la cantidad de residuos",
+            "hint": "the amount of waste",
+            "notes": "'Residuos' or 'desechos' = formal synonyms for 'basura'."
+        },
+        {
+            "id": "g10-037",
+            "level": 2,
+            "theme": "Global Challenges",
+            "sentence": "Muchas organizaciones sin fines de lucro trabajan para combatir la pobreza y mejorar la salud pública.",
+            "target": "organizaciones sin fines de lucro",
+            "hint": "nonprofit organizations",
+            "notes": "Essential civic and global vocabulary."
+        },
+        {
+            "id": "g10-038",
+            "level": 2,
+            "theme": "Personal & Public Identities",
+            "sentence": "El idioma que hablamos influye profundamente en cómo vemos e interpretamos el mundo.",
+            "target": "influye profundamente en",
+            "hint": "deeply influences",
+            "notes": "Remember: 'influir en' always takes the preposition 'en'."
+        },
+        {
+            "id": "g10-039",
+            "level": 2,
+            "theme": "Personal & Public Identities",
+            "sentence": "Para muchos inmigrantes, conservar su lengua materna es una forma de mantener viva su herencia cultural.",
+            "target": "su herencia cultural",
+            "hint": "their cultural heritage",
+            "notes": "Core phrase for Personal & Public Identities prompts."
+        },
+        {
+            "id": "g10-040",
+            "level": 2,
+            "theme": "Personal & Public Identities",
+            "sentence": "En Bolivia, el reconocimiento de las lenguas originarias como el quechua y el aimara fortalece la identidad nacional.",
+            "target": "las lenguas originarias",
+            "hint": "indigenous / native languages",
+            "notes": "Bolivia recognizes 36 indigenous languages alongside Spanish."
+        },
+        {
+            "id": "g10-041",
+            "level": 2,
+            "theme": "Personal & Public Identities",
+            "sentence": "Superar los estereotipos requiere curiosidad, diálogo abierto y empatía hacia otras culturas.",
+            "target": "Superar los estereotipos",
+            "hint": "Overcoming stereotypes",
+            "notes": "'Superar' = to overcome obstacles, fears, or stereotypes."
+        },
+        {
+            "id": "g10-042",
+            "level": 2,
+            "theme": "Personal & Public Identities",
+            "sentence": "La autoestima de los jóvenes se fortalece cuando descubren sus propios talentos y pasiones.",
+            "target": "La autoestima",
+            "hint": "Self-esteem",
+            "notes": "Note: 'la autoestima' is feminine."
+        },
+        {
+            "id": "g10-043",
+            "level": 2,
+            "theme": "Personal & Public Identities",
+            "sentence": "Vivir en una comunidad multicultural nos brinda la oportunidad de celebrar diversas tradiciones.",
+            "target": "nos brinda la oportunidad de",
+            "hint": "offers / gives us the opportunity to",
+            "notes": "'Brindar' is a polished synonym for 'dar/ofrecer'."
+        },
+        {
+            "id": "g10-044",
+            "level": 2,
+            "theme": "Beauty & Aesthetics",
+            "sentence": "Los murales urbanos suelen transmitir mensajes poderosos sobre la justicia social y la historia local.",
+            "target": "suelen transmitir mensajes",
+            "hint": "tend to convey messages",
+            "notes": "Great phrase for analyzing murals in Buenos Aires, La Paz, or Mexico City."
+        },
+        {
+            "id": "g10-045",
+            "level": 2,
+            "theme": "Beauty & Aesthetics",
+            "sentence": "La arquitectura neoandina en El Alto combina colores vibrantes con símbolos de la cultura aimara.",
+            "target": "La arquitectura neoandina",
+            "hint": "Neo-Andean architecture",
+            "notes": "Designed by Bolivian architect Freddy Mamani — a standout AP cultural example."
+        },
+        {
+            "id": "g10-046",
+            "level": 2,
+            "theme": "Beauty & Aesthetics",
+            "sentence": "El patrimonio arquitectónico de una ciudad cuenta la historia de las generaciones pasadas.",
+            "target": "El patrimonio arquitectónico",
+            "hint": "Architectural heritage",
+            "notes": "'Patrimonio' = heritage (cultural, natural, or historical)."
+        },
+        {
+            "id": "g10-047",
+            "level": 2,
+            "theme": "Beauty & Aesthetics",
+            "sentence": "A través de la literatura, los autores exploran las emociones humanas y critican problemas sociales.",
+            "target": "exploran las emociones humanas",
+            "hint": "explore human emotions",
+            "notes": "Connects Beauty & Aesthetics with historical and social themes."
+        },
+        {
+            "id": "g10-048",
+            "level": 2,
+            "theme": "Beauty & Aesthetics",
+            "sentence": "La preservación de las danzas folclóricas mantiene vivo el espíritu creativo de cada región.",
+            "target": "las danzas folclóricas",
+            "hint": "folkloric dances",
+            "notes": "Think Carnaval de Oruro in Bolivia or chacarera/zamba in Argentina."
+        },
+        {
+            "id": "g10-049",
+            "level": 2,
+            "theme": "Beauty & Aesthetics",
+            "sentence": "Para muchos artistas, la creatividad es una forma esencial de expresar lo que las palabras no pueden decir.",
+            "target": "una forma esencial de expresar",
+            "hint": "an essential way of expressing",
+            "notes": "Versatile phrase for AP speaking and writing."
+        },
+        {
+            "id": "g10-050",
+            "level": 2,
+            "theme": "Argument & Connectors",
+            "sentence": "En definitiva, aprender a comunicarse con claridad es una habilidad que sirve para toda la vida.",
+            "target": "En definitiva",
+            "hint": "Ultimately / In short",
+            "notes": "Polished concluding phrase that transitions smoothly into 11th/12th grade AP writing."
+        }
+    ]
+}

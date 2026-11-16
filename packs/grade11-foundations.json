@@ -1,0 +1,369 @@
+{
+    "packId": "grade11-pre-ap",
+    "title": "11th Grade Pre-AP — Hypothetical Clauses, Formal Register & Cultural Comparison",
+    "gradeLevel": 11,
+    "level": 2,
+    "description": "Pre-AP bridge pack focusing on imperfect subjunctive + conditional hypotheses, formal email salutations/closings, Latin American cultural comparisons, and analytical connectors across all 7 AP themes.",
+    "cards": [
+        {
+            "id": "g11-001",
+            "level": 2,
+            "theme": "Argument & Connectors",
+            "sentence": "No obstante, es preciso considerar tanto los beneficios económicos como el impacto ambiental.",
+            "target": "No obstante",
+            "hint": "Nevertheless / Nonetheless",
+            "notes": "Formal AP essay alternative to 'sin embargo'."
+        },
+        {
+            "id": "g11-002",
+            "level": 2,
+            "theme": "Argument & Connectors",
+            "sentence": "Cabe señalar que el acceso a la educación superior ha aumentado en las últimas décadas.",
+            "target": "Cabe señalar que",
+            "hint": "It is worth pointing out that",
+            "notes": "Impersonal AP academic phrasing that elevates argumentative essays."
+        },
+        {
+            "id": "g11-003",
+            "level": 2,
+            "theme": "Argument & Connectors",
+            "sentence": "De ahí que sea indispensable fomentar hábitos de lectura crítica desde la adolescencia.",
+            "target": "De ahí que sea",
+            "hint": "Hence it is / That is why it is (+ subjunctive)",
+            "notes": "'De ahí que' triggers the subjunctive ('sea') and signals logical consequence."
+        },
+        {
+            "id": "g11-004",
+            "level": 2,
+            "theme": "Argument & Connectors",
+            "sentence": "A fin de cuentas, el bienestar de una sociedad se mide por la calidad de vida de sus ciudadanos.",
+            "target": "A fin de cuentas",
+            "hint": "Ultimately / At the end of the day",
+            "notes": "Idiomatic and persuasive synthesis transition."
+        },
+        {
+            "id": "g11-005",
+            "level": 2,
+            "theme": "Argument & Connectors",
+            "sentence": "Lejos de resolver el problema, la prohibición total podría generar efectos contraproducentes.",
+            "target": "Lejos de resolver",
+            "hint": "Far from solving",
+            "notes": "'Lejos de + infinitive' is a crisp counterargument opener."
+        },
+        {
+            "id": "g11-006",
+            "level": 2,
+            "theme": "Argument & Connectors",
+            "sentence": "Con respecto a la propuesta municipal, considero que ofrece soluciones viables a largo plazo.",
+            "target": "Con respecto a",
+            "hint": "With respect to / Regarding",
+            "notes": "Ideal for AP Email Reply (Task 1) when addressing each question in the prompt."
+        },
+        {
+            "id": "g11-007",
+            "level": 2,
+            "theme": "Argument & Connectors",
+            "sentence": "Siempre y cuando se respeten las normas éticas, la innovación científica impulsa el progreso.",
+            "target": "Siempre y cuando se respeten",
+            "hint": "Provided that / As long as (+ subjunctive)",
+            "notes": "Conditional conjunction 'siempre y cuando' always triggers the subjunctive."
+        },
+        {
+            "id": "g11-008",
+            "level": 2,
+            "theme": "Argument & Connectors",
+            "sentence": "Estimado Sr. Director: Le escribo con el propósito de solicitar información adicional sobre el programa.",
+            "target": "con el propósito de",
+            "hint": "with the purpose of",
+            "notes": "Classic formal opening line for the AP Interpersonal Writing Email Reply."
+        },
+        {
+            "id": "g11-009",
+            "level": 2,
+            "theme": "Argument & Connectors",
+            "sentence": "Agradezco de antemano su atención y quedo a su entera disposición para cualquier consulta.",
+            "target": "quedo a su entera disposición",
+            "hint": "I remain at your full disposal",
+            "notes": "Gold-standard formal sign-off for the AP Email Reply."
+        },
+        {
+            "id": "g11-010",
+            "level": 2,
+            "theme": "Global Challenges",
+            "sentence": "Si los países industrializados redujeran sus emisiones, se mitigaría el deshielo de los glaciares andinos.",
+            "target": "redujeran sus emisiones",
+            "hint": "reduced their emissions (imperfect subjunctive)",
+            "notes": "Hypothetical 'si' clause: imperfect subjunctive ('redujeran') + conditional ('se mitigaría')."
+        },
+        {
+            "id": "g11-011",
+            "level": 2,
+            "theme": "Global Challenges",
+            "sentence": "La seguridad alimentaria depende en gran medida de la conservación de los suelos fértiles.",
+            "target": "La seguridad alimentaria",
+            "hint": "Food security",
+            "notes": "Core Global Challenges term in UN and Latin American policy discussions."
+        },
+        {
+            "id": "g11-012",
+            "level": 2,
+            "theme": "Global Challenges",
+            "sentence": "El desarrollo sostenible busca satisfacer las necesidades actuales sin comprometer a las futuras generaciones.",
+            "target": "El desarrollo sostenible",
+            "hint": "Sustainable development",
+            "notes": "High-frequency AP essay anchor term."
+        },
+        {
+            "id": "g11-013",
+            "level": 2,
+            "theme": "Global Challenges",
+            "sentence": "La migración interna hacia las grandes urbes suele provocar desafíos en la vivienda y el transporte.",
+            "target": "La migración interna",
+            "hint": "Internal migration (rural-to-urban)",
+            "notes": "Major demographic trend across Argentina, Bolivia, and Latin America."
+        },
+        {
+            "id": "g11-014",
+            "level": 2,
+            "theme": "Global Challenges",
+            "sentence": "Es imprescindible que se implementen políticas públicas para garantizar el acceso equitativo a la salud.",
+            "target": "el acceso equitativo",
+            "hint": "equitable / fair access",
+            "notes": "'Equitativo' = fair/equitable."
+        },
+        {
+            "id": "g11-015",
+            "level": 2,
+            "theme": "Global Challenges",
+            "sentence": "La economía circular propone reparar, reciclar y reincorporar productos en lugar de desecharlos.",
+            "target": "La economía circular",
+            "hint": "The circular economy",
+            "notes": "Modern sustainability vocabulary."
+        },
+        {
+            "id": "g11-016",
+            "level": 2,
+            "theme": "Science & Technology",
+            "sentence": "La alfabetización digital resulta esencial para que los ciudadanos distingan fuentes confiables de desinformación.",
+            "target": "La alfabetización digital",
+            "hint": "Digital literacy",
+            "notes": "Key Pre-AP phrase for evaluating online sources."
+        },
+        {
+            "id": "g11-017",
+            "level": 2,
+            "theme": "Science & Technology",
+            "sentence": "Los algoritmos de las redes sociales tienden a reforzar nuestras propias opiniones en lugar de ampliarlas.",
+            "target": "tienden a reforzar",
+            "hint": "tend to reinforce",
+            "notes": "'Tender a + infinitive' = to tend to."
+        },
+        {
+            "id": "g11-018",
+            "level": 2,
+            "theme": "Science & Technology",
+            "sentence": "El desarrollo de la telemedicina ha facilitado la atención médica en comunidades remotas del altiplano.",
+            "target": "ha facilitado la atención médica",
+            "hint": "has facilitated medical care",
+            "notes": "Connects technology to rural healthcare access in Bolivia."
+        },
+        {
+            "id": "g11-019",
+            "level": 2,
+            "theme": "Science & Technology",
+            "sentence": "Surge un dilema ético cuando la automatización reemplaza empleos tradicionales sin ofrecer capacitación.",
+            "target": "Surge un dilema ético",
+            "hint": "An ethical dilemma arises",
+            "notes": "'Surgir' = to arise/emerge."
+        },
+        {
+            "id": "g11-020",
+            "level": 2,
+            "theme": "Science & Technology",
+            "sentence": "La energía geotérmica y el litio del salar de Uyuni posicionan a Bolivia en el debate energético global.",
+            "target": "el debate energético global",
+            "hint": "the global energy debate",
+            "notes": "Bolivia's Salar de Uyuni holds one of the world's largest lithium reserves."
+        },
+        {
+            "id": "g11-021",
+            "level": 2,
+            "theme": "Contemporary Life",
+            "sentence": "El consumismo excesivo impulsa a muchas personas a comprar artículos innecesarios por presión social.",
+            "target": "El consumismo excesivo",
+            "hint": "Excessive consumerism",
+            "notes": "Common Contemporary Life essay and speaking topic."
+        },
+        {
+            "id": "g11-022",
+            "level": 2,
+            "theme": "Contemporary Life",
+            "sentence": "El bienestar emocional de los adolescentes requiere espacios seguros para dialogar sin prejuicios.",
+            "target": "El bienestar emocional",
+            "hint": "Emotional well-being",
+            "notes": "'Bienestar' = well-being/welfare."
+        },
+        {
+            "id": "g11-023",
+            "level": 2,
+            "theme": "Contemporary Life",
+            "sentence": "En Argentina, las universidades públicas y gratuitas permiten una amplia movilidad social.",
+            "target": "una amplia movilidad social",
+            "hint": "broad social mobility",
+            "notes": "Education and social mobility are central to Contemporary Life."
+        },
+        {
+            "id": "g11-024",
+            "level": 2,
+            "theme": "Contemporary Life",
+            "sentence": "Conciliar la vida laboral con la vida familiar sigue siendo un reto importante en las grandes ciudades.",
+            "target": "Conciliar la vida laboral con",
+            "hint": "Balancing work life with",
+            "notes": "'Conciliar' = to reconcile/balance work and family."
+        },
+        {
+            "id": "g11-025",
+            "level": 2,
+            "theme": "Contemporary Life",
+            "sentence": "El comercio justo garantiza que los pequeños productores reciban una remuneración digna por su trabajo.",
+            "target": "El comercio justo",
+            "hint": "Fair trade",
+            "notes": "Relevant to coffee, cacao, and quinoa cooperatives in Latin America."
+        },
+        {
+            "id": "g11-026",
+            "level": 2,
+            "theme": "Personal & Public Identities",
+            "sentence": "El sentido de pertenencia a una comunidad se construye mediante experiencias y valores compartidos.",
+            "target": "El sentido de pertenencia",
+            "hint": "The sense of belonging",
+            "notes": "One of the highest-utility phrases in all of AP Spanish."
+        },
+        {
+            "id": "g11-027",
+            "level": 2,
+            "theme": "Personal & Public Identities",
+            "sentence": "El voseo rioplatense constituye un rasgo distintivo de la identidad lingüística de Argentina y Uruguay.",
+            "target": "un rasgo distintivo",
+            "hint": "a distinctive feature / trait",
+            "notes": "'Rasgo' = feature/trait/characteristic."
+        },
+        {
+            "id": "g11-028",
+            "level": 2,
+            "theme": "Personal & Public Identities",
+            "sentence": "La diversidad cultural enriquece el tejido social al fomentar el respeto mutuo entre distintos grupos.",
+            "target": "enriquece el tejido social",
+            "hint": "enriches the social fabric",
+            "notes": "Sophisticated metaphorical phrasing for essays."
+        },
+        {
+            "id": "g11-029",
+            "level": 2,
+            "theme": "Personal & Public Identities",
+            "sentence": "Para los jóvenes biculturales, navegar entre dos idiomas forma parte cotidiana de su identidad personal.",
+            "target": "navegar entre dos idiomas",
+            "hint": "navigating between two languages",
+            "notes": "Directly resonates with bilingual students and AP identity themes."
+        },
+        {
+            "id": "g11-030",
+            "level": 2,
+            "theme": "Personal & Public Identities",
+            "sentence": "Los héroes cívicos y artistas locales suelen convertirse en símbolos de orgullo colectivo.",
+            "target": "símbolos de orgullo colectivo",
+            "hint": "symbols of collective pride",
+            "notes": "Great phrase for Cultural Comparison prompts on national/regional pride."
+        },
+        {
+            "id": "g11-031",
+            "level": 2,
+            "theme": "Families & Communities",
+            "sentence": "La solidaridad intergeneracional se manifiesta cuando los jóvenes ayudan a los adultos mayores con la tecnología.",
+            "target": "La solidaridad intergeneracional",
+            "hint": "Intergenerational solidarity",
+            "notes": "Directly addresses AP prompts on changing family roles."
+        },
+        {
+            "id": "g11-032",
+            "level": 2,
+            "theme": "Families & Communities",
+            "sentence": "En las comunidades andinas, el principio de reciprocidad conocido como 'ayni' guía la cooperación mutua.",
+            "target": "el principio de reciprocidad",
+            "hint": "the principle of reciprocity",
+            "notes": "Cultural gem for comparisons involving Bolivia or Peru."
+        },
+        {
+            "id": "g11-033",
+            "level": 2,
+            "theme": "Families & Communities",
+            "sentence": "La participación ciudadana en proyectos comunitarios fortalece la democracia a nivel local.",
+            "target": "La participación ciudadana",
+            "hint": "Citizen / civic participation",
+            "notes": "Key concept in Families & Communities."
+        },
+        {
+            "id": "g11-034",
+            "level": 2,
+            "theme": "Families & Communities",
+            "sentence": "Aunque las estructuras familiares han evolucionado, el apoyo emocional sigue siendo su pilar principal.",
+            "target": "sigue siendo su pilar principal",
+            "hint": "remains its main pillar",
+            "notes": "'Seguir + gerund' ('sigue siendo') = continues to be / remains."
+        },
+        {
+            "id": "g11-035",
+            "level": 2,
+            "theme": "Families & Communities",
+            "sentence": "Las redes de apoyo comunitario resultan vitales durante épocas de crisis económica o desastres naturales.",
+            "target": "Las redes de apoyo",
+            "hint": "Support networks",
+            "notes": "'Red de apoyo' = support network."
+        },
+        {
+            "id": "g11-036",
+            "level": 2,
+            "theme": "Beauty & Aesthetics",
+            "sentence": "El Carnaval de Oruro, declarado Obra Maestra del Patrimonio Oral e Intangible, fusiona música, danza y fe.",
+            "target": "Patrimonio Oral e Intangible",
+            "hint": "Oral and Intangible Heritage",
+            "notes": "UNESCO-recognized Bolivian cultural event ideal for AP Task 4."
+        },
+        {
+            "id": "g11-037",
+            "level": 2,
+            "theme": "Beauty & Aesthetics",
+            "sentence": "La literatura latinoamericana del siglo XX utilizó el realismo mágico para reflejar realidades políticas.",
+            "target": "el realismo mágico",
+            "hint": "magical realism",
+            "notes": "Core literary movement in Spanish-language aesthetics."
+        },
+        {
+            "id": "g11-038",
+            "level": 2,
+            "theme": "Beauty & Aesthetics",
+            "sentence": "La revitalización de los centros históricos busca equilibrar la conservación patrimonial con la modernidad.",
+            "target": "la conservación patrimonial",
+            "hint": "heritage conservation / preservation",
+            "notes": "Frequent debate topic in Beauty & Aesthetics."
+        },
+        {
+            "id": "g11-039",
+            "level": 2,
+            "theme": "Beauty & Aesthetics",
+            "sentence": "La música de protesta sirvió como voz de esperanza y resistencia durante períodos difíciles en el Cono Sur.",
+            "target": "sirvió como voz de esperanza",
+            "hint": "served as a voice of hope",
+            "notes": "Refers to Nueva Canción artists like Mercedes Sosa (Argentina) and Violeta Parra."
+        },
+        {
+            "id": "g11-040",
+            "level": 2,
+            "theme": "Beauty & Aesthetics",
+            "sentence": "El diseño sostenible demuestra que la estética moderna puede armonizar con el respeto ecológico.",
+            "target": "puede armonizar con",
+            "hint": "can harmonize with",
+            "notes": "Elegant verb for comparing aesthetics and environmental responsibility."
+        }
+    ]
+}
