@@ -1,0 +1,24 @@
+# OS & Editor Metadata
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Local Environment & Secrets (Never commit API keys or OAuth secrets)
+.env
+.env.local
+.env.*.local
+*.key
+*.pem
+client_secret*.json
+
+# Node / Build Caches (if added later)
+node_modules/
+dist/
+.netlify/
+
+# Temporary Local Deck Exports
+*backup*.json
+ap-spanish-deck-*.json
