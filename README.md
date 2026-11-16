@@ -52,7 +52,8 @@ ap-spanish-trainer/
 │   ├── preplyAdd.js                  # Single & bulk Preply gap-phrase capture
 │   ├── speaking.js                   # AP Task 4 Cultural Comparison simulator & live speech pipeline
 │   └── manageDeck.js                 # Deck table browser, search, delete, & JSON import/export
-├── config.js                         # Optional local OAuth Client ID config (injected via Netlify env var)
+├── config.js                         # Optional local OAuth Client ID config (injected via env var)
+├── _headers                          # Cache headers for Cloudflare Pages & Netlify (/packs/* 7d cache)
 ├── netlify.toml                      # Netlify build/deploy configuration
 ├── packs/
 │   ├── grade9-foundations.json       # Level 1: 9th Grade Foundations (7,300 phrases)
@@ -65,12 +66,16 @@ ap-spanish-trainer/
 └── .gitignore
 ```
 
-## Quick Deployment (GitHub + Netlify)
+## Quick Deployment (GitHub + Cloudflare Pages / Netlify)
 
 1. Push this repository to GitHub.
-2. In **Netlify**, select **Add new site → Import an existing project → Deploy with GitHub** and select this repo.
-3. Netlify automatically picks up `netlify.toml` (publishes `.`).
-4. *(Optional)* To enable **Google Drive Sync** across devices, enable the **Google Drive API** in Google Cloud Console, create a Web OAuth 2.0 Client ID with your Netlify URL under **Authorized JavaScript origins**, and either add `GOOGLE_CLIENT_ID` in **Netlify → Site configuration → Environment variables** (recommended so your Client ID stays out of GitHub) or paste it into `config.js`.
+2. **Cloudflare Pages *(Recommended for unlimited static bandwidth)*:** Go to **Workers & Pages → Create → Pages → Connect to Git**, choose this repo, set **Build output directory** to `.`, and use the build command from `netlify.toml` if setting `GOOGLE_CLIENT_ID`:
+   ```sh
+   if [ -n "$GOOGLE_CLIENT_ID" ]; then printf "window.APP_CONFIG = {\n  googleClientId: \"%s\"\n};\n" "$GOOGLE_CLIENT_ID" > config.js; fi
+   ```
+   Cloudflare Pages and Netlify both automatically pick up `_headers` to cache `/packs/*.json` for 7 days (`stale-while-revalidate=30d`).
+3. **Netlify:** Select **Add new site → Import an existing project → Deploy with GitHub** and select this repo; Netlify automatically picks up `netlify.toml` (publishes `.`).
+4. *(Optional)* To enable **Google Drive Sync** across devices, enable the **Google Drive API** in Google Cloud Console, create a Web OAuth 2.0 Client ID with your deployed URL under **Authorized JavaScript origins**, and either add `GOOGLE_CLIENT_ID` in your host's environment variables (recommended so your Client ID stays out of GitHub) or paste it into `config.js`.
 
 ## License
 

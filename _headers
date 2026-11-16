@@ -1,0 +1,21 @@
+# Edge & browser cache rules (compatible with Cloudflare Pages and Netlify)
+
+# Large curriculum, vocabulary, and verb packs (~11 MB total):
+# Cache for 7 days and serve stale-while-revalidate for 30 days to minimize bandwidth and speed up loads.
+/packs/*
+  Cache-Control: public, max-age=604800, stale-while-revalidate=2592000
+
+# App shell, partials, styles, and runtime OAuth config:
+# Revalidate on every load so pushed updates take effect immediately without stale JS/HTML mismatches.
+/
+  Cache-Control: public, max-age=0, must-revalidate
+/index.html
+  Cache-Control: public, max-age=0, must-revalidate
+/config.js
+  Cache-Control: public, max-age=0, must-revalidate
+/partials/*
+  Cache-Control: public, max-age=0, must-revalidate
+/js/*
+  Cache-Control: public, max-age=0, must-revalidate
+/styles/*
+  Cache-Control: public, max-age=0, must-revalidate
