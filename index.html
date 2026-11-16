@@ -23,21 +23,60 @@
       },
     };
   </script>
+  <script>
+    (function () {
+      try {
+        var raw = localStorage.getItem('ap_spanish_user_prefs_v1');
+        if (raw) {
+          var prefs = JSON.parse(raw);
+          if (prefs && prefs.themeMode) {
+            document.documentElement.setAttribute('data-theme', prefs.themeMode);
+          }
+          if (prefs && prefs.fontSize) {
+            document.documentElement.setAttribute('data-font-size', prefs.fontSize);
+          }
+        }
+      } catch (e) {}
+    })();
+  </script>
   <style>
+    :root {
+      --theme-bg: #f8fafc;
+      --theme-surface: #ffffff;
+      --theme-subtle: #f1f5f9;
+      --theme-hover: #e2e8f0;
+      --theme-text: #0f172a;
+      --theme-text-secondary: #334155;
+      --theme-text-muted: #64748b;
+      --theme-border: #e2e8f0;
+      --theme-border-strong: #cbd5e1;
+      --theme-accent: #4f46e5;
+      --theme-accent-bg: #eef2ff;
+      --theme-accent-text: #3730a3;
+      --theme-accent-border: #c7d2fe;
+    }
+
+    html[data-font-size="large"] {
+      font-size: 17.5px;
+    }
+    html[data-font-size="xlarge"] {
+      font-size: 19px;
+    }
+
     /* Custom subtle scrollbars and smooth transitions */
     ::-webkit-scrollbar {
       width: 6px;
       height: 6px;
     }
     ::-webkit-scrollbar-track {
-      background: #f1f5f9;
+      background: var(--theme-subtle);
     }
     ::-webkit-scrollbar-thumb {
-      background: #cbd5e1;
+      background: var(--theme-border-strong);
       border-radius: 9999px;
     }
     ::-webkit-scrollbar-thumb:hover {
-      background: #94a3b8;
+      background: var(--theme-text-muted);
     }
     .cloze-blank {
       display: inline-block;
@@ -95,6 +134,363 @@
     @keyframes popIn {
       0% { transform: scale(0.95); opacity: 0.7; }
       100% { transform: scale(1); opacity: 1; }
+    }
+
+    /* ==================== MULTI-COLOR & ACCESSIBILITY THEME OVERRIDES ==================== */
+    html[data-theme="dark"],
+    html[data-theme="midnight"],
+    html[data-theme="high-contrast"] {
+      color-scheme: dark;
+    }
+    html[data-theme="dark"] {
+      --theme-bg: #0f172a;
+      --theme-surface: #1e293b;
+      --theme-subtle: #273549;
+      --theme-hover: #334155;
+      --theme-text: #f8fafc;
+      --theme-text-secondary: #e2e8f0;
+      --theme-text-muted: #94a3b8;
+      --theme-border: #334155;
+      --theme-border-strong: #475569;
+      --theme-accent: #818cf8;
+      --theme-accent-bg: rgba(99, 102, 241, 0.18);
+      --theme-accent-text: #c7d2fe;
+      --theme-accent-border: rgba(129, 140, 248, 0.45);
+    }
+    html[data-theme="midnight"] {
+      --theme-bg: #000000;
+      --theme-surface: #0d1117;
+      --theme-subtle: #161b22;
+      --theme-hover: #21262d;
+      --theme-text: #f0f6fc;
+      --theme-text-secondary: #c9d1d9;
+      --theme-text-muted: #8b949e;
+      --theme-border: #21262d;
+      --theme-border-strong: #30363d;
+      --theme-accent: #79c0ff;
+      --theme-accent-bg: rgba(56, 139, 253, 0.16);
+      --theme-accent-text: #a5d6ff;
+      --theme-accent-border: rgba(88, 166, 255, 0.45);
+    }
+    html[data-theme="sepia"] {
+      --theme-bg: #f4ecdc;
+      --theme-surface: #fbf6eb;
+      --theme-subtle: #ece1cb;
+      --theme-hover: #e2d3b7;
+      --theme-text: #3a2d20;
+      --theme-text-secondary: #564433;
+      --theme-text-muted: #7d6751;
+      --theme-border: #dfd1b7;
+      --theme-border-strong: #c9b796;
+      --theme-accent: #8b4513;
+      --theme-accent-bg: #f2e4ce;
+      --theme-accent-text: #6e360f;
+      --theme-accent-border: #cfa97e;
+    }
+    html[data-theme="high-contrast"] {
+      --theme-bg: #000000;
+      --theme-surface: #0a0a0a;
+      --theme-subtle: #18181b;
+      --theme-hover: #27272a;
+      --theme-text: #ffffff;
+      --theme-text-secondary: #fafafa;
+      --theme-text-muted: #e4e4e7;
+      --theme-border: #ffffff;
+      --theme-border-strong: #ffffff;
+      --theme-accent: #facc15;
+      --theme-accent-bg: #1e1b00;
+      --theme-accent-text: #fde047;
+      --theme-accent-border: #facc15;
+    }
+
+    /* Shared Variable-Driven Surface Overrides (Dark, Midnight, Sepia, High-Contrast) */
+    html[data-theme]:not([data-theme="light"]):not([data-theme="colorblind"]) body {
+      background-color: var(--theme-bg) !important;
+      color: var(--theme-text) !important;
+    }
+    html[data-theme]:not([data-theme="light"]):not([data-theme="colorblind"]) .bg-white,
+    html[data-theme]:not([data-theme="light"]):not([data-theme="colorblind"]) .bg-white\/70,
+    html[data-theme]:not([data-theme="light"]):not([data-theme="colorblind"]) .bg-white\/80 {
+      background-color: var(--theme-surface) !important;
+    }
+    html[data-theme]:not([data-theme="light"]):not([data-theme="colorblind"]) .bg-slate-50,
+    html[data-theme]:not([data-theme="light"]):not([data-theme="colorblind"]) .bg-slate-50\/80 {
+      background-color: var(--theme-bg) !important;
+    }
+    html[data-theme]:not([data-theme="light"]):not([data-theme="colorblind"]) .bg-slate-100 {
+      background-color: var(--theme-subtle) !important;
+    }
+    html[data-theme]:not([data-theme="light"]):not([data-theme="colorblind"]) .hover\:bg-slate-50:hover,
+    html[data-theme]:not([data-theme="light"]):not([data-theme="colorblind"]) .hover\:bg-slate-50\/80:hover,
+    html[data-theme]:not([data-theme="light"]):not([data-theme="colorblind"]) .hover\:bg-slate-100:hover,
+    html[data-theme]:not([data-theme="light"]):not([data-theme="colorblind"]) .hover\:bg-slate-200:hover {
+      background-color: var(--theme-hover) !important;
+    }
+    html[data-theme]:not([data-theme="light"]):not([data-theme="colorblind"]) .text-slate-900 {
+      color: var(--theme-text) !important;
+    }
+    html[data-theme]:not([data-theme="light"]):not([data-theme="colorblind"]) .text-slate-800,
+    html[data-theme]:not([data-theme="light"]):not([data-theme="colorblind"]) .text-slate-700 {
+      color: var(--theme-text-secondary) !important;
+    }
+    html[data-theme]:not([data-theme="light"]):not([data-theme="colorblind"]) .text-slate-600,
+    html[data-theme]:not([data-theme="light"]):not([data-theme="colorblind"]) .text-slate-500,
+    html[data-theme]:not([data-theme="light"]):not([data-theme="colorblind"]) .text-slate-400 {
+      color: var(--theme-text-muted) !important;
+    }
+    html[data-theme]:not([data-theme="light"]):not([data-theme="colorblind"]) .border-slate-100,
+    html[data-theme]:not([data-theme="light"]):not([data-theme="colorblind"]) .border-slate-200,
+    html[data-theme]:not([data-theme="light"]):not([data-theme="colorblind"]) .border-slate-200\/80,
+    html[data-theme]:not([data-theme="light"]):not([data-theme="colorblind"]) .border-slate-300,
+    html[data-theme]:not([data-theme="light"]):not([data-theme="colorblind"]) .divide-slate-100 > :not([hidden]) ~ :not([hidden]),
+    html[data-theme]:not([data-theme="light"]):not([data-theme="colorblind"]) .divide-slate-200 > :not([hidden]) ~ :not([hidden]) {
+      border-color: var(--theme-border) !important;
+    }
+    html[data-theme]:not([data-theme="light"]):not([data-theme="colorblind"]) input:not([type="checkbox"]):not([type="radio"]),
+    html[data-theme]:not([data-theme="light"]):not([data-theme="colorblind"]) select,
+    html[data-theme]:not([data-theme="light"]):not([data-theme="colorblind"]) textarea {
+      background-color: var(--theme-subtle) !important;
+      color: var(--theme-text) !important;
+      border-color: var(--theme-border-strong) !important;
+    }
+    html[data-theme]:not([data-theme="light"]):not([data-theme="colorblind"]) kbd {
+      background-color: var(--theme-subtle) !important;
+      border-color: var(--theme-border-strong) !important;
+      color: var(--theme-text-secondary) !important;
+    }
+
+    /* Dark / Midnight / High-Contrast Colored Pill & Card Overrides */
+    html[data-theme="dark"] .bg-indigo-50, html[data-theme="dark"] .bg-indigo-50\/70, html[data-theme="dark"] .bg-indigo-50\/80, html[data-theme="dark"] .bg-indigo-100,
+    html[data-theme="midnight"] .bg-indigo-50, html[data-theme="midnight"] .bg-indigo-50\/70, html[data-theme="midnight"] .bg-indigo-50\/80, html[data-theme="midnight"] .bg-indigo-100 {
+      background-color: rgba(99, 102, 241, 0.16) !important;
+    }
+    html[data-theme="dark"] .bg-emerald-50, html[data-theme="dark"] .bg-emerald-50\/70, html[data-theme="dark"] .bg-emerald-100,
+    html[data-theme="midnight"] .bg-emerald-50, html[data-theme="midnight"] .bg-emerald-50\/70, html[data-theme="midnight"] .bg-emerald-100 {
+      background-color: rgba(16, 185, 129, 0.15) !important;
+    }
+    html[data-theme="dark"] .bg-amber-50, html[data-theme="dark"] .bg-amber-100,
+    html[data-theme="midnight"] .bg-amber-50, html[data-theme="midnight"] .bg-amber-100 {
+      background-color: rgba(245, 158, 11, 0.15) !important;
+    }
+    html[data-theme="dark"] .bg-rose-50, html[data-theme="dark"] .bg-rose-100,
+    html[data-theme="midnight"] .bg-rose-50, html[data-theme="midnight"] .bg-rose-100 {
+      background-color: rgba(244, 63, 94, 0.16) !important;
+    }
+    html[data-theme="dark"] .bg-sky-50, html[data-theme="dark"] .bg-sky-50\/70, html[data-theme="dark"] .bg-sky-100,
+    html[data-theme="midnight"] .bg-sky-50, html[data-theme="midnight"] .bg-sky-50\/70, html[data-theme="midnight"] .bg-sky-100 {
+      background-color: rgba(14, 165, 233, 0.15) !important;
+    }
+    html[data-theme="dark"] .bg-purple-50, html[data-theme="dark"] .bg-purple-50\/70, html[data-theme="dark"] .bg-purple-100,
+    html[data-theme="midnight"] .bg-purple-50, html[data-theme="midnight"] .bg-purple-50\/70, html[data-theme="midnight"] .bg-purple-100 {
+      background-color: rgba(168, 85, 247, 0.16) !important;
+    }
+    html[data-theme="dark"] .text-indigo-950, html[data-theme="dark"] .text-indigo-900, html[data-theme="dark"] .text-indigo-800, html[data-theme="dark"] .text-indigo-700,
+    html[data-theme="midnight"] .text-indigo-950, html[data-theme="midnight"] .text-indigo-900, html[data-theme="midnight"] .text-indigo-800, html[data-theme="midnight"] .text-indigo-700 {
+      color: #c7d2fe !important;
+    }
+    html[data-theme="dark"] .text-emerald-950, html[data-theme="dark"] .text-emerald-900, html[data-theme="dark"] .text-emerald-800, html[data-theme="dark"] .text-emerald-700,
+    html[data-theme="midnight"] .text-emerald-950, html[data-theme="midnight"] .text-emerald-900, html[data-theme="midnight"] .text-emerald-800, html[data-theme="midnight"] .text-emerald-700 {
+      color: #6ee7b7 !important;
+    }
+    html[data-theme="dark"] .text-amber-950, html[data-theme="dark"] .text-amber-900, html[data-theme="dark"] .text-amber-800, html[data-theme="dark"] .text-amber-700,
+    html[data-theme="midnight"] .text-amber-950, html[data-theme="midnight"] .text-amber-900, html[data-theme="midnight"] .text-amber-800, html[data-theme="midnight"] .text-amber-700 {
+      color: #fcd34d !important;
+    }
+    html[data-theme="dark"] .text-rose-950, html[data-theme="dark"] .text-rose-900, html[data-theme="dark"] .text-rose-700,
+    html[data-theme="midnight"] .text-rose-950, html[data-theme="midnight"] .text-rose-900, html[data-theme="midnight"] .text-rose-700 {
+      color: #fda4af !important;
+    }
+    html[data-theme="dark"] .text-sky-950, html[data-theme="dark"] .text-sky-900, html[data-theme="dark"] .text-sky-700,
+    html[data-theme="midnight"] .text-sky-950, html[data-theme="midnight"] .text-sky-900, html[data-theme="midnight"] .text-sky-700 {
+      color: #7dd3fc !important;
+    }
+    html[data-theme="dark"] .text-purple-900, html[data-theme="dark"] .text-purple-700,
+    html[data-theme="midnight"] .text-purple-900, html[data-theme="midnight"] .text-purple-700 {
+      color: #d8b4fe !important;
+    }
+    html[data-theme="dark"] .border-indigo-100, html[data-theme="dark"] .border-indigo-200,
+    html[data-theme="midnight"] .border-indigo-100, html[data-theme="midnight"] .border-indigo-200 {
+      border-color: rgba(129, 140, 248, 0.35) !important;
+    }
+    html[data-theme="dark"] .border-emerald-100, html[data-theme="dark"] .border-emerald-200, html[data-theme="dark"] .border-emerald-300,
+    html[data-theme="midnight"] .border-emerald-100, html[data-theme="midnight"] .border-emerald-200, html[data-theme="midnight"] .border-emerald-300 {
+      border-color: rgba(52, 211, 153, 0.35) !important;
+    }
+    html[data-theme="dark"] .border-amber-200, html[data-theme="dark"] .border-amber-200\/80, html[data-theme="dark"] .border-amber-300,
+    html[data-theme="midnight"] .border-amber-200, html[data-theme="midnight"] .border-amber-200\/80, html[data-theme="midnight"] .border-amber-300 {
+      border-color: rgba(251, 191, 36, 0.35) !important;
+    }
+    html[data-theme="dark"] .border-rose-200, html[data-theme="midnight"] .border-rose-200 {
+      border-color: rgba(251, 113, 133, 0.38) !important;
+    }
+    html[data-theme="dark"] .border-sky-200, html[data-theme="dark"] .border-sky-300,
+    html[data-theme="midnight"] .border-sky-200, html[data-theme="midnight"] .border-sky-300 {
+      border-color: rgba(56, 189, 248, 0.35) !important;
+    }
+    html[data-theme="dark"] .border-purple-200, html[data-theme="midnight"] .border-purple-200 {
+      border-color: rgba(192, 132, 252, 0.35) !important;
+    }
+
+    /* Dark / Midnight / High-Contrast Cloze Styles */
+    html[data-theme="dark"] .cloze-input,
+    html[data-theme="midnight"] .cloze-input {
+      background-color: rgba(79, 70, 229, 0.22) !important;
+      color: #e0e7ff !important;
+      border-color: #818cf8 !important;
+    }
+    html[data-theme="dark"] .cloze-input:focus,
+    html[data-theme="midnight"] .cloze-input:focus {
+      background-color: #0f172a !important;
+      box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.35) !important;
+    }
+    html[data-theme="dark"] .cloze-revealed,
+    html[data-theme="midnight"] .cloze-revealed {
+      background-color: rgba(16, 185, 129, 0.24) !important;
+      color: #6ee7b7 !important;
+      border-color: rgba(52, 211, 153, 0.55) !important;
+    }
+    html[data-theme="dark"] .cloze-blank,
+    html[data-theme="midnight"] .cloze-blank {
+      background-color: rgba(99, 102, 241, 0.22) !important;
+      color: #c7d2fe !important;
+      border-bottom-color: #818cf8 !important;
+    }
+
+    /* High Contrast Specifics */
+    html[data-theme="high-contrast"] .bg-indigo-50, html[data-theme="high-contrast"] .bg-indigo-50\/70, html[data-theme="high-contrast"] .bg-indigo-50\/80, html[data-theme="high-contrast"] .bg-indigo-100,
+    html[data-theme="high-contrast"] .bg-emerald-50, html[data-theme="high-contrast"] .bg-emerald-50\/70, html[data-theme="high-contrast"] .bg-emerald-100,
+    html[data-theme="high-contrast"] .bg-amber-50, html[data-theme="high-contrast"] .bg-amber-100,
+    html[data-theme="high-contrast"] .bg-rose-50, html[data-theme="high-contrast"] .bg-rose-100,
+    html[data-theme="high-contrast"] .bg-sky-50, html[data-theme="high-contrast"] .bg-sky-50\/70, html[data-theme="high-contrast"] .bg-sky-100,
+    html[data-theme="high-contrast"] .bg-purple-50, html[data-theme="high-contrast"] .bg-purple-50\/70, html[data-theme="high-contrast"] .bg-purple-100 {
+      background-color: #141414 !important;
+      border: 1.5px solid #ffffff !important;
+    }
+    html[data-theme="high-contrast"] .text-indigo-950, html[data-theme="high-contrast"] .text-indigo-900, html[data-theme="high-contrast"] .text-indigo-800, html[data-theme="high-contrast"] .text-indigo-700,
+    html[data-theme="high-contrast"] .text-sky-950, html[data-theme="high-contrast"] .text-sky-900, html[data-theme="high-contrast"] .text-sky-700 {
+      color: #7dd3fc !important;
+    }
+    html[data-theme="high-contrast"] .text-emerald-950, html[data-theme="high-contrast"] .text-emerald-900, html[data-theme="high-contrast"] .text-emerald-800, html[data-theme="high-contrast"] .text-emerald-700 {
+      color: #fde047 !important;
+    }
+    html[data-theme="high-contrast"] .text-amber-950, html[data-theme="high-contrast"] .text-amber-900, html[data-theme="high-contrast"] .text-amber-800, html[data-theme="high-contrast"] .text-amber-700 {
+      color: #fde047 !important;
+    }
+    html[data-theme="high-contrast"] .text-rose-950, html[data-theme="high-contrast"] .text-rose-900, html[data-theme="high-contrast"] .text-rose-700 {
+      color: #fda4af !important;
+    }
+    html[data-theme="high-contrast"] .cloze-input {
+      background-color: #000000 !important;
+      color: #fde047 !important;
+      border: 2px solid #fde047 !important;
+    }
+    html[data-theme="high-contrast"] .cloze-revealed {
+      background-color: #141414 !important;
+      color: #fde047 !important;
+      border: 2px solid #fde047 !important;
+    }
+    html[data-theme="high-contrast"] button,
+    html[data-theme="high-contrast"] select,
+    html[data-theme="high-contrast"] input {
+      border-width: 1.5px !important;
+    }
+
+    /* Warm Sepia Specifics */
+    html[data-theme="sepia"] .bg-indigo-600 {
+      background-color: #8b4513 !important;
+    }
+    html[data-theme="sepia"] .hover\:bg-indigo-700:hover {
+      background-color: #733910 !important;
+    }
+    html[data-theme="sepia"] .bg-indigo-50, html[data-theme="sepia"] .bg-indigo-50\/70, html[data-theme="sepia"] .bg-indigo-50\/80, html[data-theme="sepia"] .bg-indigo-100 {
+      background-color: #f0e3ce !important;
+    }
+    html[data-theme="sepia"] .text-indigo-950, html[data-theme="sepia"] .text-indigo-900, html[data-theme="sepia"] .text-indigo-800, html[data-theme="sepia"] .text-indigo-700 {
+      color: #6e360f !important;
+    }
+    html[data-theme="sepia"] .border-indigo-100, html[data-theme="sepia"] .border-indigo-200 {
+      border-color: #d7be99 !important;
+    }
+    html[data-theme="sepia"] .cloze-input {
+      background-color: #f4e7d3 !important;
+      color: #4f260a !important;
+      border-color: #b88a55 !important;
+      border-bottom-color: #8b4513 !important;
+    }
+    html[data-theme="sepia"] .cloze-revealed {
+      background-color: #e4edd8 !important;
+      color: #2f4f22 !important;
+      border-color: #9cb97c !important;
+    }
+
+    /* Colorblind-Friendly Mode (Okabe-Ito Safe Palette: Blue vs Vermilion/Orange, never Red vs Green) */
+    html[data-theme="colorblind"] .bg-rose-50,
+    html[data-theme="colorblind"] .bg-rose-100 {
+      background-color: #fff0e5 !important;
+    }
+    html[data-theme="colorblind"] .hover\:bg-rose-100:hover {
+      background-color: #ffe0cc !important;
+    }
+    html[data-theme="colorblind"] .border-rose-200 {
+      border-color: #d55e00 !important;
+    }
+    html[data-theme="colorblind"] .text-rose-950,
+    html[data-theme="colorblind"] .text-rose-900,
+    html[data-theme="colorblind"] .text-rose-700,
+    html[data-theme="colorblind"] .text-rose-500 {
+      color: #9e3d00 !important;
+    }
+    html[data-theme="colorblind"] .bg-rose-200\/70 {
+      background-color: #ffd0b0 !important;
+    }
+    html[data-theme="colorblind"] .bg-rose-600 {
+      background-color: #d55e00 !important;
+    }
+    html[data-theme="colorblind"] .bg-emerald-50,
+    html[data-theme="colorblind"] .bg-emerald-50\/70,
+    html[data-theme="colorblind"] .bg-emerald-100 {
+      background-color: #e6f4fc !important;
+    }
+    html[data-theme="colorblind"] .hover\:bg-emerald-100:hover {
+      background-color: #cce8f9 !important;
+    }
+    html[data-theme="colorblind"] .border-emerald-100,
+    html[data-theme="colorblind"] .border-emerald-200,
+    html[data-theme="colorblind"] .border-emerald-300 {
+      border-color: #0072b2 !important;
+    }
+    html[data-theme="colorblind"] .text-emerald-950,
+    html[data-theme="colorblind"] .text-emerald-900,
+    html[data-theme="colorblind"] .text-emerald-800,
+    html[data-theme="colorblind"] .text-emerald-700 {
+      color: #004e7a !important;
+    }
+    html[data-theme="colorblind"] .bg-emerald-200\/70 {
+      background-color: #bae0f5 !important;
+    }
+    html[data-theme="colorblind"] .bg-emerald-500,
+    html[data-theme="colorblind"] .bg-emerald-600 {
+      background-color: #0072b2 !important;
+    }
+    html[data-theme="colorblind"] .bg-amber-50,
+    html[data-theme="colorblind"] .bg-amber-100 {
+      background-color: #fef9db !important;
+    }
+    html[data-theme="colorblind"] .border-amber-200,
+    html[data-theme="colorblind"] .border-amber-200\/80,
+    html[data-theme="colorblind"] .border-amber-300 {
+      border-color: #cc8a00 !important;
+    }
+    html[data-theme="colorblind"] .text-amber-950,
+    html[data-theme="colorblind"] .text-amber-900,
+    html[data-theme="colorblind"] .text-amber-800,
+    html[data-theme="colorblind"] .text-amber-700 {
+      color: #704c00 !important;
+    }
+    html[data-theme="colorblind"] .cloze-revealed {
+      background-color: #e6f4fc !important;
+      color: #004e7a !important;
+      border: 1.5px solid #0072b2 !important;
     }
   </style>
 </head>
@@ -169,11 +565,12 @@
             <span>How to Use</span>
           </button>
 
-          <!-- Active Neural Audio Status Pill & Settings Button -->
-          <button id="open-audio-settings-btn" type="button" class="flex items-center gap-2 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-900 px-3 py-1.5 rounded-xl text-xs font-semibold transition cursor-pointer" title="Configure Google Chrome Neural Voice or Google Cloud TTS API Fallback">
-            <span id="audio-engine-dot" class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-            <span id="active-voice-badge" class="max-w-[210px] truncate">Detecting Google Voice...</span>
-            <svg class="w-3.5 h-3.5 text-emerald-700 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <!-- Unified Settings Menu Button (Color Modes, Voice, & Study Preferences) -->
+          <button id="open-settings-btn" type="button" class="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-800 px-3 py-1.5 rounded-xl text-xs font-semibold transition cursor-pointer" title="Settings: Color Modes, Spanish Voice, & Study Preferences">
+            <span id="audio-engine-dot" class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" title="Voice status"></span>
+            <span>Settings</span>
+            <span id="header-theme-badge" class="hidden sm:inline-block px-1.5 py-0.5 rounded-md bg-white border border-slate-200 text-[10px] font-bold text-slate-600">Light</span>
+            <svg class="w-3.5 h-3.5 text-slate-600 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
               <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
@@ -671,77 +1068,235 @@
     </div>
   </div>
 
-  <!-- ==================== SPANISH NEURAL AUDIO SETTINGS MODAL ==================== -->
-  <div id="audio-settings-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 hidden items-center justify-center p-4">
-    <div class="bg-white rounded-3xl shadow-2xl max-w-lg w-full p-6 border border-slate-200 space-y-5 max-h-[90vh] overflow-y-auto">
+  <!-- ==================== UNIFIED SETTINGS MODAL (COLOR MODES, VOICE, & PREFERENCES) ==================== -->
+  <div id="settings-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 hidden items-center justify-center p-4">
+    <div class="bg-white rounded-3xl shadow-2xl max-w-2xl w-full p-6 border border-slate-200 space-y-5 max-h-[90vh] overflow-y-auto">
       <div class="flex items-start justify-between gap-3 border-b border-slate-100 pb-3">
         <div>
-          <h3 class="text-lg font-extrabold text-slate-900">Spanish Neural Audio Settings</h3>
-          <p class="text-xs text-slate-500 mt-0.5">Configure Chrome's built-in Google voices or Google Cloud Neural2 TTS.</p>
+          <h3 class="text-lg font-extrabold text-slate-900">Settings</h3>
+          <p class="text-xs text-slate-500 mt-0.5">Color &amp; accessibility modes, Spanish neural audio, and saved study preferences.</p>
         </div>
-        <button id="close-audio-settings-btn" type="button" class="text-slate-400 hover:text-slate-700 p-1 rounded-lg text-lg font-bold leading-none cursor-pointer">
+        <button id="close-settings-btn" type="button" class="text-slate-400 hover:text-slate-700 p-1 rounded-lg text-lg font-bold leading-none cursor-pointer">
           ✕
         </button>
       </div>
 
-      <!-- Sandbox / Local File Warning Banner -->
-      <div id="chromeos-sandbox-warning" class="hidden bg-amber-50 border border-amber-300 rounded-2xl p-3.5 text-xs text-amber-950 space-y-1">
-        <div class="font-bold">Why does it sound like local eSpeak right now?</div>
-        <p class="leading-relaxed">
-          Inside preview iframes or local <code>file://</code> URLs, Chrome hides its cloud <strong>Google español</strong> voices. Once you deploy to an <code>https://</code> Netlify link, Chrome unlocks them automatically—or paste a Google Cloud TTS API key below for instant studio voices anywhere.
-        </p>
+      <!-- Settings Section Tabs -->
+      <div class="flex gap-1.5 bg-slate-100 p-1 rounded-xl border border-slate-200 overflow-x-auto">
+        <button type="button" data-settings-tab="appearance" class="settings-tab-btn flex-1 px-3 py-1.5 rounded-lg text-xs font-bold bg-white text-indigo-700 shadow-xs transition whitespace-nowrap cursor-pointer">
+          🎨 Color &amp; Style
+        </button>
+        <button type="button" data-settings-tab="voice" class="settings-tab-btn flex-1 px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 transition whitespace-nowrap cursor-pointer">
+          🔊 Voice &amp; Audio
+        </button>
+        <button type="button" data-settings-tab="study" class="settings-tab-btn flex-1 px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 transition whitespace-nowrap cursor-pointer">
+          ⚙️ Study &amp; Daily Pace
+        </button>
       </div>
 
-      <!-- Tier 1: Chrome Built-in Google Voice -->
-      <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-2.5">
-        <div class="flex items-center justify-between">
-          <span class="text-xs font-bold text-slate-900">Tier 1: Chrome / Browser Voice</span>
-          <span id="tier1-status-tag" class="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">Detecting...</span>
-        </div>
-        <select id="voice-select" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-xs bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-          <option value="">Auto-Detect Google Spanish Neural Voice</option>
-        </select>
-      </div>
-
-      <!-- Tier 2: Google Cloud TTS API Fallback -->
-      <div class="bg-sky-50/70 border border-sky-200 rounded-2xl p-4 space-y-3">
-        <div class="flex items-center justify-between">
-          <span class="text-xs font-bold text-sky-950">Tier 2: Google Cloud TTS API (Optional)</span>
-          <span id="tier2-status-tag" class="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-slate-200 text-slate-700">Not Configured</span>
-        </div>
+      <!-- Settings Panel 1: Appearance & Multi-Color Modes -->
+      <div id="settings-panel-appearance" class="settings-panel space-y-4">
         <div class="space-y-2">
-          <label for="gcp-voice-select" class="block text-[11px] font-semibold text-sky-900">Cloud Neural Voice:</label>
-          <select id="gcp-voice-select" class="w-full rounded-xl border border-sky-300 px-3 py-2 text-xs bg-white focus:ring-2 focus:ring-sky-500 focus:outline-none">
-            <option value="es-US-Neural2-B">es-US-Neural2-B (Latin American Male — Natural)</option>
-            <option value="es-US-Neural2-A">es-US-Neural2-A (Latin American Female — Natural)</option>
-            <option value="es-ES-Neural2-B">es-ES-Neural2-B (Castilian Male — Natural)</option>
-            <option value="es-ES-Neural2-A">es-ES-Neural2-A (Castilian Female — Natural)</option>
-          </select>
-        </div>
-        <div class="space-y-1.5">
-          <label for="gcp-api-key-input" class="block text-[11px] font-semibold text-sky-900">GCP API Key (stored strictly in localStorage):</label>
-          <div class="flex gap-2">
-            <input type="password" id="gcp-api-key-input" placeholder="AIzaSy..." class="flex-1 rounded-xl border border-sky-300 px-3 py-2 text-xs font-mono bg-white focus:ring-2 focus:ring-sky-500 focus:outline-none" />
-            <button id="save-gcp-key-btn" type="button" class="px-3 py-2 rounded-xl bg-sky-700 hover:bg-sky-800 text-white text-xs font-semibold transition cursor-pointer">
-              Save
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-500">Color &amp; Accessibility Theme</label>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5" id="theme-mode-grid">
+            <button type="button" data-theme-option="light" class="theme-option-btn text-left p-3 rounded-2xl border-2 border-indigo-500 bg-indigo-50/60 transition cursor-pointer">
+              <div class="flex items-center justify-between gap-2">
+                <span class="text-xs font-extrabold text-slate-900">Light (Default)</span>
+                <span class="inline-flex items-center gap-1">
+                  <span class="w-3 h-3 rounded-full bg-slate-50 border border-slate-300"></span>
+                  <span class="w-3 h-3 rounded-full bg-indigo-600"></span>
+                  <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
+                </span>
+              </div>
+              <p class="text-[11px] text-slate-500 mt-1">Crisp daylight slate &amp; indigo theme.</p>
             </button>
-            <button id="clear-gcp-key-btn" type="button" class="px-2.5 py-2 rounded-xl bg-white hover:bg-rose-50 border border-slate-300 text-slate-600 hover:text-rose-700 text-xs font-semibold transition cursor-pointer">
-              Clear
+
+            <button type="button" data-theme-option="dark" class="theme-option-btn text-left p-3 rounded-2xl border border-slate-200 bg-white hover:bg-slate-50 transition cursor-pointer">
+              <div class="flex items-center justify-between gap-2">
+                <span class="text-xs font-extrabold text-slate-900">Dark Mode</span>
+                <span class="inline-flex items-center gap-1">
+                  <span class="w-3 h-3 rounded-full bg-slate-900 border border-slate-600"></span>
+                  <span class="w-3 h-3 rounded-full bg-indigo-400"></span>
+                  <span class="w-3 h-3 rounded-full bg-emerald-400"></span>
+                </span>
+              </div>
+              <p class="text-[11px] text-slate-500 mt-1">Balanced low-glare slate dark palette.</p>
+            </button>
+
+            <button type="button" data-theme-option="midnight" class="theme-option-btn text-left p-3 rounded-2xl border border-slate-200 bg-white hover:bg-slate-50 transition cursor-pointer">
+              <div class="flex items-center justify-between gap-2">
+                <span class="text-xs font-extrabold text-slate-900">Midnight (OLED)</span>
+                <span class="inline-flex items-center gap-1">
+                  <span class="w-3 h-3 rounded-full bg-black border border-slate-600"></span>
+                  <span class="w-3 h-3 rounded-full bg-sky-400"></span>
+                  <span class="w-3 h-3 rounded-full bg-slate-300"></span>
+                </span>
+              </div>
+              <p class="text-[11px] text-slate-500 mt-1">True black background for night study.</p>
+            </button>
+
+            <button type="button" data-theme-option="sepia" class="theme-option-btn text-left p-3 rounded-2xl border border-slate-200 bg-white hover:bg-slate-50 transition cursor-pointer">
+              <div class="flex items-center justify-between gap-2">
+                <span class="text-xs font-extrabold text-slate-900">Warm Sepia</span>
+                <span class="inline-flex items-center gap-1">
+                  <span class="w-3 h-3 rounded-full" style="background:#f4ecdc;border:1px solid #c9b796"></span>
+                  <span class="w-3 h-3 rounded-full" style="background:#8b4513"></span>
+                  <span class="w-3 h-3 rounded-full" style="background:#564433"></span>
+                </span>
+              </div>
+              <p class="text-[11px] text-slate-500 mt-1">Soft warm paper tones to ease eye strain.</p>
+            </button>
+
+            <button type="button" data-theme-option="high-contrast" class="theme-option-btn text-left p-3 rounded-2xl border border-slate-200 bg-white hover:bg-slate-50 transition cursor-pointer">
+              <div class="flex items-center justify-between gap-2">
+                <span class="text-xs font-extrabold text-slate-900">High Contrast</span>
+                <span class="inline-flex items-center gap-1">
+                  <span class="w-3 h-3 rounded-full bg-black border border-white"></span>
+                  <span class="w-3 h-3 rounded-full bg-yellow-400"></span>
+                  <span class="w-3 h-3 rounded-full bg-white border border-slate-400"></span>
+                </span>
+              </div>
+              <p class="text-[11px] text-slate-500 mt-1">Maximum contrast &amp; bold borders for low vision.</p>
+            </button>
+
+            <button type="button" data-theme-option="colorblind" class="theme-option-btn text-left p-3 rounded-2xl border border-slate-200 bg-white hover:bg-slate-50 transition cursor-pointer">
+              <div class="flex items-center justify-between gap-2">
+                <span class="text-xs font-extrabold text-slate-900">Colorblind Friendly</span>
+                <span class="inline-flex items-center gap-1">
+                  <span class="w-3 h-3 rounded-full" style="background:#0072b2"></span>
+                  <span class="w-3 h-3 rounded-full" style="background:#d55e00"></span>
+                  <span class="w-3 h-3 rounded-full" style="background:#e69f00"></span>
+                </span>
+              </div>
+              <p class="text-[11px] text-slate-500 mt-1">Okabe-Ito palette (Blue/Orange instead of Red/Green).</p>
             </button>
           </div>
         </div>
-        <label class="inline-flex items-center gap-2 text-xs text-sky-950 cursor-pointer select-none">
-          <input type="checkbox" id="force-gcp-checkbox" class="rounded text-sky-600 focus:ring-sky-500" />
-          <span>Always prefer Google Cloud TTS over browser voice</span>
-        </label>
+
+        <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <div class="text-xs font-bold text-slate-900">Reading Text Size</div>
+            <div class="text-[11px] text-slate-500">Adjust phrase and interface scale across the site.</div>
+          </div>
+          <div class="inline-flex rounded-xl bg-white p-1 border border-slate-200" id="font-size-selector">
+            <button type="button" data-font-size="normal" class="font-size-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-indigo-600 text-white transition cursor-pointer">Standard</button>
+            <button type="button" data-font-size="large" class="font-size-btn px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 transition cursor-pointer">Large</button>
+            <button type="button" data-font-size="xlarge" class="font-size-btn px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 transition cursor-pointer">XL</button>
+          </div>
+        </div>
       </div>
 
-      <!-- Test & Done Footer -->
-      <div class="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-slate-100">
-        <button id="test-voice-btn" type="button" class="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-semibold shadow-xs transition cursor-pointer">
-          🔊 Test Current Voice
-        </button>
-        <button id="done-audio-settings-btn" type="button" class="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs sm:text-sm font-semibold transition cursor-pointer">
+      <!-- Settings Panel 2: Spanish Neural Audio -->
+      <div id="settings-panel-voice" class="settings-panel hidden space-y-4">
+        <div class="flex items-center justify-between bg-emerald-50 border border-emerald-200 rounded-2xl px-4 py-2.5 text-xs">
+          <span class="font-bold text-emerald-950">Active Voice Engine:</span>
+          <span id="active-voice-badge" class="font-semibold text-emerald-800 truncate max-w-[260px]">Detecting Google Voice...</span>
+        </div>
+
+        <!-- Sandbox / Local File Warning Banner -->
+        <div id="chromeos-sandbox-warning" class="hidden bg-amber-50 border border-amber-300 rounded-2xl p-3.5 text-xs text-amber-950 space-y-1">
+          <div class="font-bold">Why does it sound like local eSpeak right now?</div>
+          <p class="leading-relaxed">
+            Inside preview iframes or local <code>file://</code> URLs, Chrome hides its cloud <strong>Google español</strong> voices. Over <code>https://</code> on Netlify, Chrome unlocks them automatically—or paste a Google Cloud TTS API key below for instant studio voices anywhere.
+          </p>
+        </div>
+
+        <!-- Tier 1: Chrome Built-in Google Voice -->
+        <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-2.5">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-slate-900">Tier 1: Chrome / Browser Voice</span>
+            <span id="tier1-status-tag" class="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">Detecting...</span>
+          </div>
+          <select id="voice-select" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-xs bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+            <option value="">Auto-Detect Google Spanish Neural Voice</option>
+          </select>
+        </div>
+
+        <!-- Tier 2: Google Cloud TTS API Fallback -->
+        <div class="bg-sky-50/70 border border-sky-200 rounded-2xl p-4 space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-sky-950">Tier 2: Google Cloud TTS API (Optional)</span>
+            <span id="tier2-status-tag" class="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-slate-200 text-slate-700">Not Configured</span>
+          </div>
+          <div class="space-y-2">
+            <label for="gcp-voice-select" class="block text-[11px] font-semibold text-sky-900">Cloud Neural Voice:</label>
+            <select id="gcp-voice-select" class="w-full rounded-xl border border-sky-300 px-3 py-2 text-xs bg-white focus:ring-2 focus:ring-sky-500 focus:outline-none">
+              <option value="es-US-Neural2-B">es-US-Neural2-B (Latin American Male — Natural)</option>
+              <option value="es-US-Neural2-A">es-US-Neural2-A (Latin American Female — Natural)</option>
+              <option value="es-ES-Neural2-B">es-ES-Neural2-B (Castilian Male — Natural)</option>
+              <option value="es-ES-Neural2-A">es-ES-Neural2-A (Castilian Female — Natural)</option>
+            </select>
+          </div>
+          <div class="space-y-1.5">
+            <label for="gcp-api-key-input" class="block text-[11px] font-semibold text-sky-900">GCP API Key (stored locally in browser):</label>
+            <div class="flex gap-2">
+              <input type="password" id="gcp-api-key-input" placeholder="AIzaSy..." class="flex-1 rounded-xl border border-sky-300 px-3 py-2 text-xs font-mono bg-white focus:ring-2 focus:ring-sky-500 focus:outline-none" />
+              <button id="save-gcp-key-btn" type="button" class="px-3 py-2 rounded-xl bg-sky-700 hover:bg-sky-800 text-white text-xs font-semibold transition cursor-pointer">
+                Save
+              </button>
+              <button id="clear-gcp-key-btn" type="button" class="px-2.5 py-2 rounded-xl bg-white hover:bg-rose-50 border border-slate-300 text-slate-600 hover:text-rose-700 text-xs font-semibold transition cursor-pointer">
+                Clear
+              </button>
+            </div>
+          </div>
+          <label class="inline-flex items-center gap-2 text-xs text-sky-950 cursor-pointer select-none">
+            <input type="checkbox" id="force-gcp-checkbox" class="rounded text-sky-600 focus:ring-sky-500" />
+            <span>Always prefer Google Cloud TTS over browser voice</span>
+          </label>
+        </div>
+
+        <div class="flex items-center justify-start">
+          <button id="test-voice-btn" type="button" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-xs transition cursor-pointer">
+            🔊 Test Current Voice
+          </button>
+        </div>
+      </div>
+
+      <!-- Settings Panel 3: Saved Study & Sync Preferences -->
+      <div id="settings-panel-study" class="settings-panel hidden space-y-4">
+        <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-3">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div>
+              <div class="text-xs font-bold text-slate-900">New Phrases per Day Goal</div>
+              <div class="text-[11px] text-slate-500">20/day covers a full 7,300-phrase grade pack in 1 year. Saved to Google Drive.</div>
+            </div>
+            <select id="settings-daily-limit-select" class="rounded-xl border border-slate-300 px-3 py-2 text-xs font-bold bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+              <option value="5">5 phrases / day</option>
+              <option value="10">10 phrases / day</option>
+              <option value="15">15 phrases / day</option>
+              <option value="20">20 phrases / day</option>
+              <option value="30">30 phrases / day</option>
+              <option value="9999">Unlimited</option>
+            </select>
+          </div>
+
+          <div class="pt-3 border-t border-slate-200/80 space-y-2.5">
+            <label class="flex items-center justify-between gap-3 cursor-pointer select-none">
+              <div>
+                <div class="text-xs font-bold text-slate-900">Auto-Speak on Reveal</div>
+                <div class="text-[11px] text-slate-500">Automatically read the Spanish sentence aloud when you reveal a card.</div>
+              </div>
+              <input type="checkbox" id="settings-auto-tts-checkbox" checked class="rounded text-indigo-600 focus:ring-indigo-500 w-4 h-4" />
+            </label>
+
+            <label class="flex items-center justify-between gap-3 cursor-pointer select-none">
+              <div>
+                <div class="text-xs font-bold text-slate-900">Focus Typing Automatically</div>
+                <div class="text-[11px] text-slate-500">Put the cursor directly in the cloze blank on each new flashcard.</div>
+              </div>
+              <input type="checkbox" id="settings-auto-focus-checkbox" class="rounded text-indigo-600 focus:ring-indigo-500 w-4 h-4" />
+            </label>
+          </div>
+        </div>
+
+        <div class="bg-indigo-50/70 border border-indigo-100 rounded-2xl p-3.5 text-xs text-indigo-950 leading-relaxed">
+          <strong>Auto-Resume &amp; Cloud Sync:</strong> Your selected grade level, AP theme filter, Study mode, active card, daily pace, and appearance settings are saved automatically—and synced to your Google Drive whenever you are signed in.
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="flex items-center justify-end gap-3 pt-2 border-t border-slate-100">
+        <button id="done-settings-btn" type="button" class="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs sm:text-sm font-semibold transition cursor-pointer">
           Done
         </button>
       </div>
@@ -765,10 +1320,19 @@
       const LOADED_PACKS_KEY = 'ap_spanish_loaded_packs_v1';
       const AUDIO_PREFS_KEY = 'ap_spanish_audio_prefs_v1';
       const DAILY_PACE_KEY = 'ap_spanish_daily_pace_v1';
+      const USER_PREFS_KEY = 'ap_spanish_user_prefs_v1';
       const GOOGLE_AUTH_PREFS_KEY = 'ap_spanish_google_auth_v1';
       const AUTO_FOCUS_TYPE_KEY = 'ap_spanish_auto_focus_type_v1';
       const DRIVE_FILE_NAME = 'ap-spanish-progress-v2.json';
       const DRIVE_BACKUP_FILE_NAME = 'ap-spanish-progress-v2.backup.json';
+      const THEME_MODE_LABELS = {
+        light: 'Light',
+        dark: 'Dark',
+        midnight: 'Midnight',
+        sepia: 'Sepia',
+        'high-contrast': 'Contrast',
+        colorblind: 'Colorblind'
+      };
       const OFFICIAL_PACK_CATALOG = [
         { url: './packs/grade9-foundations.json', label: '9th Grade Foundations (7,300)', regex: /^g9-\d+$/ },
         { url: './packs/grade10-foundations.json', label: '10th Grade Intermediate (7,300)', regex: /^g10-\d+$/ },
@@ -936,7 +1500,21 @@
       let dailyPace = {
         date: new Date().toISOString().slice(0, 10),
         introducedCount: 0,
-        dailyLimit: 20
+        dailyLimit: 20,
+        limitUpdatedAt: 0
+      };
+
+      let userPrefs = {
+        themeMode: 'light',
+        fontSize: 'normal',
+        studyLevel: 'ALL',
+        studyTheme: 'ALL',
+        studyMode: 'DUE',
+        activeTab: 'study',
+        lastCardId: null,
+        autoSpeak: true,
+        autoFocusType: false,
+        updatedAt: 0
       };
 
       let googleAuthState = {
@@ -958,7 +1536,8 @@
         selectedVoiceName: '',
         gcpApiKey: '',
         gcpVoiceName: 'es-US-Neural2-B',
-        forceGcp: false
+        forceGcp: false,
+        updatedAt: 0
       };
 
       // Speaking Challenge State
@@ -1055,17 +1634,126 @@
         return new Date().toISOString().slice(0, 10);
       }
 
+      function applyAppearancePrefs() {
+        const theme = THEME_MODE_LABELS[userPrefs.themeMode] ? userPrefs.themeMode : 'light';
+        const fontSize = ['normal', 'large', 'xlarge'].includes(userPrefs.fontSize) ? userPrefs.fontSize : 'normal';
+        document.documentElement.setAttribute('data-theme', theme);
+        document.documentElement.setAttribute('data-font-size', fontSize);
+
+        const headerBadge = document.getElementById('header-theme-badge');
+        if (headerBadge) {
+          headerBadge.textContent = THEME_MODE_LABELS[theme] || 'Light';
+        }
+
+        document.querySelectorAll('.theme-option-btn').forEach((btn) => {
+          const isSelected = btn.dataset.themeOption === theme;
+          if (isSelected) {
+            btn.className = 'theme-option-btn text-left p-3 rounded-2xl border-2 border-indigo-500 bg-indigo-50/60 transition cursor-pointer';
+          } else {
+            btn.className = 'theme-option-btn text-left p-3 rounded-2xl border border-slate-200 bg-white hover:bg-slate-50 transition cursor-pointer';
+          }
+        });
+
+        document.querySelectorAll('.font-size-btn').forEach((btn) => {
+          const isSelected = btn.dataset.fontSize === fontSize;
+          if (isSelected) {
+            btn.className = 'font-size-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-indigo-600 text-white transition cursor-pointer';
+          } else {
+            btn.className = 'font-size-btn px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 transition cursor-pointer';
+          }
+        });
+      }
+
+      function syncStudyModeButtonsUI(mode) {
+        const dueBtn = document.getElementById('mode-due-btn');
+        const allBtn = document.getElementById('mode-all-btn');
+        if (!dueBtn || !allBtn) return;
+        if (mode === 'DUE') {
+          dueBtn.className = 'px-3 py-1.5 rounded-lg text-xs font-semibold bg-white text-indigo-700 shadow-xs transition';
+          allBtn.className = 'px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 transition';
+        } else {
+          allBtn.className = 'px-3 py-1.5 rounded-lg text-xs font-semibold bg-white text-indigo-700 shadow-xs transition';
+          dueBtn.className = 'px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 transition';
+        }
+      }
+
+      function syncUserPrefsToUI() {
+        studyLevel = userPrefs.studyLevel || 'ALL';
+        studyTheme = userPrefs.studyTheme || 'ALL';
+        studyMode = userPrefs.studyMode === 'ALL' ? 'ALL' : 'DUE';
+        autoFocusType = Boolean(userPrefs.autoFocusType);
+
+        const levelSelect = document.getElementById('study-level-filter');
+        if (levelSelect) levelSelect.value = studyLevel;
+        const themeSelect = document.getElementById('study-theme-filter');
+        if (themeSelect) themeSelect.value = studyTheme;
+        syncStudyModeButtonsUI(studyMode);
+
+        const autoTts = document.getElementById('auto-tts-checkbox');
+        const settingsAutoTts = document.getElementById('settings-auto-tts-checkbox');
+        if (autoTts) autoTts.checked = userPrefs.autoSpeak !== false;
+        if (settingsAutoTts) settingsAutoTts.checked = userPrefs.autoSpeak !== false;
+
+        const autoFocusCb = document.getElementById('auto-focus-type-checkbox');
+        const settingsAutoFocusCb = document.getElementById('settings-auto-focus-checkbox');
+        if (autoFocusCb) autoFocusCb.checked = autoFocusType;
+        if (settingsAutoFocusCb) settingsAutoFocusCb.checked = autoFocusType;
+
+        applyAppearancePrefs();
+      }
+
+      function loadUserPrefs() {
+        try {
+          const raw = localStorage.getItem(USER_PREFS_KEY);
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            userPrefs = { ...userPrefs, ...parsed };
+          } else {
+            // Migrate legacy standalone autoFocusType preference if present
+            const legacyFocus = localStorage.getItem(AUTO_FOCUS_TYPE_KEY);
+            if (legacyFocus === 'true') {
+              userPrefs.autoFocusType = true;
+            }
+          }
+        } catch (err) {
+          console.error('Failed to load user prefs:', err);
+        }
+        syncUserPrefsToUI();
+      }
+
+      function saveUserPrefs(triggerCloudSync = false, bumpTimestamp = true) {
+        if (bumpTimestamp) {
+          userPrefs.updatedAt = Date.now();
+        }
+        try {
+          localStorage.setItem(USER_PREFS_KEY, JSON.stringify(userPrefs));
+        } catch (err) {
+          console.error('Failed to save user prefs:', err);
+        }
+        if (triggerCloudSync) {
+          scheduleDriveAutoSync();
+        }
+      }
+
+      function syncDailyLimitSelectsUI() {
+        const val = String(dailyPace.dailyLimit || 20);
+        const limitSelect = document.getElementById('daily-new-limit-select');
+        const settingsLimitSelect = document.getElementById('settings-daily-limit-select');
+        if (limitSelect) limitSelect.value = val;
+        if (settingsLimitSelect) settingsLimitSelect.value = val;
+      }
+
       function loadDailyPace() {
         try {
           const raw = localStorage.getItem(DAILY_PACE_KEY);
           if (raw) {
             const parsed = JSON.parse(raw);
             dailyPace = { ...dailyPace, ...parsed };
-            // Upgrade previous defaults (10 or 15) to 20/day
-            if (!parsed.upgradedTo20 && (dailyPace.dailyLimit === 10 || dailyPace.dailyLimit === 15)) {
+            // Upgrade previous defaults (10 or 15) to 20/day if not explicitly set after upgrade
+            if (!parsed.upgradedTo20 && !parsed.limitUpdatedAt && (dailyPace.dailyLimit === 10 || dailyPace.dailyLimit === 15)) {
               dailyPace.dailyLimit = 20;
               dailyPace.upgradedTo20 = true;
-              saveDailyPace();
+              saveDailyPace(false);
             }
           }
         } catch (err) {
@@ -1075,21 +1763,22 @@
         if (dailyPace.date !== today) {
           dailyPace.date = today;
           dailyPace.introducedCount = 0;
-          saveDailyPace();
+          saveDailyPace(false);
         }
-        const limitSelect = document.getElementById('daily-new-limit-select');
-        if (limitSelect) {
-          limitSelect.value = String(dailyPace.dailyLimit || 20);
-        }
+        syncDailyLimitSelectsUI();
       }
 
-      function saveDailyPace() {
+      function saveDailyPace(triggerCloudSync = false) {
         try {
           localStorage.setItem(DAILY_PACE_KEY, JSON.stringify(dailyPace));
         } catch (err) {
           console.error('Failed to save daily pace:', err);
         }
+        syncDailyLimitSelectsUI();
         updateStats();
+        if (triggerCloudSync) {
+          scheduleDriveAutoSync();
+        }
       }
 
       function getRemainingNewAllowance() {
@@ -1359,6 +2048,13 @@
           schemaVersion: 2,
           updatedAt: Date.now(),
           dailyPace,
+          userPrefs,
+          audioPrefsSync: {
+            selectedVoiceName: audioPrefs.selectedVoiceName || '',
+            gcpVoiceName: audioPrefs.gcpVoiceName || 'es-US-Neural2-B',
+            forceGcp: Boolean(audioPrefs.forceGcp),
+            updatedAt: audioPrefs.updatedAt || 0
+          },
           loadedPackUrls: [...loadedPackUrls],
           deletedIds: [...deletedCardIds],
           progress,
@@ -1457,15 +2153,61 @@
           });
         }
 
-        // 4. Merge today's daily pace count
-        if (remotePayload.dailyPace && remotePayload.dailyPace.date === getTodayDateStr()) {
-          const mergedIntroduced = Math.max(
-            dailyPace.introducedCount || 0,
-            remotePayload.dailyPace.introducedCount || 0
-          );
-          if (mergedIntroduced !== dailyPace.introducedCount) {
-            dailyPace.introducedCount = mergedIntroduced;
-            saveDailyPace();
+        // 4. Merge daily pace (# phrases per day setting + today's introduced count)
+        if (remotePayload.dailyPace && typeof remotePayload.dailyPace === 'object') {
+          const rPace = remotePayload.dailyPace;
+          let paceChanged = false;
+          const rLimit = Number(rPace.dailyLimit);
+          const rLimitTs = Number(rPace.limitUpdatedAt) || 0;
+          const lLimitTs = Number(dailyPace.limitUpdatedAt) || 0;
+          if (rLimit > 0 && (rLimitTs > lLimitTs || (lLimitTs === 0 && rLimit !== dailyPace.dailyLimit && rLimitTs > 0))) {
+            dailyPace.dailyLimit = rLimit;
+            dailyPace.limitUpdatedAt = rLimitTs;
+            dailyPace.upgradedTo20 = true;
+            paceChanged = true;
+            mergedChanges++;
+          }
+          if (rPace.date === getTodayDateStr()) {
+            const mergedIntroduced = Math.max(
+              dailyPace.introducedCount || 0,
+              rPace.introducedCount || 0
+            );
+            if (mergedIntroduced !== dailyPace.introducedCount) {
+              dailyPace.introducedCount = mergedIntroduced;
+              paceChanged = true;
+              mergedChanges++;
+            }
+          }
+          if (paceChanged) {
+            saveDailyPace(false);
+          }
+        }
+
+        // 5. Merge user preferences & training resume state (color mode, filters, active card, toggles)
+        if (remotePayload.userPrefs && typeof remotePayload.userPrefs === 'object') {
+          const rPrefs = remotePayload.userPrefs;
+          if ((Number(rPrefs.updatedAt) || 0) > (Number(userPrefs.updatedAt) || 0)) {
+            userPrefs = { ...userPrefs, ...rPrefs };
+            saveUserPrefs(false, false);
+            syncUserPrefsToUI();
+            if (userPrefs.activeTab && ['study', 'add', 'speaking', 'manage'].includes(userPrefs.activeTab)) {
+              switchTab(userPrefs.activeTab, { sync: false, skipTimestamp: true, restoreLastCard: true });
+            }
+            mergedChanges++;
+          }
+        }
+
+        // 6. Merge non-secret audio preferences (voice choice & Cloud TTS voice, never GCP API key)
+        if (remotePayload.audioPrefsSync && typeof remotePayload.audioPrefsSync === 'object') {
+          const rAudio = remotePayload.audioPrefsSync;
+          if ((Number(rAudio.updatedAt) || 0) > (Number(audioPrefs.updatedAt) || 0)) {
+            audioPrefs.selectedVoiceName = rAudio.selectedVoiceName || '';
+            audioPrefs.gcpVoiceName = rAudio.gcpVoiceName || 'es-US-Neural2-B';
+            audioPrefs.forceGcp = Boolean(rAudio.forceGcp);
+            audioPrefs.updatedAt = Number(rAudio.updatedAt) || 0;
+            saveAudioPrefs(false, false);
+            populateVoices();
+            mergedChanges++;
           }
         }
 
@@ -1735,7 +2477,7 @@
 
           const mergedChanges = await applyRemoteDeltaPayload(remotePayload);
           saveDeck(false);
-          selectNextCard();
+          selectNextCard({ restoreLastCard: true, skipTimestamp: true });
           if (!document.getElementById('tab-manage').classList.contains('hidden')) {
             renderManageTable();
           }
@@ -1955,13 +2697,19 @@
         }
       }
 
-      function saveAudioPrefs() {
+      function saveAudioPrefs(triggerCloudSync = false, bumpTimestamp = true) {
+        if (bumpTimestamp) {
+          audioPrefs.updatedAt = Date.now();
+        }
         try {
           localStorage.setItem(AUDIO_PREFS_KEY, JSON.stringify(audioPrefs));
         } catch (err) {
           console.error('Error saving audio prefs:', err);
         }
         updateAudioBadgeUI();
+        if (triggerCloudSync) {
+          scheduleDriveAutoSync();
+        }
       }
 
       function isRoboticLocalVoice(voice) {
@@ -1998,7 +2746,7 @@
       }
 
       function updateAudioBadgeUI() {
-        const btnEl = document.getElementById('open-audio-settings-btn');
+        const btnEl = document.getElementById('open-settings-btn');
         const badgeEl = document.getElementById('active-voice-badge');
         const dotEl = document.getElementById('audio-engine-dot');
         const tier1Tag = document.getElementById('tier1-status-tag');
@@ -2018,32 +2766,44 @@
           }
         }
 
-        if (hasGcpKey) {
-          tier2Tag.textContent = 'Ready (Key Saved)';
-          tier2Tag.className = 'text-[11px] font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800';
-        } else {
-          tier2Tag.textContent = 'Not Configured';
-          tier2Tag.className = 'text-[11px] font-semibold px-2 py-0.5 rounded-full bg-slate-200 text-slate-700';
+        if (tier2Tag) {
+          if (hasGcpKey) {
+            tier2Tag.textContent = 'Ready (Key Saved)';
+            tier2Tag.className = 'text-[11px] font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800';
+          } else {
+            tier2Tag.textContent = 'Not Configured';
+            tier2Tag.className = 'text-[11px] font-semibold px-2 py-0.5 rounded-full bg-slate-200 text-slate-700';
+          }
         }
 
+        let voiceSummary = 'Detecting Voice...';
         if ((audioPrefs.forceGcp || !isGoogleCloudVoice) && hasGcpKey) {
-          btnEl.className = 'flex items-center gap-2 bg-sky-50 hover:bg-sky-100 border border-sky-200 text-sky-900 px-3 py-1.5 rounded-xl text-xs font-semibold transition cursor-pointer';
-          badgeEl.textContent = `Cloud Neural: ${audioPrefs.gcpVoiceName}`;
-          dotEl.className = 'w-2 h-2 rounded-full bg-sky-500';
-          tier1Tag.textContent = isGoogleCloudVoice ? 'Standby' : 'Hidden in Local/Sandbox';
-          tier1Tag.className = 'text-[11px] font-semibold px-2 py-0.5 rounded-full bg-slate-200 text-slate-700';
+          voiceSummary = `Cloud Neural: ${audioPrefs.gcpVoiceName}`;
+          if (badgeEl) badgeEl.textContent = voiceSummary;
+          if (dotEl) dotEl.className = 'w-2 h-2 rounded-full bg-sky-500';
+          if (tier1Tag) {
+            tier1Tag.textContent = isGoogleCloudVoice ? 'Standby' : 'Hidden in Local/Sandbox';
+            tier1Tag.className = 'text-[11px] font-semibold px-2 py-0.5 rounded-full bg-slate-200 text-slate-700';
+          }
         } else if (bestBrowserVoice && !isRobotic) {
-          btnEl.className = 'flex items-center gap-2 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-900 px-3 py-1.5 rounded-xl text-xs font-semibold transition cursor-pointer';
-          badgeEl.textContent = bestBrowserVoice.name;
-          dotEl.className = 'w-2 h-2 rounded-full bg-emerald-500';
-          tier1Tag.textContent = isGoogleCloudVoice ? 'Google Neural Active' : 'System Voice Active';
-          tier1Tag.className = 'text-[11px] font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800';
+          voiceSummary = bestBrowserVoice.name;
+          if (badgeEl) badgeEl.textContent = voiceSummary;
+          if (dotEl) dotEl.className = 'w-2 h-2 rounded-full bg-emerald-500';
+          if (tier1Tag) {
+            tier1Tag.textContent = isGoogleCloudVoice ? 'Google Neural Active' : 'System Voice Active';
+            tier1Tag.className = 'text-[11px] font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800';
+          }
         } else {
-          btnEl.className = 'flex items-center gap-2 bg-amber-50 hover:bg-amber-100 border border-amber-300 text-amber-900 px-3 py-1.5 rounded-xl text-xs font-semibold transition cursor-pointer';
-          badgeEl.textContent = 'Robotic Local Voice (Fix Audio)';
-          dotEl.className = 'w-2 h-2 rounded-full bg-amber-500 animate-pulse';
-          tier1Tag.textContent = 'Offline eSpeak Only';
-          tier1Tag.className = 'text-[11px] font-semibold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800';
+          voiceSummary = 'Robotic Local Voice (Fix Audio)';
+          if (badgeEl) badgeEl.textContent = voiceSummary;
+          if (dotEl) dotEl.className = 'w-2 h-2 rounded-full bg-amber-500 animate-pulse';
+          if (tier1Tag) {
+            tier1Tag.textContent = 'Offline eSpeak Only';
+            tier1Tag.className = 'text-[11px] font-semibold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800';
+          }
+        }
+        if (btnEl) {
+          btnEl.title = `Settings • Theme: ${THEME_MODE_LABELS[userPrefs.themeMode] || 'Light'} • Voice: ${voiceSummary}`;
         }
       }
 
@@ -2178,24 +2938,67 @@
         window.speechSynthesis.onvoiceschanged = populateVoices;
       }
 
-      // Audio Settings Modal Wiring
-      const audioModal = document.getElementById('audio-settings-modal');
-      function openAudioSettings() {
+      // Unified Settings Modal Wiring (Appearance / Color Modes, Voice & Audio, Study Defaults)
+      const settingsModal = document.getElementById('settings-modal');
+      function switchSettingsTab(section = 'appearance') {
+        document.querySelectorAll('.settings-tab-btn').forEach((btn) => {
+          if (btn.dataset.settingsTab === section) {
+            btn.className = 'settings-tab-btn flex-1 px-3 py-1.5 rounded-lg text-xs font-bold bg-white text-indigo-700 shadow-xs transition whitespace-nowrap cursor-pointer';
+          } else {
+            btn.className = 'settings-tab-btn flex-1 px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 transition whitespace-nowrap cursor-pointer';
+          }
+        });
+        document.querySelectorAll('.settings-panel').forEach((panel) => {
+          panel.classList.add('hidden');
+        });
+        const targetPanel = document.getElementById(`settings-panel-${section}`);
+        if (targetPanel) targetPanel.classList.remove('hidden');
+      }
+
+      function openSettingsModal(initialTab = 'appearance') {
         populateVoices();
+        applyAppearancePrefs();
+        syncDailyLimitSelectsUI();
+        syncUserPrefsToUI();
         document.getElementById('gcp-api-key-input').value = audioPrefs.gcpApiKey || '';
         document.getElementById('gcp-voice-select').value = audioPrefs.gcpVoiceName || 'es-US-Neural2-B';
         document.getElementById('force-gcp-checkbox').checked = Boolean(audioPrefs.forceGcp);
-        audioModal.classList.remove('hidden');
-        audioModal.classList.add('flex');
+        switchSettingsTab(initialTab);
+        settingsModal.classList.remove('hidden');
+        settingsModal.classList.add('flex');
       }
-      function closeAudioSettings() {
-        audioModal.classList.add('hidden');
-        audioModal.classList.remove('flex');
+      function closeSettingsModal() {
+        settingsModal.classList.add('hidden');
+        settingsModal.classList.remove('flex');
       }
 
-      document.getElementById('open-audio-settings-btn').onclick = openAudioSettings;
-      document.getElementById('close-audio-settings-btn').onclick = closeAudioSettings;
-      document.getElementById('done-audio-settings-btn').onclick = closeAudioSettings;
+      document.getElementById('open-settings-btn').onclick = () => openSettingsModal('appearance');
+      document.getElementById('close-settings-btn').onclick = closeSettingsModal;
+      document.getElementById('done-settings-btn').onclick = closeSettingsModal;
+      settingsModal.addEventListener('click', (e) => {
+        if (e.target === settingsModal) closeSettingsModal();
+      });
+
+      document.querySelectorAll('.settings-tab-btn').forEach((btn) => {
+        btn.addEventListener('click', () => switchSettingsTab(btn.dataset.settingsTab));
+      });
+
+      document.querySelectorAll('.theme-option-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          userPrefs.themeMode = btn.dataset.themeOption || 'light';
+          applyAppearancePrefs();
+          updateAudioBadgeUI();
+          saveUserPrefs(true, true);
+        });
+      });
+
+      document.querySelectorAll('.font-size-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          userPrefs.fontSize = btn.dataset.fontSize || 'normal';
+          applyAppearancePrefs();
+          saveUserPrefs(true, true);
+        });
+      });
 
       // Help Guide Modal Wiring
       const helpModal = document.getElementById('help-modal');
@@ -2216,23 +3019,23 @@
 
       document.getElementById('voice-select').onchange = (e) => {
         audioPrefs.selectedVoiceName = e.target.value;
-        saveAudioPrefs();
+        saveAudioPrefs(true, true);
       };
 
       document.getElementById('gcp-voice-select').onchange = (e) => {
         audioPrefs.gcpVoiceName = e.target.value;
-        saveAudioPrefs();
+        saveAudioPrefs(true, true);
       };
 
       document.getElementById('force-gcp-checkbox').onchange = (e) => {
         audioPrefs.forceGcp = e.target.checked;
-        saveAudioPrefs();
+        saveAudioPrefs(true, true);
       };
 
       document.getElementById('save-gcp-key-btn').onclick = () => {
         const val = document.getElementById('gcp-api-key-input').value.trim();
         audioPrefs.gcpApiKey = val;
-        saveAudioPrefs();
+        saveAudioPrefs(false, false);
         showToast(val ? 'Google Cloud TTS API key saved locally!' : 'Cleared API key.', 'success');
       };
 
@@ -2241,7 +3044,7 @@
         audioPrefs.gcpApiKey = '';
         audioPrefs.forceGcp = false;
         document.getElementById('force-gcp-checkbox').checked = false;
-        saveAudioPrefs();
+        saveAudioPrefs(true, true);
         showToast('Google Cloud TTS API key removed.', 'info');
       };
 
@@ -2419,7 +3222,7 @@
         return getEffectiveDueCards(studyTheme, studyLevel);
       }
 
-      function selectNextCard() {
+      function selectNextCard(options = {}) {
         const queue = getFilteredStudyQueue();
         typedAnswers = [];
         expectedAnswers = [];
@@ -2431,14 +3234,22 @@
           renderFlashcard();
           return;
         }
-        // Pick earliest due card (or next different card in Practice All mode)
-        if (studyMode === 'ALL' && queue.length > 1 && queue[0].id === currentCardId) {
+        // Resume the exact card the user left off on if still in the current queue
+        if (options.restoreLastCard && userPrefs.lastCardId && queue.some((c) => c.id === userPrefs.lastCardId)) {
+          currentCardId = userPrefs.lastCardId;
+        } else if (studyMode === 'ALL' && queue.length > 1 && queue[0].id === currentCardId && !options.keepCurrent) {
           const idx = queue.findIndex((c) => c.id === currentCardId);
           const nextCard = queue[(idx + 1) % queue.length];
           currentCardId = nextCard.id;
         } else {
           currentCardId = queue[0].id;
         }
+
+        if (currentCardId !== userPrefs.lastCardId) {
+          userPrefs.lastCardId = currentCardId;
+          saveUserPrefs(false, !options.skipTimestamp);
+        }
+
         isRevealed = false;
         renderFlashcard();
 
@@ -2791,40 +3602,59 @@
 
       function setStudyMode(mode) {
         studyMode = mode;
-        const dueBtn = document.getElementById('mode-due-btn');
-        const allBtn = document.getElementById('mode-all-btn');
-        if (mode === 'DUE') {
-          dueBtn.className = 'px-3 py-1.5 rounded-lg text-xs font-semibold bg-white text-indigo-700 shadow-xs transition';
-          allBtn.className = 'px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 transition';
-        } else {
-          allBtn.className = 'px-3 py-1.5 rounded-lg text-xs font-semibold bg-white text-indigo-700 shadow-xs transition';
-          dueBtn.className = 'px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 transition';
-        }
+        userPrefs.studyMode = mode;
+        syncStudyModeButtonsUI(mode);
+        saveUserPrefs(true, true);
         selectNextCard();
+      }
+
+      function handleDailyLimitChange(newVal) {
+        dailyPace.dailyLimit = Number(newVal) || 20;
+        dailyPace.upgradedTo20 = true;
+        dailyPace.limitUpdatedAt = Date.now();
+        saveDailyPace(true);
+        selectNextCard();
+        showToast(
+          dailyPace.dailyLimit >= 9999
+            ? 'Daily new-phrase goal set to Unlimited.'
+            : `Daily new-phrase goal set to ${dailyPace.dailyLimit} phrases/day.`,
+          'info'
+        );
       }
 
       document.getElementById('mode-due-btn').onclick = () => setStudyMode('DUE');
       document.getElementById('mode-all-btn').onclick = () => setStudyMode('ALL');
       document.getElementById('study-level-filter').onchange = (e) => {
         studyLevel = e.target.value;
+        userPrefs.studyLevel = studyLevel;
+        saveUserPrefs(true, true);
         selectNextCard();
       };
       document.getElementById('study-theme-filter').onchange = (e) => {
         studyTheme = e.target.value;
+        userPrefs.studyTheme = studyTheme;
+        saveUserPrefs(true, true);
         selectNextCard();
       };
-      document.getElementById('daily-new-limit-select').onchange = (e) => {
-        dailyPace.dailyLimit = Number(e.target.value) || 20;
-        dailyPace.upgradedTo20 = true;
-        saveDailyPace();
-        selectNextCard();
-        showToast(
-          dailyPace.dailyLimit >= 9999
-            ? 'Daily new-card cap set to Unlimited.'
-            : `Daily new-card cap set to ${dailyPace.dailyLimit} cards/day.`,
-          'info'
-        );
-      };
+      document.getElementById('daily-new-limit-select').onchange = (e) => handleDailyLimitChange(e.target.value);
+      const settingsDailyLimitEl = document.getElementById('settings-daily-limit-select');
+      if (settingsDailyLimitEl) {
+        settingsDailyLimitEl.onchange = (e) => handleDailyLimitChange(e.target.value);
+      }
+
+      function handleAutoSpeakChange(checked) {
+        userPrefs.autoSpeak = Boolean(checked);
+        const cb1 = document.getElementById('auto-tts-checkbox');
+        const cb2 = document.getElementById('settings-auto-tts-checkbox');
+        if (cb1) cb1.checked = userPrefs.autoSpeak;
+        if (cb2) cb2.checked = userPrefs.autoSpeak;
+        saveUserPrefs(true, true);
+      }
+      document.getElementById('auto-tts-checkbox').addEventListener('change', (e) => handleAutoSpeakChange(e.target.checked));
+      const settingsAutoTtsEl = document.getElementById('settings-auto-tts-checkbox');
+      if (settingsAutoTtsEl) {
+        settingsAutoTtsEl.addEventListener('change', (e) => handleAutoSpeakChange(e.target.checked));
+      }
 
       // ==================== TAB 2: PREPLY QUICK-ADD ====================
       const addSentenceInput = document.getElementById('add-sentence');
@@ -3346,7 +4176,7 @@
       });
 
       // ==================== NAVIGATION & KEYBOARD SHORTCUTS ====================
-      function switchTab(tabName) {
+      function switchTab(tabName, options = {}) {
         document.querySelectorAll('.tab-btn').forEach((btn) => {
           if (btn.dataset.tab === tabName) {
             btn.className = 'tab-btn active px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition whitespace-nowrap bg-indigo-600 text-white shadow-xs';
@@ -3360,7 +4190,18 @@
         });
         document.getElementById(`tab-${tabName}`).classList.remove('hidden');
 
-        if (tabName === 'study') selectNextCard();
+        if (userPrefs.activeTab !== tabName) {
+          userPrefs.activeTab = tabName;
+          saveUserPrefs(options.sync !== false, !options.skipTimestamp);
+        }
+
+        if (tabName === 'study') {
+          selectNextCard({
+            restoreLastCard: options.restoreLastCard !== false,
+            keepCurrent: true,
+            skipTimestamp: options.skipTimestamp
+          });
+        }
         if (tabName === 'manage') renderManageTable();
         if (tabName === 'speaking' && !currentPrompt) generateSpeakingChallenge();
       }
@@ -3370,26 +4211,32 @@
       });
 
       function loadAutoFocusTypePref() {
-        try {
-          autoFocusType = localStorage.getItem(AUTO_FOCUS_TYPE_KEY) === 'true';
-        } catch (err) {
-          autoFocusType = false;
+        autoFocusType = Boolean(userPrefs.autoFocusType);
+        const cb1 = document.getElementById('auto-focus-type-checkbox');
+        const cb2 = document.getElementById('settings-auto-focus-checkbox');
+        const handleFocusChange = (checked) => {
+          autoFocusType = Boolean(checked);
+          userPrefs.autoFocusType = autoFocusType;
+          if (cb1) cb1.checked = autoFocusType;
+          if (cb2) cb2.checked = autoFocusType;
+          saveUserPrefs(true, true);
+          try {
+            localStorage.setItem(AUTO_FOCUS_TYPE_KEY, String(autoFocusType));
+          } catch (err) {
+            console.error('Failed to save auto-focus preference:', err);
+          }
+          if (autoFocusType && !isRevealed) {
+            const firstInput = document.querySelector('#flashcard-area .cloze-input');
+            if (firstInput) firstInput.focus();
+          }
+        };
+        if (cb1) {
+          cb1.checked = autoFocusType;
+          cb1.addEventListener('change', (e) => handleFocusChange(e.target.checked));
         }
-        const cb = document.getElementById('auto-focus-type-checkbox');
-        if (cb) {
-          cb.checked = autoFocusType;
-          cb.addEventListener('change', (e) => {
-            autoFocusType = e.target.checked;
-            try {
-              localStorage.setItem(AUTO_FOCUS_TYPE_KEY, String(autoFocusType));
-            } catch (err) {
-              console.error('Failed to save auto-focus preference:', err);
-            }
-            if (autoFocusType && !isRevealed) {
-              const firstInput = document.querySelector('#flashcard-area .cloze-input');
-              if (firstInput) firstInput.focus();
-            }
-          });
+        if (cb2) {
+          cb2.checked = autoFocusType;
+          cb2.addEventListener('change', (e) => handleFocusChange(e.target.checked));
         }
       }
 
@@ -3421,13 +4268,20 @@
       // ==================== BOOTSTRAP APP ====================
       (async function bootstrapApp() {
         loadAudioPrefs();
+        loadUserPrefs();
         loadAutoFocusTypePref();
         populateVoices();
         loadGoogleAuthPrefs();
         loadDailyPace();
         await loadDeck();
         updateStats();
-        selectNextCard();
+        const initialTab = ['study', 'add', 'speaking', 'manage'].includes(userPrefs.activeTab)
+          ? userPrefs.activeTab
+          : 'study';
+        switchTab(initialTab, { sync: false, skipTimestamp: true, restoreLastCard: true });
+        if (initialTab !== 'study') {
+          selectNextCard({ restoreLastCard: true, skipTimestamp: true });
+        }
         generateSpeakingChallenge();
         if (hasValidGoogleToken()) {
           await pullAndMergeFromGoogleDrive(true);
