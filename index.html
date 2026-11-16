@@ -734,17 +734,17 @@
     </div>
   </div>
 
-  <!-- ==================== APPLICATION LOGIC ==================== -->
+  <!-- ==================== APPLICATION CONFIG & LOGIC ==================== -->
+  <script src="./config.js"></script>
   <script>
     (function () {
       'use strict';
 
-      // =========================================================================
-      // APP-WIDE PUBLIC GOOGLE OAUTH CLIENT ID (Set once by site owner)
-      // Create a Web OAuth 2.0 Client ID in Google Cloud Console with your
-      // Netlify URL in Authorized JavaScript Origins and paste it below.
-      // =========================================================================
-      const DEFAULT_GOOGLE_CLIENT_ID = '580122007246-jnt7omcvnbog2k51bkck6acmnp81n6cg.apps.googleusercontent.com';
+      // Loaded from external ./config.js so updates to index.html never overwrite the OAuth Client ID.
+      const DEFAULT_GOOGLE_CLIENT_ID =
+        window.APP_CONFIG && typeof window.APP_CONFIG.googleClientId === 'string'
+          ? window.APP_CONFIG.googleClientId.trim()
+          : '';
 
       const STORAGE_KEY = 'ap_spanish_srs_deck_v1';
       const DELETED_IDS_KEY = 'ap_spanish_deleted_ids_v1';
@@ -1241,6 +1241,13 @@
             googleAuthState.driveBackupFileId = parsed.driveBackupFileId || '';
             googleAuthState.lastSyncedAt = parsed.lastSyncedAt || '';
             googleAuthState.lastPayloadBytes = parsed.lastPayloadBytes || 0;
+            if (parsed.accessToken && Number(parsed.tokenExpiresAt) > Date.now() + 30000) {
+              googleAuthState.accessToken = parsed.accessToken;
+              googleAuthState.tokenExpiresAt = Number(parsed.tokenExpiresAt);
+            } else {
+              googleAuthState.accessToken = '';
+              googleAuthState.tokenExpiresAt = 0;
+            }
           }
         } catch (err) {
           console.error('Failed to load Google auth prefs:', err);
@@ -1254,6 +1261,8 @@
           localStorage.setItem(
             GOOGLE_AUTH_PREFS_KEY,
             JSON.stringify({
+              accessToken: googleAuthState.accessToken,
+              tokenExpiresAt: googleAuthState.tokenExpiresAt,
               userEmail: googleAuthState.userEmail,
               userName: googleAuthState.userName,
               driveFileId: googleAuthState.driveFileId,
@@ -1266,6 +1275,12 @@
           console.error('Failed to save Google auth prefs:', err);
         }
         updateGoogleDriveUI();
+      }
+
+      function clearExpiredGoogleToken() {
+        googleAuthState.accessToken = '';
+        googleAuthState.tokenExpiresAt = 0;
+        saveGoogleAuthPrefs();
       }
 
       function hasValidGoogleToken() {
@@ -1295,6 +1310,10 @@
               ? `Last synced at ${googleAuthState.lastSyncedAt}${sizeLabel}`
               : 'Connected — automatic Google Drive backup active.';
           }
+        } else if (googleAuthState.userEmail) {
+          const rememberedLabel = googleAuthState.userName || googleAuthState.userEmail;
+          badge.textContent = `Reconnect (${rememberedLabel})`;
+          btn.className = 'flex items-center gap-2 bg-amber-50 hover:bg-amber-100 border border-amber-300 text-amber-900 px-3.5 py-1.5 rounded-xl text-xs font-semibold shadow-2xs transition cursor-pointer';
         } else {
           badge.textContent = 'Sign in with Google';
           btn.className = 'flex items-center gap-2 bg-white hover:bg-slate-50 border border-slate-300 text-slate-800 px-3.5 py-1.5 rounded-xl text-xs font-semibold shadow-2xs transition cursor-pointer';
@@ -1323,6 +1342,7 @@
           { headers: { Authorization: `Bearer ${token}` } }
         );
         if (!searchRes.ok) {
+          if (searchRes.status === 401) clearExpiredGoogleToken();
           throw new Error(`Drive search failed (${searchRes.status})`);
         }
         const searchData = await searchRes.json();
@@ -1345,6 +1365,7 @@
           headers: { Authorization: `Bearer ${token}` }
         });
         if (!dlRes.ok) {
+          if (dlRes.status === 401) clearExpiredGoogleToken();
           const err = new Error(`Drive download failed (${dlRes.status})`);
           err.status = dlRes.status;
           throw err;
@@ -1370,7 +1391,10 @@
               body: jsonString
             }
           );
-          if (!patchRes.ok) throw new Error(`Drive update failed (${patchRes.status})`);
+          if (!patchRes.ok) {
+            if (patchRes.status === 401) clearExpiredGoogleToken();
+            throw new Error(`Drive update failed (${patchRes.status})`);
+          }
           return existingFileId;
         }
 
@@ -1399,7 +1423,10 @@
             body: multipartBody
           }
         );
-        if (!createRes.ok) throw new Error(`Drive create failed (${createRes.status})`);
+        if (!createRes.ok) {
+          if (createRes.status === 401) clearExpiredGoogleToken();
+          throw new Error(`Drive create failed (${createRes.status})`);
+        }
         const created = await createRes.json();
         return created.id;
       }
@@ -1535,7 +1562,7 @@
       function startGoogleSignInFlow() {
         const clientId = (DEFAULT_GOOGLE_CLIENT_ID || '').trim();
         if (!clientId || clientId.startsWith('YOUR_GOOGLE_OAUTH_CLIENT_ID')) {
-          showToast('Google Sign-In is not configured yet—add DEFAULT_GOOGLE_CLIENT_ID in index.html.', 'info');
+          showToast('Google Sign-In is not configured yet—set googleClientId in config.js.', 'info');
           return;
         }
         if (!window.google || !window.google.accounts || !window.google.accounts.oauth2) {
@@ -1553,13 +1580,18 @@
             }
             googleAuthState.accessToken = tokenResponse.access_token;
             googleAuthState.tokenExpiresAt = Date.now() + (Number(tokenResponse.expires_in) || 3600) * 1000;
+            saveGoogleAuthPrefs();
             updateGoogleDriveUI('Connected');
             await fetchGoogleUserProfile(tokenResponse.access_token);
             await pullAndMergeFromGoogleDrive(false);
           }
         });
 
-        tokenClient.requestAccessToken({ prompt: '' });
+        const tokenRequestOptions = { prompt: '' };
+        if (googleAuthState.userEmail) {
+          tokenRequestOptions.hint = googleAuthState.userEmail;
+        }
+        tokenClient.requestAccessToken(tokenRequestOptions);
       }
 
       function signOutGoogle() {
@@ -3081,6 +3113,9 @@
       updateStats();
       selectNextCard();
       generateSpeakingChallenge();
+      if (hasValidGoogleToken()) {
+        pullAndMergeFromGoogleDrive(true);
+      }
     })();
   </script>
 </body>
