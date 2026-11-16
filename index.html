@@ -62,6 +62,36 @@
       border-radius: 6px;
       animation: popIn 0.2s ease-out;
     }
+    .cloze-input {
+      display: inline-block;
+      min-width: 155px;
+      width: 16ch;
+      max-width: 100%;
+      border: 1.5px solid #a5b4fc;
+      border-bottom: 2.5px dashed #4f46e5;
+      color: #312e81;
+      font-weight: 700;
+      font-size: 0.92em;
+      text-align: center;
+      padding: 2px 10px;
+      margin: 2px 4px;
+      background-color: #eef2ff;
+      border-radius: 8px;
+      outline: none;
+      vertical-align: baseline;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+    }
+    .cloze-input::placeholder {
+      color: #818cf8;
+      font-weight: 500;
+      font-size: 0.78em;
+    }
+    .cloze-input:focus {
+      background-color: #ffffff;
+      border-color: #4f46e5;
+      border-bottom-style: solid;
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.18);
+    }
     @keyframes popIn {
       0% { transform: scale(0.95); opacity: 0.7; }
       100% { transform: scale(1); opacity: 1; }
@@ -212,7 +242,7 @@
           </div>
         </div>
 
-        <div class="flex items-center gap-3">
+        <div class="flex flex-wrap items-center gap-3">
           <div class="inline-flex rounded-xl bg-slate-100 p-1 border border-slate-200">
             <button id="mode-due-btn" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-white text-indigo-700 shadow-xs transition">
               Due Only
@@ -221,6 +251,10 @@
               Practice All
             </button>
           </div>
+          <label class="inline-flex items-center gap-1.5 text-xs font-medium text-slate-600 cursor-pointer select-none" title="Automatically focus the blank input on each card so you can start typing immediately">
+            <input type="checkbox" id="auto-focus-type-checkbox" class="rounded text-indigo-600 focus:ring-indigo-500" />
+            <span>Focus Typing</span>
+          </label>
           <label class="inline-flex items-center gap-1.5 text-xs font-medium text-slate-600 cursor-pointer select-none">
             <input type="checkbox" id="auto-tts-checkbox" checked class="rounded text-indigo-600 focus:ring-indigo-500" />
             <span>Auto-Speak</span>
@@ -235,6 +269,7 @@
 
       <!-- Keyboard Shortcut Footer Hint -->
       <div class="flex flex-wrap items-center justify-center gap-4 text-xs text-slate-400">
+        <span><kbd class="px-1.5 py-0.5 bg-white border border-slate-300 rounded text-slate-600 font-mono">Enter</kbd> Type / Check</span>
         <span><kbd class="px-1.5 py-0.5 bg-white border border-slate-300 rounded text-slate-600 font-mono">Space</kbd> Reveal Answer</span>
         <span><kbd class="px-1.5 py-0.5 bg-white border border-slate-300 rounded text-slate-600 font-mono">R</kbd> Listen Audio</span>
         <span><kbd class="px-1.5 py-0.5 bg-white border border-slate-300 rounded text-slate-600 font-mono">1</kbd>–<kbd class="px-1.5 py-0.5 bg-white border border-slate-300 rounded text-slate-600 font-mono">4</kbd> Rate Card</span>
@@ -716,6 +751,7 @@
       const AUDIO_PREFS_KEY = 'ap_spanish_audio_prefs_v1';
       const DAILY_PACE_KEY = 'ap_spanish_daily_pace_v1';
       const GOOGLE_AUTH_PREFS_KEY = 'ap_spanish_google_auth_v1';
+      const AUTO_FOCUS_TYPE_KEY = 'ap_spanish_auto_focus_type_v1';
       const DRIVE_FILE_NAME = 'ap-spanish-progress-v2.json';
       const DRIVE_BACKUP_FILE_NAME = 'ap-spanish-progress-v2.backup.json';
       const DEFAULT_PACK_URL = './packs/grade9-foundations.json';
@@ -862,6 +898,10 @@
       let studyMode = 'DUE'; // 'DUE' | 'ALL'
       let currentCardId = null;
       let isRevealed = false;
+      let typedAnswers = [];
+      let expectedAnswers = [];
+      let activeBlankInputIndex = 0;
+      let autoFocusType = false;
       let spanishVoices = [];
       let activeAudioElement = null;
       const cloudAudioCache = new Map(); // In-memory cache: `${voice}|${rate}|${text}` -> base64 audioContent
@@ -1936,38 +1976,144 @@
         return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
       }
 
-      function formatClozeSentence(sentence, target, revealed) {
-        const safeSentence = escapeHtml(sentence);
-        const safeTarget = escapeHtml(target);
+      function parseClozeSegments(sentence, target) {
+        const rawSentence = String(sentence || '');
+        const rawTarget = String(target || '');
 
         // Support multi-part targets separated by "..." (e.g., "no solo ... sino que también")
-        if (safeTarget.includes('...')) {
-          const parts = safeTarget.split('...').map((p) => p.trim()).filter(Boolean);
-          let result = safeSentence;
-          parts.forEach((part) => {
+        if (rawTarget.includes('...')) {
+          const parts = rawTarget.split('...').map((p) => p.trim()).filter(Boolean);
+          let cursor = 0;
+          let matchedAll = parts.length > 0;
+          const tempSegments = [];
+          const tempExpected = [];
+
+          for (const part of parts) {
+            const rest = rawSentence.slice(cursor);
             const regex = new RegExp(escapeRegExp(part), 'i');
-            result = result.replace(regex, (match) =>
-              revealed
-                ? `<span class="cloze-revealed">${match}</span>`
-                : `<span class="cloze-blank">[ _______ ]</span>`
-            );
-          });
-          return result;
+            const m = rest.match(regex);
+            if (!m) {
+              matchedAll = false;
+              break;
+            }
+            if (m.index > 0) {
+              tempSegments.push({ type: 'text', text: rest.slice(0, m.index) });
+            }
+            tempSegments.push({
+              type: 'blank',
+              expected: m[0],
+              blankIndex: tempExpected.length
+            });
+            tempExpected.push(m[0]);
+            cursor += m.index + m[0].length;
+          }
+
+          if (matchedAll) {
+            if (cursor < rawSentence.length) {
+              tempSegments.push({ type: 'text', text: rawSentence.slice(cursor) });
+            }
+            return { segments: tempSegments, expected: tempExpected, isFallback: false };
+          }
         }
 
-        const regex = new RegExp(escapeRegExp(safeTarget), 'i');
-        if (regex.test(safeSentence)) {
-          return safeSentence.replace(regex, (match) =>
-            revealed
-              ? `<span class="cloze-revealed">${match}</span>`
-              : `<span class="cloze-blank">[ _______ ]</span>`
-          );
+        const regex = new RegExp(escapeRegExp(rawTarget), 'i');
+        const match = rawSentence.match(regex);
+        if (match) {
+          const segments = [];
+          if (match.index > 0) {
+            segments.push({ type: 'text', text: rawSentence.slice(0, match.index) });
+          }
+          segments.push({
+            type: 'blank',
+            expected: match[0],
+            blankIndex: 0
+          });
+          const endIdx = match.index + match[0].length;
+          if (endIdx < rawSentence.length) {
+            segments.push({ type: 'text', text: rawSentence.slice(endIdx) });
+          }
+          return { segments, expected: [match[0]], isFallback: false };
         }
 
         // Fallback if target isn't exact substring
-        return revealed
-          ? `${safeSentence} <div class="mt-3"><span class="cloze-revealed">${safeTarget}</span></div>`
-          : `${safeSentence} <div class="mt-3"><span class="cloze-blank">[ _______ ]</span></div>`;
+        return {
+          segments: [
+            { type: 'text', text: rawSentence },
+            { type: 'fallback-blank', expected: rawTarget, blankIndex: 0 }
+          ],
+          expected: [rawTarget],
+          isFallback: true
+        };
+      }
+
+      function normalizeSpanishAnswer(str) {
+        return String(str || '').trim().replace(/\s+/g, ' ').toLowerCase();
+      }
+
+      function stripSpanishDiacritics(str) {
+        return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      }
+
+      function evaluateTypedAnswers(typedList, expectedList) {
+        const hasTypedAny = typedList.some((v) => String(v || '').trim().length > 0);
+        if (!hasTypedAny) {
+          return { hasTypedAny: false, status: 'none', perBlank: [] };
+        }
+
+        const perBlank = expectedList.map((exp, idx) => {
+          const typed = String(typedList[idx] || '');
+          const normTyped = normalizeSpanishAnswer(typed);
+          const normExp = normalizeSpanishAnswer(exp);
+          if (!normTyped) {
+            return { status: 'wrong', typed, expected: exp };
+          }
+          if (normTyped === normExp) {
+            return { status: 'exact', typed, expected: exp };
+          }
+          if (stripSpanishDiacritics(normTyped) === stripSpanishDiacritics(normExp)) {
+            return { status: 'accent', typed, expected: exp };
+          }
+          return { status: 'wrong', typed, expected: exp };
+        });
+
+        let overall = 'exact';
+        if (perBlank.some((b) => b.status === 'wrong')) {
+          overall = 'wrong';
+        } else if (perBlank.some((b) => b.status === 'accent')) {
+          overall = 'accent';
+        }
+
+        return { hasTypedAny: true, status: overall, perBlank };
+      }
+
+      function formatClozeSentence(sentence, target, revealed, options = {}) {
+        const interactive = Boolean(options.interactive);
+        const userAnswers = Array.isArray(options.typedAnswers) ? options.typedAnswers : [];
+        const parsed = parseClozeSegments(sentence, target);
+
+        if (interactive) {
+          expectedAnswers = parsed.expected;
+        }
+
+        return parsed.segments
+          .map((seg) => {
+            if (seg.type === 'text') {
+              return escapeHtml(seg.text);
+            }
+            const safeExpected = escapeHtml(seg.expected);
+            let innerHtml;
+            if (revealed) {
+              innerHtml = `<span class="cloze-revealed">${safeExpected}</span>`;
+            } else if (interactive) {
+              const currentVal = String(userAnswers[seg.blankIndex] || '');
+              const widthCh = Math.max(16, currentVal.length + 3);
+              innerHtml = `<input type="text" class="cloze-input" data-blank-idx="${seg.blankIndex}" value="${escapeHtml(currentVal)}" style="width: ${widthCh}ch" placeholder="type chunk..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" aria-label="Type missing Spanish phrase" />`;
+            } else {
+              innerHtml = `<span class="cloze-blank">[ _______ ]</span>`;
+            }
+            return seg.type === 'fallback-blank' ? `<div class="mt-3">${innerHtml}</div>` : innerHtml;
+          })
+          .join('');
       }
 
       // ==================== TAB 1: STUDY (SRS) ====================
@@ -1986,6 +2132,10 @@
 
       function selectNextCard() {
         const queue = getFilteredStudyQueue();
+        typedAnswers = [];
+        expectedAnswers = [];
+        activeBlankInputIndex = 0;
+
         if (queue.length === 0) {
           currentCardId = null;
           isRevealed = false;
@@ -2002,6 +2152,11 @@
         }
         isRevealed = false;
         renderFlashcard();
+
+        if (autoFocusType && !document.getElementById('tab-study').classList.contains('hidden')) {
+          const firstInput = document.querySelector('#flashcard-area .cloze-input');
+          if (firstInput) firstInput.focus();
+        }
       }
 
       function renderFlashcard() {
@@ -2044,7 +2199,63 @@
           return;
         }
 
-        const formattedSentence = formatClozeSentence(card.sentence, card.target, isRevealed);
+        const formattedSentence = formatClozeSentence(card.sentence, card.target, isRevealed, {
+          interactive: true,
+          typedAnswers
+        });
+
+        const evaluation = isRevealed ? evaluateTypedAnswers(typedAnswers, expectedAnswers) : null;
+        let typedFeedbackHtml = '';
+        if (evaluation && evaluation.hasTypedAny) {
+          const typedSummary = evaluation.perBlank
+            .map((b) => (b.typed.trim() ? b.typed.trim() : '(blank)'))
+            .join(' ... ');
+          const expectedSummary = evaluation.perBlank.map((b) => b.expected).join(' ... ');
+
+          if (evaluation.status === 'exact') {
+            typedFeedbackHtml = `
+              <div class="max-w-xl mx-auto bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-emerald-900 font-semibold inline-flex items-center gap-2">
+                <span>✓</span>
+                <span>¡Exacto! You typed the exact phrase.</span>
+              </div>
+            `;
+          } else if (evaluation.status === 'accent') {
+            typedFeedbackHtml = `
+              <div class="max-w-xl mx-auto bg-amber-50 border border-amber-200 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-amber-950 space-y-1">
+                <div class="font-bold">~ Almost! Watch the accents / ñ:</div>
+                <div>
+                  You typed: <span class="font-mono bg-white/80 px-1.5 py-0.5 rounded border border-amber-200">${escapeHtml(typedSummary)}</span>
+                  <span class="mx-1 text-amber-600">→</span>
+                  Expected: <strong class="text-emerald-800">${escapeHtml(expectedSummary)}</strong>
+                </div>
+              </div>
+            `;
+          } else {
+            typedFeedbackHtml = `
+              <div class="max-w-xl mx-auto bg-rose-50 border border-rose-200 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-rose-950 space-y-1">
+                <div class="font-bold">✗ Not quite — compare your answer:</div>
+                <div>
+                  You typed: <span class="line-through text-rose-700 font-medium">${escapeHtml(typedSummary)}</span>
+                  <span class="mx-1 text-rose-500">→</span>
+                  Expected: <strong class="text-emerald-800 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">${escapeHtml(expectedSummary)}</strong>
+                </div>
+              </div>
+            `;
+          }
+        }
+
+        const hasTypedTextNow = typedAnswers.some((v) => String(v || '').trim().length > 0);
+        const accentHelperHtml = !isRevealed
+          ? `<div class="flex flex-wrap items-center justify-center gap-1.5 pt-1" aria-label="Spanish accent helper">
+              <span class="text-[11px] font-medium text-slate-400 mr-1">Accents:</span>
+              ${['á', 'é', 'í', 'ó', 'ú', 'ü', 'ñ', '¿', '¡']
+                .map(
+                  (ch) =>
+                    `<button type="button" class="accent-char-btn px-2 py-0.5 rounded-lg bg-slate-100 hover:bg-indigo-100 border border-slate-200 hover:border-indigo-300 text-xs font-bold text-slate-700 hover:text-indigo-800 transition cursor-pointer" data-char="${ch}">${ch}</button>`
+                )
+                .join('')}
+            </div>`
+          : '';
 
         // Calculate preview intervals for SM-2 buttons
         const previewIntervals = {
@@ -2098,6 +2309,9 @@
               ${formattedSentence}
             </p>
 
+            ${accentHelperHtml}
+            ${typedFeedbackHtml}
+
             <div class="inline-block bg-amber-50 border border-amber-200/80 px-4 py-2 rounded-xl">
               <span class="text-xs font-bold uppercase tracking-wider text-amber-700 mr-1.5">Cue:</span>
               <span class="text-sm font-semibold text-amber-950">${escapeHtml(card.hint)}</span>
@@ -2117,7 +2331,7 @@
             ${
               !isRevealed
                 ? `<button id="reveal-card-btn" class="w-full py-3.5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm sm:text-base shadow-sm transition cursor-pointer">
-                    Reveal Answer (Space)
+                    ${hasTypedTextNow ? 'Check &amp; Reveal Answer (Enter)' : 'Reveal Answer (Space)'}
                   </button>`
                 : `<div class="flex items-center justify-between text-[11px] px-1">
                     <span class="font-semibold text-slate-600">How well did you recall the missing phrase?</span>
@@ -2153,7 +2367,58 @@
         document.getElementById('card-tts-slow-btn').onclick = () => speakSpanish(card.sentence, 0.8);
 
         if (!isRevealed) {
-          document.getElementById('reveal-card-btn').onclick = revealCurrentCard;
+          const revealBtn = document.getElementById('reveal-card-btn');
+          revealBtn.onclick = revealCurrentCard;
+
+          const inputs = [...container.querySelectorAll('.cloze-input')];
+          const syncRevealBtnLabel = () => {
+            const anyFilled = typedAnswers.some((v) => String(v || '').trim().length > 0);
+            revealBtn.textContent = anyFilled ? 'Check & Reveal Answer (Enter)' : 'Reveal Answer (Space)';
+          };
+
+          inputs.forEach((input) => {
+            const idx = Number(input.dataset.blankIdx) || 0;
+            input.addEventListener('focus', () => {
+              activeBlankInputIndex = idx;
+            });
+            input.addEventListener('input', () => {
+              typedAnswers[idx] = input.value;
+              input.style.width = `${Math.max(16, input.value.length + 3)}ch`;
+              syncRevealBtnLabel();
+            });
+            input.addEventListener('keydown', (e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                if (idx < inputs.length - 1 && !inputs[idx + 1].value.trim()) {
+                  inputs[idx + 1].focus();
+                } else {
+                  revealCurrentCard();
+                }
+              } else if (e.key === 'Escape') {
+                input.blur();
+              }
+            });
+          });
+
+          container.querySelectorAll('.accent-char-btn').forEach((btn) => {
+            btn.addEventListener('mousedown', (e) => {
+              e.preventDefault();
+              const ch = btn.dataset.char || '';
+              const targetInput = inputs[activeBlankInputIndex] || inputs[0];
+              if (!targetInput) return;
+              if (document.activeElement !== targetInput) {
+                targetInput.focus();
+              }
+              const start = targetInput.selectionStart ?? targetInput.value.length;
+              const end = targetInput.selectionEnd ?? targetInput.value.length;
+              targetInput.value = targetInput.value.slice(0, start) + ch + targetInput.value.slice(end);
+              targetInput.selectionStart = targetInput.selectionEnd = start + ch.length;
+              const idx = Number(targetInput.dataset.blankIdx) || 0;
+              typedAnswers[idx] = targetInput.value;
+              targetInput.style.width = `${Math.max(16, targetInput.value.length + 3)}ch`;
+              syncRevealBtnLabel();
+            });
+          });
         } else {
           document.querySelectorAll('.rate-btn').forEach((btn) => {
             btn.onclick = () => rateCurrentCard(Number(btn.dataset.rate));
@@ -2164,6 +2429,10 @@
       function revealCurrentCard() {
         const card = deck.find((c) => c.id === currentCardId);
         if (!card || isRevealed) return;
+        document.querySelectorAll('#flashcard-area .cloze-input').forEach((input) => {
+          const idx = Number(input.dataset.blankIdx) || 0;
+          typedAnswers[idx] = input.value;
+        });
         isRevealed = true;
         renderFlashcard();
         if (document.getElementById('auto-tts-checkbox').checked) {
@@ -2753,6 +3022,30 @@
         btn.addEventListener('click', () => switchTab(btn.dataset.tab));
       });
 
+      function loadAutoFocusTypePref() {
+        try {
+          autoFocusType = localStorage.getItem(AUTO_FOCUS_TYPE_KEY) === 'true';
+        } catch (err) {
+          autoFocusType = false;
+        }
+        const cb = document.getElementById('auto-focus-type-checkbox');
+        if (cb) {
+          cb.checked = autoFocusType;
+          cb.addEventListener('change', (e) => {
+            autoFocusType = e.target.checked;
+            try {
+              localStorage.setItem(AUTO_FOCUS_TYPE_KEY, String(autoFocusType));
+            } catch (err) {
+              console.error('Failed to save auto-focus preference:', err);
+            }
+            if (autoFocusType && !isRevealed) {
+              const firstInput = document.querySelector('#flashcard-area .cloze-input');
+              if (firstInput) firstInput.focus();
+            }
+          });
+        }
+      }
+
       // Global Keyboard Shortcuts on Study Tab
       document.addEventListener('keydown', (e) => {
         const activeTag = document.activeElement ? document.activeElement.tagName : '';
@@ -2761,7 +3054,13 @@
         const studyPanelVisible = !document.getElementById('tab-study').classList.contains('hidden');
         if (!studyPanelVisible || !currentCardId) return;
 
-        if (e.code === 'Space') {
+        if (e.key === 'Enter' && !isRevealed && !['BUTTON', 'A'].includes(activeTag)) {
+          const firstInput = document.querySelector('#flashcard-area .cloze-input');
+          if (firstInput) {
+            e.preventDefault();
+            firstInput.focus();
+          }
+        } else if (e.code === 'Space') {
           e.preventDefault();
           if (!isRevealed) revealCurrentCard();
         } else if (e.key.toLowerCase() === 'r') {
@@ -2774,6 +3073,7 @@
 
       // ==================== BOOTSTRAP APP ====================
       loadAudioPrefs();
+      loadAutoFocusTypePref();
       populateVoices();
       loadGoogleAuthPrefs();
       loadDailyPace();
