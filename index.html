@@ -1,0 +1,2804 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AP Spanish Chunk & SRS Trainer</title>
+  <!-- Tailwind CSS via CDN for zero-build ChromeOS & Netlify deployment -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Identity Services for client-side Google Sign-In & Google Drive AppData sync -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <!-- Inter Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    /* Custom subtle scrollbars and smooth transitions */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+    .cloze-blank {
+      display: inline-block;
+      min-width: 130px;
+      border-bottom: 2.5px dashed #4f46e5;
+      color: #4f46e5;
+      font-weight: 700;
+      text-align: center;
+      padding: 0 10px;
+      margin: 0 4px;
+      background-color: #eef2ff;
+      border-radius: 6px;
+    }
+    .cloze-revealed {
+      display: inline-block;
+      color: #065f46;
+      font-weight: 700;
+      padding: 1px 10px;
+      margin: 0 2px;
+      background-color: #d1fae5;
+      border: 1px solid #6ee7b7;
+      border-radius: 6px;
+      animation: popIn 0.2s ease-out;
+    }
+    @keyframes popIn {
+      0% { transform: scale(0.95); opacity: 0.7; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased min-h-screen flex flex-col">
+
+  <!-- Toast Notification Container (Replaces alert/confirm) -->
+  <div id="toast-container" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none px-4 sm:px-0"></div>
+
+  <!-- Custom Confirmation Modal -->
+  <div id="confirm-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 hidden items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 border border-slate-200">
+      <h3 id="confirm-title" class="text-lg font-bold text-slate-900 mb-2">Confirm Action</h3>
+      <p id="confirm-message" class="text-sm text-slate-600 mb-6 leading-relaxed"></p>
+      <div class="flex justify-end gap-3">
+        <button id="confirm-cancel-btn" class="px-4 py-2.5 rounded-xl text-sm font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 transition">
+          Cancel
+        </button>
+        <button id="confirm-ok-btn" class="px-4 py-2.5 rounded-xl text-sm font-semibold text-white bg-rose-600 hover:bg-rose-700 transition">
+          Confirm
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Top Header -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-xs">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 py-3.5">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+        <!-- Brand & Title -->
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-extrabold text-lg shadow-sm">
+              AP
+            </div>
+            <div>
+              <h1 class="text-lg sm:text-xl font-extrabold text-slate-900 tracking-tight leading-tight">
+                AP Spanish Chunk Trainer
+              </h1>
+              <p class="text-xs text-slate-500">Contextual Cloze SRS &amp; Preply Lab</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stats Badges & Voice Selector -->
+        <div class="flex flex-wrap items-center gap-2 sm:gap-3">
+          <div class="flex items-center gap-1.5 bg-amber-50 border border-amber-200 text-amber-800 px-3 py-1.5 rounded-xl text-xs font-semibold">
+            <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+            <span>Due Today: <strong id="stat-due">0</strong></span>
+          </div>
+          <div class="flex items-center gap-1.5 bg-emerald-50 border border-emerald-200 text-emerald-800 px-3 py-1.5 rounded-xl text-xs font-semibold">
+            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+            <span>Mastered: <strong id="stat-mastered">0</strong></span>
+          </div>
+          <div class="flex items-center gap-1.5 bg-slate-100 border border-slate-200 text-slate-700 px-3 py-1.5 rounded-xl text-xs font-semibold">
+            <span>Total: <strong id="stat-total">0</strong></span>
+          </div>
+
+          <!-- Google Sign-In & Drive Sync Button -->
+          <button id="open-drive-sync-btn" type="button" class="flex items-center gap-2 bg-white hover:bg-slate-50 border border-slate-300 text-slate-800 px-3 py-1.5 rounded-xl text-xs font-semibold shadow-2xs transition cursor-pointer" title="Sign in with Google to save & sync progress to Google Drive">
+            <svg class="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24">
+              <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"/>
+              <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.11-6.72-4.96H1.29v3.14C3.26 21.3 7.37 24 12 24z"/>
+              <path fill="#FBBC05" d="M5.28 14.24c-.24-.72-.38-1.49-.38-2.24s.14-1.52.38-2.24V6.62H1.29C.47 8.24 0 10.06 0 12s.47 3.76 1.29 5.38l3.99-3.14z"/>
+              <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.37 0 3.26 2.7 1.29 6.62l3.99 3.14c.95-2.85 3.6-4.96 6.72-4.96z"/>
+            </svg>
+            <span id="drive-sync-badge" class="max-w-[160px] truncate">Google Drive Sync</span>
+          </button>
+
+          <!-- How to Use Guide Button -->
+          <button id="open-help-btn" type="button" class="flex items-center gap-1.5 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 text-indigo-800 px-3 py-1.5 rounded-xl text-xs font-semibold transition cursor-pointer" title="How to Use This App">
+            <span class="w-4 h-4 rounded-full bg-indigo-600 text-white inline-flex items-center justify-center text-[10px] font-bold">?</span>
+            <span>How to Use</span>
+          </button>
+
+          <!-- Active Neural Audio Status Pill & Settings Button -->
+          <button id="open-audio-settings-btn" type="button" class="flex items-center gap-2 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-900 px-3 py-1.5 rounded-xl text-xs font-semibold transition cursor-pointer" title="Configure Google Chrome Neural Voice or Google Cloud TTS API Fallback">
+            <span id="audio-engine-dot" class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span id="active-voice-badge" class="max-w-[210px] truncate">Detecting Google Voice...</span>
+            <svg class="w-3.5 h-3.5 text-emerald-700 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <nav class="flex gap-1.5 mt-3.5 overflow-x-auto pb-1" aria-label="Tabs">
+        <button data-tab="study" class="tab-btn active px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition whitespace-nowrap bg-indigo-600 text-white shadow-xs">
+          1. Study (SRS)
+        </button>
+        <button data-tab="add" class="tab-btn px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition whitespace-nowrap text-slate-600 hover:bg-slate-100">
+          2. Preply Quick-Add
+        </button>
+        <button data-tab="speaking" class="tab-btn px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition whitespace-nowrap text-slate-600 hover:bg-slate-100">
+          3. 2-Min Speaking Challenge
+        </button>
+        <button data-tab="manage" class="tab-btn px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition whitespace-nowrap text-slate-600 hover:bg-slate-100">
+          4. Manage &amp; Sync Deck
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Content Area -->
+  <main class="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 py-6">
+
+    <!-- ==================== TAB 1: STUDY (SRS) ==================== -->
+    <section id="tab-study" class="tab-panel space-y-5">
+      <!-- Filter & Mode Controls -->
+      <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div class="flex flex-wrap items-center gap-2.5">
+          <label for="study-level-filter" class="text-xs font-semibold uppercase tracking-wider text-slate-500">Level:</label>
+          <select id="study-level-filter" class="bg-emerald-50/70 border border-emerald-200 text-emerald-950 text-sm rounded-xl px-3 py-2 font-semibold focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+            <option value="ALL">All Levels (9th → 12th)</option>
+            <option value="1">Level 1: 9th Grade Foundations</option>
+            <option value="2">Level 2: 10th/11th Intermediate</option>
+            <option value="3">Level 3: 12th AP Exam Mastery</option>
+          </select>
+
+          <label for="study-theme-filter" class="text-xs font-semibold uppercase tracking-wider text-slate-500">Theme:</label>
+          <select id="study-theme-filter" class="bg-slate-50 border border-slate-300 text-slate-800 text-sm rounded-xl px-3 py-2 font-medium focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+            <option value="ALL">All AP Themes</option>
+            <option value="Argument & Connectors">Argument &amp; Connectors</option>
+            <option value="Global Challenges">Global Challenges</option>
+            <option value="Science & Technology">Science &amp; Technology</option>
+            <option value="Contemporary Life">Contemporary Life</option>
+            <option value="Personal & Public Identities">Personal &amp; Public Identities</option>
+            <option value="Families & Communities">Families &amp; Communities</option>
+            <option value="Beauty & Aesthetics">Beauty &amp; Aesthetics</option>
+          </select>
+
+          <!-- Daily New-Card Pace Cap -->
+          <div class="flex items-center gap-1.5 bg-indigo-50/80 border border-indigo-100 px-3 py-1.5 rounded-xl text-xs">
+            <span class="font-semibold text-indigo-900">New Today:</span>
+            <strong id="daily-new-progress" class="text-indigo-700">0 / 10</strong>
+            <label for="daily-new-limit-select" class="sr-only">New cards per day limit</label>
+            <select id="daily-new-limit-select" class="ml-1 bg-white border border-indigo-200 rounded-lg px-1.5 py-0.5 text-[11px] font-bold text-indigo-800 focus:outline-none" title="Maximum new unstudied cards introduced per day">
+              <option value="5">5/day</option>
+              <option value="10">10/day</option>
+              <option value="15" selected>15/day</option>
+              <option value="20">20/day</option>
+              <option value="9999">Unlimited</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <div class="inline-flex rounded-xl bg-slate-100 p-1 border border-slate-200">
+            <button id="mode-due-btn" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-white text-indigo-700 shadow-xs transition">
+              Due Only
+            </button>
+            <button id="mode-all-btn" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 transition">
+              Practice All
+            </button>
+          </div>
+          <label class="inline-flex items-center gap-1.5 text-xs font-medium text-slate-600 cursor-pointer select-none">
+            <input type="checkbox" id="auto-tts-checkbox" checked class="rounded text-indigo-600 focus:ring-indigo-500" />
+            <span>Auto-Speak</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Flashcard Container -->
+      <div id="flashcard-area" class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 sm:p-10 min-h-[340px] flex flex-col justify-between transition-all">
+        <!-- Populated dynamically by JS -->
+      </div>
+
+      <!-- Keyboard Shortcut Footer Hint -->
+      <div class="flex flex-wrap items-center justify-center gap-4 text-xs text-slate-400">
+        <span><kbd class="px-1.5 py-0.5 bg-white border border-slate-300 rounded text-slate-600 font-mono">Space</kbd> Reveal Answer</span>
+        <span><kbd class="px-1.5 py-0.5 bg-white border border-slate-300 rounded text-slate-600 font-mono">R</kbd> Listen Audio</span>
+        <span><kbd class="px-1.5 py-0.5 bg-white border border-slate-300 rounded text-slate-600 font-mono">1</kbd>–<kbd class="px-1.5 py-0.5 bg-white border border-slate-300 rounded text-slate-600 font-mono">4</kbd> Rate Card</span>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 2: PREPLY QUICK-ADD ==================== -->
+    <section id="tab-add" class="tab-panel hidden space-y-6">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Left: Single Phrase Form -->
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+          <div class="border-b border-slate-100 pb-3">
+            <h2 class="text-base font-bold text-slate-900">Add Single Preply "Gap Phrase"</h2>
+            <p class="text-xs text-slate-500 mt-0.5">Turn a sentence from your tutor's chat into a contextual cloze card.</p>
+          </div>
+
+          <form id="single-add-form" class="space-y-4">
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Full Spanish Sentence *</label>
+              <textarea id="add-sentence" rows="2" required placeholder="e.g., A pesar de que la tecnología avanza rápido, persiste la brecha digital." class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none"></textarea>
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Target Chunk to Blank Out * <span class="font-normal text-slate-400">(must appear in sentence above)</span></label>
+              <input type="text" id="add-target" required placeholder="e.g., A pesar de que" class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
+            </div>
+
+            <!-- Live Cloze Preview -->
+            <div class="bg-indigo-50/70 border border-indigo-100 rounded-xl p-3">
+              <span class="text-[11px] font-bold uppercase tracking-wider text-indigo-500 block mb-1">Live Card Preview:</span>
+              <p id="add-live-preview" class="text-sm text-slate-700 italic">Type a sentence and target chunk above to preview...</p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">English Meaning / Cue *</label>
+                <input type="text" id="add-hint" required placeholder="e.g., Despite the fact that" class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">AP Theme *</label>
+                <select id="add-theme" class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                  <option value="Argument & Connectors">Argument &amp; Connectors</option>
+                  <option value="Global Challenges">Global Challenges</option>
+                  <option value="Science & Technology">Science &amp; Technology</option>
+                  <option value="Contemporary Life">Contemporary Life</option>
+                  <option value="Personal & Public Identities">Personal &amp; Public Identities</option>
+                  <option value="Families & Communities">Families &amp; Communities</option>
+                  <option value="Beauty & Aesthetics">Beauty &amp; Aesthetics</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Usage / Dialect Note <span class="font-normal text-slate-400">(optional)</span></label>
+              <input type="text" id="add-notes" placeholder="e.g., Great for AP argumentative essay transitions; triggers indicative here." class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
+            </div>
+
+            <button type="submit" class="w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm shadow-xs transition cursor-pointer">
+              + Save Chunk to Study Deck
+            </button>
+          </form>
+        </div>
+
+        <!-- Right: Bulk Preply Chat Importer -->
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs flex flex-col justify-between space-y-4">
+          <div class="space-y-4">
+            <div class="border-b border-slate-100 pb-3">
+              <h2 class="text-base font-bold text-slate-900">Bulk Preply Chat Importer</h2>
+              <p class="text-xs text-slate-500 mt-0.5">Paste multiple lines from a tutoring session using pipe <code class="bg-slate-100 px-1 rounded text-indigo-600">|</code> separators.</p>
+            </div>
+
+            <div class="bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs text-slate-600 space-y-1">
+              <p class="font-semibold text-slate-800">Format (one card per line):</p>
+              <code class="block text-[11px] text-indigo-700 break-all">Full Spanish Sentence | Target Chunk | English Hint | AP Theme</code>
+              <p class="text-[11px] text-slate-500 pt-1">If AP Theme is omitted, it defaults to <strong>Argument &amp; Connectors</strong>.</p>
+            </div>
+
+            <div>
+              <label for="bulk-textarea" class="block text-xs font-semibold text-slate-700 mb-1">Paste Lines Below:</label>
+              <textarea id="bulk-textarea" rows="8" placeholder="Es imprescindible que los jóvenes desarrollen el pensamiento crítico. | Es imprescindible que | It is essential that (+ subjunctive) | Contemporary Life&#10;En cuanto a las energías renovables, Argentina tiene un gran potencial. | En cuanto a | Regarding / As for | Global Challenges" class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-xs font-mono leading-relaxed focus:ring-2 focus:ring-indigo-500 focus:outline-none"></textarea>
+            </div>
+          </div>
+
+          <div class="space-y-2">
+            <button id="bulk-import-btn" type="button" class="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm shadow-xs transition cursor-pointer">
+              Parse &amp; Add All Lines
+            </button>
+            <p id="bulk-feedback" class="text-xs text-center text-slate-500 min-h-[18px]"></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 3: 2-MIN SPEAKING CHALLENGE ==================== -->
+    <section id="tab-speaking" class="tab-panel hidden space-y-6">
+      <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 sm:p-8 space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+          <div>
+            <span class="inline-block px-2.5 py-1 rounded-lg bg-purple-100 text-purple-800 text-xs font-bold uppercase tracking-wider mb-1">
+              AP Task 4 Simulator
+            </span>
+            <h2 class="text-xl font-extrabold text-slate-900">2-Minute Cultural Comparison Challenge</h2>
+            <p class="text-xs text-slate-500 mt-0.5">Compare your community with a Spanish-speaking region (e.g., Argentina or Bolivia) using the 3 target chunks below.</p>
+          </div>
+          <button id="new-speaking-challenge-btn" class="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold shadow-xs transition shrink-0 cursor-pointer">
+            ↻ New Prompt &amp; Chunks
+          </button>
+        </div>
+
+        <!-- Prompt Card -->
+        <div class="bg-slate-900 text-white rounded-2xl p-6 space-y-3 shadow-inner">
+          <div class="flex items-center justify-between">
+            <span id="speaking-prompt-theme" class="text-xs font-bold uppercase tracking-wider text-indigo-300">Theme</span>
+            <button id="speak-prompt-btn" class="inline-flex items-center gap-1.5 text-xs bg-white/10 hover:bg-white/20 text-white px-3 py-1.5 rounded-lg transition cursor-pointer">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+              </svg>
+              Read Prompt Aloud
+            </button>
+          </div>
+          <p id="speaking-prompt-es" class="text-lg sm:text-xl font-bold leading-snug"></p>
+          <p id="speaking-prompt-en" class="text-xs sm:text-sm text-slate-300 italic"></p>
+        </div>
+
+        <!-- Two Column: Required Chunks Checklist + Exam Timer -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+          <!-- Required Chunks -->
+          <div class="bg-amber-50/60 border border-amber-200 rounded-2xl p-5 space-y-3">
+            <h3 class="text-sm font-bold text-amber-950 flex items-center justify-between">
+              <span>Required Chunks to Weave In:</span>
+              <span id="chunks-checked-count" class="text-xs font-semibold px-2 py-0.5 rounded-full bg-amber-200/80 text-amber-900">0 / 3 Used</span>
+            </h3>
+            <p class="text-xs text-amber-800">Check each phrase off as you say it out loud during your 2-minute speech:</p>
+            <div id="speaking-chunks-list" class="space-y-2.5 pt-1">
+              <!-- Populated dynamically -->
+            </div>
+          </div>
+
+          <!-- AP Timer Box -->
+          <div class="bg-slate-50 border border-slate-200 rounded-2xl p-5 flex flex-col items-center justify-center text-center space-y-4">
+            <div class="inline-flex rounded-xl bg-slate-200/80 p-1">
+              <button id="timer-mode-speak" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-white text-slate-900 shadow-xs transition">
+                Speaking (2:00)
+              </button>
+              <button id="timer-mode-prep" class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 transition">
+                AP Prep (4:00)
+              </button>
+            </div>
+
+            <div id="timer-display" class="text-5xl sm:text-6xl font-extrabold font-mono tracking-tight text-slate-900 py-2">
+              02:00
+            </div>
+
+            <div class="flex items-center gap-2.5 w-full justify-center">
+              <button id="timer-start-btn" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm shadow-xs transition cursor-pointer">
+                Start Timer
+              </button>
+              <button id="timer-pause-btn" class="px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-semibold text-sm shadow-xs transition cursor-pointer">
+                Pause
+              </button>
+              <button id="timer-reset-btn" class="px-4 py-2.5 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 font-semibold text-sm transition cursor-pointer">
+                Reset
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 4: MANAGE & SYNC DECK ==================== -->
+    <section id="tab-manage" class="tab-panel hidden space-y-6">
+      <!-- Export / Import / Reset Toolbar -->
+      <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+          <div>
+            <h2 class="text-base font-bold text-slate-900">Deck Backup &amp; Weekly Sync (.JSON)</h2>
+            <p class="text-xs text-slate-500 mt-0.5">Export progress or import new weekly Preply phrase packs without overwriting existing review stats.</p>
+          </div>
+          <div class="flex flex-wrap items-center gap-2.5">
+            <button id="export-json-btn" class="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-semibold shadow-xs transition cursor-pointer">
+              ↓ Export Deck (.json)
+            </button>
+            <label class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-semibold shadow-xs transition cursor-pointer">
+              ↑ Import / Merge (.json)
+              <input type="file" id="import-json-input" accept=".json,application/json" class="hidden" />
+            </label>
+            <button id="reset-default-btn" class="px-4 py-2.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs sm:text-sm font-semibold transition cursor-pointer">
+              Reset Default Deck
+            </button>
+          </div>
+        </div>
+
+        <!-- External JSON Curriculum Pack Loader (Saves directly to User's Google Drive) -->
+        <div class="bg-indigo-50/60 border border-indigo-200/80 rounded-2xl p-4 sm:p-5 space-y-3.5">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div>
+              <span class="inline-block px-2 py-0.5 rounded-md bg-indigo-100 text-indigo-800 text-[10px] font-bold uppercase tracking-wider mb-1">
+                Modular 4-Year Curriculum (500 Phrases / Grade)
+              </span>
+              <h3 class="text-sm font-bold text-slate-900">Grade-Level JSON Packs (Stored Externally in <code>/packs/</code>)</h3>
+              <p class="text-xs text-slate-600">Phrases live in separate <code>.json</code> files inside your GitHub/Netlify <code>/packs/</code> folder so <code>index.html</code> stays fast and clean. Click any grade pack to merge it into your deck and sync to Google Drive.</p>
+            </div>
+          </div>
+
+          <!-- Hosted / Repo Pack Manifest Buttons -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5" id="curriculum-pack-catalog">
+            <button type="button" data-pack-url="./packs/grade9-foundations.json" data-pack-name="9th Grade Foundations (500)" class="load-remote-pack-btn text-left p-3 rounded-xl bg-white hover:bg-emerald-50 border border-emerald-300 transition cursor-pointer shadow-2xs">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-emerald-900">9th Grade: Foundations</span>
+                <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800">Lvl 1</span>
+              </div>
+              <div class="text-[11px] text-slate-500 mt-1"><code>./packs/grade9-foundations.json</code></div>
+            </button>
+            <button type="button" data-pack-url="./packs/grade10-intermediate.json" data-pack-name="10th Grade Intermediate (500)" class="load-remote-pack-btn text-left p-3 rounded-xl bg-white hover:bg-indigo-50 border border-indigo-200 transition cursor-pointer shadow-2xs">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-indigo-900">10th Grade: Intermediate</span>
+                <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-sky-100 text-sky-800">Lvl 2</span>
+              </div>
+              <div class="text-[11px] text-slate-500 mt-1"><code>./packs/grade10-intermediate.json</code></div>
+            </button>
+            <button type="button" data-pack-url="./packs/grade11-pre-ap.json" data-pack-name="11th Grade Pre-AP (500)" class="load-remote-pack-btn text-left p-3 rounded-xl bg-white hover:bg-indigo-50 border border-indigo-200 transition cursor-pointer shadow-2xs">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-indigo-900">11th Grade: Pre-AP</span>
+                <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-indigo-100 text-indigo-800">Lvl 2–3</span>
+              </div>
+              <div class="text-[11px] text-slate-500 mt-1"><code>./packs/grade11-pre-ap.json</code></div>
+            </button>
+            <button type="button" data-pack-url="./packs/grade12-ap-mastery.json" data-pack-name="12th Grade AP Mastery (500)" class="load-remote-pack-btn text-left p-3 rounded-xl bg-white hover:bg-indigo-50 border border-indigo-200 transition cursor-pointer shadow-2xs">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-indigo-900">12th Grade: AP Mastery</span>
+                <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-purple-100 text-purple-800">Lvl 3</span>
+              </div>
+              <div class="text-[11px] text-slate-500 mt-1"><code>./packs/grade12-ap-mastery.json</code></div>
+            </button>
+          </div>
+
+          <!-- Custom Remote JSON URL Loader -->
+          <div class="flex flex-col sm:flex-row gap-2 pt-1">
+            <input type="url" id="remote-pack-url-input" placeholder="https://your-site.netlify.app/packs/grade9-foundations.json" class="flex-1 rounded-xl border border-indigo-200 px-3.5 py-2 text-xs font-mono bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
+            <button type="button" id="fetch-remote-pack-btn" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-xs transition cursor-pointer shrink-0">
+              Fetch &amp; Merge URL into Deck
+            </button>
+          </div>
+        </div>
+
+        <!-- Search & Filter Bar for Deck Table -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
+          <div class="sm:col-span-2">
+            <input type="text" id="manage-search" placeholder="Search Spanish sentence, target chunk, or English hint..." class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
+          </div>
+          <div>
+            <select id="manage-theme-filter" class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+              <option value="ALL">All Themes</option>
+              <option value="Argument & Connectors">Argument &amp; Connectors</option>
+              <option value="Global Challenges">Global Challenges</option>
+              <option value="Science & Technology">Science &amp; Technology</option>
+              <option value="Contemporary Life">Contemporary Life</option>
+              <option value="Personal & Public Identities">Personal &amp; Public Identities</option>
+              <option value="Families & Communities">Families &amp; Communities</option>
+              <option value="Beauty & Aesthetics">Beauty &amp; Aesthetics</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Cards Table -->
+        <div class="overflow-x-auto border border-slate-200 rounded-xl max-h-[480px] overflow-y-auto">
+          <table class="min-w-full divide-y divide-slate-200 text-left">
+            <thead class="bg-slate-50 text-[11px] font-bold uppercase tracking-wider text-slate-500 sticky top-0 z-10">
+              <tr>
+                <th class="py-3 px-4">Target Chunk &amp; Hint</th>
+                <th class="py-3 px-4">Context Sentence</th>
+                <th class="py-3 px-4">AP Theme</th>
+                <th class="py-3 px-4">SRS Status</th>
+                <th class="py-3 px-4 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="manage-table-body" class="divide-y divide-slate-100 bg-white text-sm">
+              <!-- Populated dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==================== GOOGLE SIGN-IN & DRIVE SYNC MODAL ==================== -->
+  <div id="drive-sync-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 hidden items-center justify-center p-4">
+    <div class="bg-white rounded-3xl shadow-2xl max-w-lg w-full p-6 border border-slate-200 space-y-5 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-start justify-between gap-3 border-b border-slate-100 pb-3">
+        <div>
+          <h3 class="text-lg font-extrabold text-slate-900">Google Sign-In &amp; Drive Sync</h3>
+          <p class="text-xs text-slate-500 mt-0.5">Save each user's custom Preply phrases and SRS progress directly to their own Google Drive.</p>
+        </div>
+        <button id="close-drive-sync-btn" type="button" class="text-slate-400 hover:text-slate-700 p-1 rounded-lg text-lg font-bold leading-none cursor-pointer">
+          ✕
+        </button>
+      </div>
+
+      <!-- Connection Status Card -->
+      <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-3">
+        <div class="flex items-center justify-between gap-2">
+          <div>
+            <div id="google-user-name" class="text-sm font-bold text-slate-900">Not Signed In (Local Browser Mode)</div>
+            <div id="google-sync-status-detail" class="text-xs text-slate-500 mt-0.5">Connect a Google account to sync progress across devices.</div>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2 pt-1">
+          <button id="google-signin-action-btn" type="button" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-xs transition cursor-pointer">
+            Sign in with Google
+          </button>
+          <button id="google-signout-action-btn" type="button" class="hidden px-3.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-semibold transition cursor-pointer">
+            Sign Out
+          </button>
+        </div>
+
+        <div id="drive-manual-actions" class="hidden flex flex-wrap items-center gap-2 pt-2 border-t border-slate-200/80">
+          <button id="drive-push-now-btn" type="button" class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold transition cursor-pointer">
+            ↑ Save Now to Drive
+          </button>
+          <button id="drive-pull-now-btn" type="button" class="px-3 py-1.5 rounded-lg bg-white hover:bg-slate-100 border border-slate-300 text-slate-700 text-xs font-semibold transition cursor-pointer">
+            ↓ Pull &amp; Merge from Drive
+          </button>
+        </div>
+      </div>
+
+      <!-- Google OAuth Client ID Setup -->
+      <div class="bg-sky-50/70 border border-sky-200 rounded-2xl p-4 space-y-2.5">
+        <label for="google-client-id-input" class="block text-xs font-bold text-sky-950">
+          Google OAuth 2.0 Web Client ID
+        </label>
+        <p class="text-[11px] text-sky-900 leading-relaxed">
+          Enable <strong>Google Drive API</strong> in Google Cloud Console, create a Web OAuth Client ID with your Netlify URL under Authorized JavaScript Origins, and paste it below:
+        </p>
+        <div class="flex gap-2">
+          <input type="text" id="google-client-id-input" placeholder="1234567890-abcdefg.apps.googleusercontent.com" class="flex-1 rounded-xl border border-sky-300 px-3 py-2 text-xs font-mono bg-white focus:ring-2 focus:ring-sky-500 focus:outline-none" />
+          <button id="save-google-client-id-btn" type="button" class="px-3.5 py-2 rounded-xl bg-sky-700 hover:bg-sky-800 text-white text-xs font-semibold transition cursor-pointer shrink-0">
+            Save ID
+          </button>
+        </div>
+      </div>
+
+      <div class="flex justify-end pt-1">
+        <button id="done-drive-sync-btn" type="button" class="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs sm:text-sm font-semibold transition cursor-pointer">
+          Done
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== HOW TO USE GUIDE MODAL ==================== -->
+  <div id="help-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 hidden items-center justify-center p-4">
+    <div class="bg-white rounded-3xl shadow-2xl max-w-2xl w-full p-6 border border-slate-200 space-y-5 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-start justify-between gap-3 border-b border-slate-100 pb-3">
+        <div>
+          <h3 class="text-lg font-extrabold text-slate-900">How to Use the AP Spanish Trainer</h3>
+          <p class="text-xs text-slate-500 mt-0.5">A 10–15 minute daily system built for the AP Spanish Language &amp; Culture exam.</p>
+        </div>
+        <button id="close-help-btn" type="button" class="text-slate-400 hover:text-slate-700 p-1 rounded-lg text-lg font-bold leading-none cursor-pointer">
+          ✕
+        </button>
+      </div>
+
+      <div class="space-y-4 text-xs sm:text-sm text-slate-700 leading-relaxed">
+        <div class="bg-indigo-50/70 border border-indigo-100 rounded-2xl p-4">
+          <h4 class="font-bold text-indigo-950 mb-1">1. Daily Spaced Repetition (15 New Chunks/Day)</h4>
+          <p>Instead of memorizing 50 isolated words, study full AP-level sentences with the key phrase blanked out. Rate each card honestly so the SM-2 algorithm schedules reviews right before you forget them:</p>
+          <ul class="list-disc pl-5 mt-1.5 space-y-1 text-xs">
+            <li><strong>1. Again (Forgot):</strong> Resets progress and shows the card again in <strong>1 minute</strong>.</li>
+            <li><strong>2. Hard (Struggled):</strong> Tightens the card's ease multiplier and brings it back sooner (<strong>12 hours</strong> or <strong>1.2×</strong> current interval).</li>
+            <li><strong>3. Good (Recalled):</strong> Standard spacing (<strong>1 day → 3 days → interval × ease</strong>).</li>
+            <li><strong>4. Easy (Effortless):</strong> Increases the card's ease multiplier and pushes it out further (<strong>4 days</strong> or <strong>1.3×</strong> boost).</li>
+          </ul>
+        </div>
+
+        <div class="bg-emerald-50/70 border border-emerald-100 rounded-2xl p-4">
+          <h4 class="font-bold text-emerald-950 mb-1">2. Capture "Gap Phrases" from Preply Tutors</h4>
+          <p>During sessions with his Argentine or Bolivian tutors, whenever he gets stuck expressing an idea, have the tutor type the natural Spanish sentence in chat. Paste those lines into <strong>Tab 2 (Preply Quick-Add)</strong> right after class.</p>
+        </div>
+
+        <div class="bg-purple-50/70 border border-purple-100 rounded-2xl p-4">
+          <h4 class="font-bold text-purple-950 mb-1">3. Practice the 2-Minute AP Cultural Comparison</h4>
+          <p>Use <strong>Tab 3</strong> twice a week. It simulates AP Speaking Task 4 (4 minutes prep, 2 minutes speaking) and challenges him to weave 3 learned transition chunks into a comparison between his community and Argentina/Bolivia.</p>
+        </div>
+
+        <div class="bg-amber-50/70 border border-amber-100 rounded-2xl p-4">
+          <h4 class="font-bold text-amber-950 mb-1">4. Natural Google Voices &amp; Google Drive Sync</h4>
+          <p>When hosted over <code>https://</code> on Netlify, Chrome automatically unlocks natural <strong>Google español</strong> voices (or add a free-tier Google Cloud TTS key in Audio Settings for offline/iOS). When signed in with <strong>Google Drive Sync</strong>, every card rating, interval, ease score, and custom Preply phrase automatically backs up to your personal Google Drive.</p>
+        </div>
+      </div>
+
+      <div class="flex justify-end pt-1">
+        <button id="done-help-btn" type="button" class="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs sm:text-sm font-semibold transition cursor-pointer">
+          Got It
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== SPANISH NEURAL AUDIO SETTINGS MODAL ==================== -->
+  <div id="audio-settings-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 hidden items-center justify-center p-4">
+    <div class="bg-white rounded-3xl shadow-2xl max-w-lg w-full p-6 border border-slate-200 space-y-5 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-start justify-between gap-3 border-b border-slate-100 pb-3">
+        <div>
+          <h3 class="text-lg font-extrabold text-slate-900">Spanish Neural Audio Settings</h3>
+          <p class="text-xs text-slate-500 mt-0.5">Configure Chrome's built-in Google voices or Google Cloud Neural2 TTS.</p>
+        </div>
+        <button id="close-audio-settings-btn" type="button" class="text-slate-400 hover:text-slate-700 p-1 rounded-lg text-lg font-bold leading-none cursor-pointer">
+          ✕
+        </button>
+      </div>
+
+      <!-- Sandbox / Local File Warning Banner -->
+      <div id="chromeos-sandbox-warning" class="hidden bg-amber-50 border border-amber-300 rounded-2xl p-3.5 text-xs text-amber-950 space-y-1">
+        <div class="font-bold">Why does it sound like local eSpeak right now?</div>
+        <p class="leading-relaxed">
+          Inside preview iframes or local <code>file://</code> URLs, Chrome hides its cloud <strong>Google español</strong> voices. Once you deploy to an <code>https://</code> Netlify link, Chrome unlocks them automatically—or paste a Google Cloud TTS API key below for instant studio voices anywhere.
+        </p>
+      </div>
+
+      <!-- Tier 1: Chrome Built-in Google Voice -->
+      <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-2.5">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold text-slate-900">Tier 1: Chrome / Browser Voice</span>
+          <span id="tier1-status-tag" class="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">Detecting...</span>
+        </div>
+        <select id="voice-select" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-xs bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+          <option value="">Auto-Detect Google Spanish Neural Voice</option>
+        </select>
+      </div>
+
+      <!-- Tier 2: Google Cloud TTS API Fallback -->
+      <div class="bg-sky-50/70 border border-sky-200 rounded-2xl p-4 space-y-3">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold text-sky-950">Tier 2: Google Cloud TTS API (Optional)</span>
+          <span id="tier2-status-tag" class="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-slate-200 text-slate-700">Not Configured</span>
+        </div>
+        <div class="space-y-2">
+          <label for="gcp-voice-select" class="block text-[11px] font-semibold text-sky-900">Cloud Neural Voice:</label>
+          <select id="gcp-voice-select" class="w-full rounded-xl border border-sky-300 px-3 py-2 text-xs bg-white focus:ring-2 focus:ring-sky-500 focus:outline-none">
+            <option value="es-US-Neural2-B">es-US-Neural2-B (Latin American Male — Natural)</option>
+            <option value="es-US-Neural2-A">es-US-Neural2-A (Latin American Female — Natural)</option>
+            <option value="es-ES-Neural2-B">es-ES-Neural2-B (Castilian Male — Natural)</option>
+            <option value="es-ES-Neural2-A">es-ES-Neural2-A (Castilian Female — Natural)</option>
+          </select>
+        </div>
+        <div class="space-y-1.5">
+          <label for="gcp-api-key-input" class="block text-[11px] font-semibold text-sky-900">GCP API Key (stored strictly in localStorage):</label>
+          <div class="flex gap-2">
+            <input type="password" id="gcp-api-key-input" placeholder="AIzaSy..." class="flex-1 rounded-xl border border-sky-300 px-3 py-2 text-xs font-mono bg-white focus:ring-2 focus:ring-sky-500 focus:outline-none" />
+            <button id="save-gcp-key-btn" type="button" class="px-3 py-2 rounded-xl bg-sky-700 hover:bg-sky-800 text-white text-xs font-semibold transition cursor-pointer">
+              Save
+            </button>
+            <button id="clear-gcp-key-btn" type="button" class="px-2.5 py-2 rounded-xl bg-white hover:bg-rose-50 border border-slate-300 text-slate-600 hover:text-rose-700 text-xs font-semibold transition cursor-pointer">
+              Clear
+            </button>
+          </div>
+        </div>
+        <label class="inline-flex items-center gap-2 text-xs text-sky-950 cursor-pointer select-none">
+          <input type="checkbox" id="force-gcp-checkbox" class="rounded text-sky-600 focus:ring-sky-500" />
+          <span>Always prefer Google Cloud TTS over browser voice</span>
+        </label>
+      </div>
+
+      <!-- Test & Done Footer -->
+      <div class="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-slate-100">
+        <button id="test-voice-btn" type="button" class="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-semibold shadow-xs transition cursor-pointer">
+          🔊 Test Current Voice
+        </button>
+        <button id="done-audio-settings-btn" type="button" class="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs sm:text-sm font-semibold transition cursor-pointer">
+          Done
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== APPLICATION LOGIC ==================== -->
+  <script>
+    (function () {
+      'use strict';
+
+      const STORAGE_KEY = 'ap_spanish_srs_deck_v1';
+      const DELETED_IDS_KEY = 'ap_spanish_deleted_ids_v1';
+      const AUDIO_PREFS_KEY = 'ap_spanish_audio_prefs_v1';
+      const DAILY_PACE_KEY = 'ap_spanish_daily_pace_v1';
+      const GOOGLE_AUTH_PREFS_KEY = 'ap_spanish_google_auth_v1';
+      const DRIVE_FILE_NAME = 'ap-spanish-progress-v2.json';
+      const DRIVE_BACKUP_FILE_NAME = 'ap-spanish-progress-v2.backup.json';
+      const DEFAULT_PACK_URL = './packs/grade9-foundations.json';
+      const DAY_MS = 24 * 60 * 60 * 1000;
+
+      // Minimal built-in bootstrap sample (only used if offline/local before external JSON packs are loaded)
+      const BOOTSTRAP_SAMPLE_DECK = [
+        {
+          id: 'g9-boot-1',
+          level: 1,
+          sentence: 'Juan come manzanas frescas todas las mañanas antes de ir a la escuela.',
+          target: 'come manzanas',
+          hint: 'eats apples',
+          theme: 'Contemporary Life',
+          notes: 'Classic starter! Notice how Spanish drops "unos/unas" before plural food items.',
+          interval: 0,
+          ease: 2.5,
+          reps: 0,
+          dueDate: Date.now()
+        },
+        {
+          id: 'g9-boot-2',
+          level: 1,
+          sentence: 'En mi opinión, aprender otro idioma abre muchas puertas en el futuro.',
+          target: 'En mi opinión',
+          hint: 'In my opinion',
+          theme: 'Argument & Connectors',
+          notes: 'Clear, confident way to state a viewpoint in 9th grade.',
+          interval: 0,
+          ease: 2.5,
+          reps: 0,
+          dueDate: Date.now()
+        },
+        {
+          id: 'g9-boot-3',
+          level: 1,
+          sentence: 'Mi familia y yo solemos cenar juntos alrededor de las ocho de la noche.',
+          target: 'solemos cenar juntos',
+          hint: 'usually have dinner together',
+          theme: 'Families & Communities',
+          notes: '"Soler + infinitive" means "to usually do something" — very natural!',
+          interval: 0,
+          ease: 2.5,
+          reps: 0,
+          dueDate: Date.now()
+        },
+        {
+          id: 'g9-boot-4',
+          level: 1,
+          sentence: 'Por ejemplo, en Argentina es muy común tomar mate con amigos en el parque.',
+          target: 'Por ejemplo',
+          hint: 'For example',
+          theme: 'Argument & Connectors',
+          notes: 'Essential for backing up any statement with a concrete cultural detail.',
+          interval: 0,
+          ease: 2.5,
+          reps: 0,
+          dueDate: Date.now()
+        },
+        {
+          id: 'g9-boot-5',
+          level: 1,
+          sentence: 'Todos podemos ayudar al planeta si reciclamos botellas y ahorramos agua.',
+          target: 'si reciclamos botellas',
+          hint: 'if we recycle bottles',
+          theme: 'Global Challenges',
+          notes: 'Real-world "si" clause using simple present tense.',
+          interval: 0,
+          ease: 2.5,
+          reps: 0,
+          dueDate: Date.now()
+        }
+      ];
+
+      // 12 Official-Style AP Cultural Comparison Prompts
+      const SPEAKING_PROMPTS = [
+        {
+          theme: 'Families & Communities',
+          es: '¿Qué papel desempeñan las celebraciones familiares en la preservación de la identidad cultural en tu comunidad y en una región del mundo hispanohablante?',
+          en: 'What role do family celebrations play in preserving cultural identity in your community and in a Spanish-speaking region?'
+        },
+        {
+          theme: 'Science & Technology',
+          es: '¿Cómo ha afectado el acceso a Internet y a las redes sociales la vida cotidiana de los jóvenes en tu comunidad en comparación con un país hispanohablante?',
+          en: 'How has access to the Internet and social media affected the daily lives of young people in your community compared to a Spanish-speaking country?'
+        },
+        {
+          theme: 'Global Challenges',
+          es: '¿Qué iniciativas existen en tu comunidad para proteger el medio ambiente y cómo se comparan con los esfuerzos en una región del mundo hispanohablante?',
+          en: 'What initiatives exist in your community to protect the environment and how do they compare with efforts in a Spanish-speaking region?'
+        },
+        {
+          theme: 'Contemporary Life',
+          es: '¿Cómo influye el transporte público o la infraestructura urbana en la calidad de vida de los habitantes de tu comunidad y en una ciudad hispanohablante?',
+          en: 'How does public transportation or urban infrastructure influence residents’ quality of life in your community and in a Spanish-speaking city?'
+        },
+        {
+          theme: 'Personal & Public Identities',
+          es: '¿De qué manera el idioma o las expresiones regionales reflejan la identidad de las personas en tu comunidad y en una región hispanohablante?',
+          en: 'In what ways do language or regional expressions reflect people’s identity in your community and in a Spanish-speaking region?'
+        },
+        {
+          theme: 'Beauty & Aesthetics',
+          es: '¿Cómo contribuye el arte público (como los murales o la música callejera) a la identidad de un barrio en tu comunidad y en el mundo hispanohablante?',
+          en: 'How does public art (such as murals or street music) contribute to a neighborhood’s identity in your community and in the Spanish-speaking world?'
+        },
+        {
+          theme: 'Families & Communities',
+          es: '¿Cómo ha cambiado la estructura familiar y el rol de los abuelos en la crianza de los hijos en tu comunidad frente a una región hispanohablante?',
+          en: 'How has family structure and the role of grandparents in raising children changed in your community versus a Spanish-speaking region?'
+        },
+        {
+          theme: 'Contemporary Life',
+          es: '¿Qué importancia tienen los deportes o las actividades extracurriculares en la formación de los jóvenes en tu comunidad y en un país hispanohablante?',
+          en: 'What importance do sports or extracurricular activities have in shaping young people in your community and in a Spanish-speaking country?'
+        },
+        {
+          theme: 'Global Challenges',
+          es: '¿Qué desafíos enfrentan los jóvenes al buscar su primer empleo en tu comunidad en comparación con una región del mundo hispanohablante?',
+          en: 'What challenges do young people face when looking for their first job in your community compared to a Spanish-speaking region?'
+        },
+        {
+          theme: 'Personal & Public Identities',
+          es: '¿Cómo se manifiesta el orgullo nacional o regional durante los eventos culturales en tu comunidad y en una región hispanohablante?',
+          en: 'How is national or regional pride expressed during cultural events in your community and in a Spanish-speaking region?'
+        },
+        {
+          theme: 'Science & Technology',
+          es: '¿Qué beneficios y riesgos presenta el uso de la inteligencia artificial en la educación en tu comunidad y en el mundo hispanohablante?',
+          en: 'What benefits and risks does the use of artificial intelligence present in education in your community and in the Spanish-speaking world?'
+        },
+        {
+          theme: 'Beauty & Aesthetics',
+          es: '¿De qué manera la gastronomía tradicional refleja la historia y la diversidad cultural de tu comunidad y de una región hispanohablante?',
+          en: 'In what ways does traditional gastronomy reflect the history and cultural diversity of your community and a Spanish-speaking region?'
+        }
+      ];
+
+      // App State
+      let deck = [];
+      let deletedCardIds = new Set();
+      let studyLevel = 'ALL';
+      let studyTheme = 'ALL';
+      let studyMode = 'DUE'; // 'DUE' | 'ALL'
+      let currentCardId = null;
+      let isRevealed = false;
+      let spanishVoices = [];
+      let activeAudioElement = null;
+      const cloudAudioCache = new Map(); // In-memory cache: `${voice}|${rate}|${text}` -> base64 audioContent
+
+      let dailyPace = {
+        date: new Date().toISOString().slice(0, 10),
+        introducedCount: 0,
+        dailyLimit: 15
+      };
+
+      let googleAuthState = {
+        clientId: '',
+        accessToken: '',
+        tokenExpiresAt: 0,
+        userEmail: '',
+        userName: '',
+        driveFileId: '',
+        driveBackupFileId: '',
+        lastSyncedAt: '',
+        lastPayloadBytes: 0
+      };
+      let tokenClient = null;
+      let driveSyncTimeout = null;
+      let isDriveSyncing = false;
+
+      let audioPrefs = {
+        selectedVoiceName: '',
+        gcpApiKey: '',
+        gcpVoiceName: 'es-US-Neural2-B',
+        forceGcp: false
+      };
+
+      // Speaking Challenge State
+      let currentPrompt = null;
+      let currentRequiredChunks = [];
+      let timerMode = 'SPEAK'; // 'SPEAK' (120s) | 'PREP' (240s)
+      let timeRemaining = 120;
+      let timerInterval = null;
+
+      // ==================== STORAGE & STATS ====================
+      function getTodayDateStr() {
+        return new Date().toISOString().slice(0, 10);
+      }
+
+      function loadDailyPace() {
+        try {
+          const raw = localStorage.getItem(DAILY_PACE_KEY);
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            dailyPace = { ...dailyPace, ...parsed };
+            // Upgrade previous default of 10 to 15
+            if (!parsed.upgradedTo15 && dailyPace.dailyLimit === 10) {
+              dailyPace.dailyLimit = 15;
+              dailyPace.upgradedTo15 = true;
+              saveDailyPace();
+            }
+          }
+        } catch (err) {
+          console.error('Failed to load daily pace:', err);
+        }
+        const today = getTodayDateStr();
+        if (dailyPace.date !== today) {
+          dailyPace.date = today;
+          dailyPace.introducedCount = 0;
+          saveDailyPace();
+        }
+        const limitSelect = document.getElementById('daily-new-limit-select');
+        if (limitSelect) {
+          limitSelect.value = String(dailyPace.dailyLimit || 15);
+        }
+      }
+
+      function saveDailyPace() {
+        try {
+          localStorage.setItem(DAILY_PACE_KEY, JSON.stringify(dailyPace));
+        } catch (err) {
+          console.error('Failed to save daily pace:', err);
+        }
+        updateStats();
+      }
+
+      function getRemainingNewAllowance() {
+        const today = getTodayDateStr();
+        if (dailyPace.date !== today) {
+          dailyPace.date = today;
+          dailyPace.introducedCount = 0;
+          saveDailyPace();
+        }
+        const limit = Number(dailyPace.dailyLimit) || 15;
+        return Math.max(0, limit - (dailyPace.introducedCount || 0));
+      }
+
+      function getEffectiveDueCards(themeFilter = 'ALL', levelFilter = 'ALL') {
+        const now = Date.now();
+        const themeCards = deck.filter(
+          (c) =>
+            (themeFilter === 'ALL' || c.theme === themeFilter) &&
+            (levelFilter === 'ALL' || String(c.level || 2) === String(levelFilter))
+        );
+
+        // 1. Cards already introduced (reps > 0) that are due for review
+        const dueReviews = themeCards
+          .filter((c) => (c.reps || 0) > 0 && (c.dueDate || 0) <= now)
+          .sort((a, b) => (a.dueDate || 0) - (b.dueDate || 0));
+
+        // 2. Unstudied new cards (reps === 0), capped by daily new-card allowance
+        const newAllowance = getRemainingNewAllowance();
+        const newCardsAvailable = themeCards
+          .filter((c) => (c.reps || 0) === 0 && (c.dueDate || 0) <= now)
+          .slice(0, newAllowance);
+
+        return [...dueReviews, ...newCardsAvailable];
+      }
+
+      function loadDeck() {
+        try {
+          const rawDeleted = localStorage.getItem(DELETED_IDS_KEY);
+          if (rawDeleted) {
+            deletedCardIds = new Set(JSON.parse(rawDeleted));
+          }
+        } catch (err) {
+          console.error('Failed to load deleted IDs:', err);
+        }
+
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            if (Array.isArray(parsed) && parsed.length > 0) {
+              deck = parsed.filter((c) => !deletedCardIds.has(c.id));
+              return;
+            }
+          }
+        } catch (err) {
+          console.error('Failed to load deck from localStorage:', err);
+        }
+
+        // First-time visit: seed with bootstrap sample and auto-fetch ./packs/grade9-foundations.json if hosted
+        deck = JSON.parse(JSON.stringify(BOOTSTRAP_SAMPLE_DECK))
+          .filter((c) => !deletedCardIds.has(c.id))
+          .map((c) => ({
+            ...c,
+            dueDate: Date.now(),
+            updatedAt: 0
+          }));
+        saveDeck(false);
+
+        fetch(DEFAULT_PACK_URL)
+          .then((res) => (res.ok ? res.json() : null))
+          .then((data) => {
+            if (!data) return;
+            const cardsArray = Array.isArray(data) ? data : data.cards || data.deck;
+            if (Array.isArray(cardsArray) && cardsArray.length > 0) {
+              mergeImportedCardsArray(cardsArray, '9th Grade Foundations', true);
+            }
+          })
+          .catch(() => {
+            // Silently ignore when opened via local file:// without a web server
+          });
+      }
+
+      function saveDeck(triggerCloudSync = true) {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(deck));
+          localStorage.setItem(DELETED_IDS_KEY, JSON.stringify([...deletedCardIds]));
+        } catch (err) {
+          console.error('Failed to save deck:', err);
+        }
+        updateStats();
+        if (triggerCloudSync) {
+          scheduleDriveAutoSync();
+        }
+      }
+
+      // Build lightweight delta payload (~2-15 KB) containing ONLY studied progress & custom/imported cards
+      function buildCompactProgressDelta() {
+        const bootstrapIds = new Set(BOOTSTRAP_SAMPLE_DECK.map((c) => c.id));
+        const progress = {};
+        const customCards = [];
+
+        deck.forEach((card) => {
+          const isBootstrap = bootstrapIds.has(card.id);
+          const hasProgress = (card.reps || 0) > 0 || (card.interval || 0) > 0 || (card.updatedAt || 0) > 0;
+
+          if (hasProgress) {
+            progress[card.id] = {
+              reps: card.reps || 0,
+              interval: card.interval || 0,
+              ease: card.ease || 2.5,
+              dueDate: card.dueDate || Date.now(),
+              updatedAt: card.updatedAt || Date.now()
+            };
+          }
+
+          if (!isBootstrap) {
+            customCards.push({
+              id: card.id,
+              level: card.level || 1,
+              sentence: card.sentence,
+              target: card.target,
+              hint: card.hint,
+              theme: card.theme,
+              notes: card.notes || '',
+              reps: card.reps || 0,
+              interval: card.interval || 0,
+              ease: card.ease || 2.5,
+              dueDate: card.dueDate || Date.now(),
+              updatedAt: card.updatedAt || Date.now()
+            });
+          }
+        });
+
+        return {
+          schemaVersion: 2,
+          updatedAt: Date.now(),
+          dailyPace,
+          deletedIds: [...deletedCardIds],
+          progress,
+          customCards
+        };
+      }
+
+      // Merge remote delta payload (or legacy v1 full-deck array) safely using per-card updatedAt timestamps
+      function applyRemoteDeltaPayload(remotePayload) {
+        if (!remotePayload || typeof remotePayload !== 'object') return 0;
+        let mergedChanges = 0;
+
+        // Support legacy v1 array format if migrating
+        if (Array.isArray(remotePayload)) {
+          const localById = new Map(deck.map((c) => [c.id, c]));
+          remotePayload.forEach((rCard) => {
+            if (!rCard || !rCard.id) return;
+            const local = localById.get(rCard.id);
+            if (local) {
+              if ((rCard.reps || 0) > (local.reps || 0) || (rCard.dueDate || 0) > (local.dueDate || 0)) {
+                Object.assign(local, rCard);
+                mergedChanges++;
+              }
+            } else if (rCard.sentence && rCard.target && rCard.hint && !deletedCardIds.has(rCard.id)) {
+              deck.push(rCard);
+              mergedChanges++;
+            }
+          });
+          return mergedChanges;
+        }
+
+        if (remotePayload.schemaVersion !== 2) return 0;
+
+        // 1. Merge deleted IDs
+        if (Array.isArray(remotePayload.deletedIds)) {
+          remotePayload.deletedIds.forEach((id) => {
+            if (!deletedCardIds.has(id)) {
+              deletedCardIds.add(id);
+              mergedChanges++;
+            }
+          });
+          deck = deck.filter((c) => !deletedCardIds.has(c.id));
+        }
+
+        // 2. Merge custom / imported cards
+        const localById = new Map(deck.map((c) => [c.id, c]));
+        const localSentences = new Set(deck.map((c) => c.sentence.toLowerCase().trim()));
+        if (Array.isArray(remotePayload.customCards)) {
+          remotePayload.customCards.forEach((rCard) => {
+            if (!rCard || !rCard.id || deletedCardIds.has(rCard.id)) return;
+            const existing = localById.get(rCard.id);
+            if (existing) {
+              if ((rCard.updatedAt || 0) > (existing.updatedAt || 0)) {
+                Object.assign(existing, rCard);
+                mergedChanges++;
+              }
+            } else if (rCard.sentence && rCard.target && rCard.hint && !localSentences.has(rCard.sentence.toLowerCase().trim())) {
+              deck.push(rCard);
+              localById.set(rCard.id, rCard);
+              localSentences.add(rCard.sentence.toLowerCase().trim());
+              mergedChanges++;
+            }
+          });
+        }
+
+        // 3. Merge per-card SRS progress using Last-Write-Wins updatedAt timestamp
+        if (remotePayload.progress && typeof remotePayload.progress === 'object') {
+          Object.entries(remotePayload.progress).forEach(([cardId, rStats]) => {
+            const localCard = localById.get(cardId);
+            if (!localCard || !rStats) return;
+            const remoteTs = rStats.updatedAt || 0;
+            const localTs = localCard.updatedAt || 0;
+            if (remoteTs > localTs || (remoteTs === localTs && (rStats.reps || 0) > (localCard.reps || 0))) {
+              localCard.reps = Number(rStats.reps) || 0;
+              localCard.interval = Number(rStats.interval) || 0;
+              localCard.ease = Number(rStats.ease) || 2.5;
+              localCard.dueDate = Number(rStats.dueDate) || Date.now();
+              localCard.updatedAt = remoteTs;
+              mergedChanges++;
+            }
+          });
+        }
+
+        // 4. Merge today's daily pace count
+        if (remotePayload.dailyPace && remotePayload.dailyPace.date === getTodayDateStr()) {
+          const mergedIntroduced = Math.max(
+            dailyPace.introducedCount || 0,
+            remotePayload.dailyPace.introducedCount || 0
+          );
+          if (mergedIntroduced !== dailyPace.introducedCount) {
+            dailyPace.introducedCount = mergedIntroduced;
+            saveDailyPace();
+          }
+        }
+
+        return mergedChanges;
+      }
+
+      function updateStats() {
+        const dueCount = getEffectiveDueCards('ALL').length;
+        const masteredCount = deck.filter((c) => (c.interval || 0) >= 7).length;
+        document.getElementById('stat-due').textContent = dueCount;
+        document.getElementById('stat-mastered').textContent = masteredCount;
+        document.getElementById('stat-total').textContent = deck.length;
+
+        const paceEl = document.getElementById('daily-new-progress');
+        if (paceEl) {
+          const limitLabel = dailyPace.dailyLimit >= 9999 ? '∞' : dailyPace.dailyLimit;
+          paceEl.textContent = `${dailyPace.introducedCount || 0} / ${limitLabel}`;
+        }
+      }
+
+      // ==================== GOOGLE SIGN-IN & GOOGLE DRIVE APPDATA SYNC ====================
+      function loadGoogleAuthPrefs() {
+        try {
+          const raw = localStorage.getItem(GOOGLE_AUTH_PREFS_KEY);
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            googleAuthState.clientId = parsed.clientId || '';
+            googleAuthState.userEmail = parsed.userEmail || '';
+            googleAuthState.userName = parsed.userName || '';
+            googleAuthState.driveFileId = parsed.driveFileId || '';
+            googleAuthState.driveBackupFileId = parsed.driveBackupFileId || '';
+            googleAuthState.lastSyncedAt = parsed.lastSyncedAt || '';
+            googleAuthState.lastPayloadBytes = parsed.lastPayloadBytes || 0;
+          }
+        } catch (err) {
+          console.error('Failed to load Google auth prefs:', err);
+        }
+        updateGoogleDriveUI();
+      }
+
+      function saveGoogleAuthPrefs() {
+        try {
+          localStorage.setItem(
+            GOOGLE_AUTH_PREFS_KEY,
+            JSON.stringify({
+              clientId: googleAuthState.clientId,
+              userEmail: googleAuthState.userEmail,
+              userName: googleAuthState.userName,
+              driveFileId: googleAuthState.driveFileId,
+              driveBackupFileId: googleAuthState.driveBackupFileId,
+              lastSyncedAt: googleAuthState.lastSyncedAt,
+              lastPayloadBytes: googleAuthState.lastPayloadBytes
+            })
+          );
+        } catch (err) {
+          console.error('Failed to save Google auth prefs:', err);
+        }
+        updateGoogleDriveUI();
+      }
+
+      function hasValidGoogleToken() {
+        return Boolean(googleAuthState.accessToken && Date.now() < googleAuthState.tokenExpiresAt - 30000);
+      }
+
+      function updateGoogleDriveUI(syncStatusText = '') {
+        const badge = document.getElementById('drive-sync-badge');
+        const btn = document.getElementById('open-drive-sync-btn');
+        const userNameEl = document.getElementById('google-user-name');
+        const detailEl = document.getElementById('google-sync-status-detail');
+        const signInBtn = document.getElementById('google-signin-action-btn');
+        const signOutBtn = document.getElementById('google-signout-action-btn');
+        const manualActions = document.getElementById('drive-manual-actions');
+
+        if (hasValidGoogleToken()) {
+          const displayLabel = googleAuthState.userName || googleAuthState.userEmail || 'Drive Connected';
+          const sizeLabel = googleAuthState.lastPayloadBytes
+            ? ` (${(googleAuthState.lastPayloadBytes / 1024).toFixed(1)} KB delta)`
+            : '';
+          badge.textContent = syncStatusText || displayLabel;
+          btn.className = 'flex items-center gap-2 bg-sky-50 hover:bg-sky-100 border border-sky-200 text-sky-900 px-3 py-1.5 rounded-xl text-xs font-semibold shadow-2xs transition cursor-pointer';
+          userNameEl.textContent = googleAuthState.userEmail
+            ? `${googleAuthState.userName || 'Signed In'} (${googleAuthState.userEmail})`
+            : 'Connected to Google Drive';
+          detailEl.textContent = googleAuthState.lastSyncedAt
+            ? `Last delta sync: ${googleAuthState.lastSyncedAt}${sizeLabel} • Atomic backup active`
+            : 'Connected — lightweight delta sync & atomic backup active.';
+          signInBtn.textContent = 'Refresh Session';
+          signOutBtn.classList.remove('hidden');
+          manualActions.classList.remove('hidden');
+        } else {
+          badge.textContent = googleAuthState.userEmail ? 'Reconnect Drive' : 'Google Drive Sync';
+          btn.className = 'flex items-center gap-2 bg-white hover:bg-slate-50 border border-slate-300 text-slate-800 px-3 py-1.5 rounded-xl text-xs font-semibold shadow-2xs transition cursor-pointer';
+          userNameEl.textContent = googleAuthState.userEmail
+            ? `Signed Out (${googleAuthState.userEmail})`
+            : 'Not Signed In (Local Browser Mode)';
+          detailEl.textContent = 'Connect a Google account to save progress deltas directly to Google Drive.';
+          signInBtn.textContent = 'Sign in with Google';
+          signOutBtn.classList.add('hidden');
+          manualActions.classList.add('hidden');
+        }
+      }
+
+      async function fetchGoogleUserProfile(token) {
+        try {
+          const res = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          if (!res.ok) return;
+          const profile = await res.json();
+          googleAuthState.userEmail = profile.email || '';
+          googleAuthState.userName = profile.name || profile.given_name || '';
+          saveGoogleAuthPrefs();
+        } catch (err) {
+          console.warn('Could not fetch Google profile:', err);
+        }
+      }
+
+      async function findDriveFileByName(token, fileName) {
+        const query = encodeURIComponent(`name='${fileName}' and trashed=false`);
+        const searchRes = await fetch(
+          `https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&q=${query}&fields=files(id,name,modifiedTime)`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        if (!searchRes.ok) {
+          throw new Error(`Drive search failed (${searchRes.status})`);
+        }
+        const searchData = await searchRes.json();
+        return searchData.files && searchData.files.length > 0 ? searchData.files[0].id : null;
+      }
+
+      async function findOrCreateDriveDeckFile(token) {
+        if (googleAuthState.driveFileId) return googleAuthState.driveFileId;
+        const foundId = await findDriveFileByName(token, DRIVE_FILE_NAME);
+        if (foundId) {
+          googleAuthState.driveFileId = foundId;
+          saveGoogleAuthPrefs();
+          return foundId;
+        }
+        return null;
+      }
+
+      async function downloadAndValidateDriveJson(token, fileId) {
+        const dlRes = await fetch(`https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (!dlRes.ok) {
+          const err = new Error(`Drive download failed (${dlRes.status})`);
+          err.status = dlRes.status;
+          throw err;
+        }
+        const rawText = await dlRes.text();
+        const parsed = JSON.parse(rawText); // Throws SyntaxError if corrupted
+        if (!parsed || (typeof parsed !== 'object')) {
+          throw new Error('Corrupted JSON payload in Drive.');
+        }
+        return { parsed, rawText };
+      }
+
+      async function uploadJsonToDriveFile(token, existingFileId, fileName, jsonString) {
+        if (existingFileId) {
+          const patchRes = await fetch(
+            `https://www.googleapis.com/upload/drive/v3/files/${existingFileId}?uploadType=media`,
+            {
+              method: 'PATCH',
+              headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json'
+              },
+              body: jsonString
+            }
+          );
+          if (!patchRes.ok) throw new Error(`Drive update failed (${patchRes.status})`);
+          return existingFileId;
+        }
+
+        const boundary = 'ap_spanish_drive_boundary_' + Date.now();
+        const metadata = JSON.stringify({
+          name: fileName,
+          parents: ['appDataFolder']
+        });
+        const multipartBody =
+          `--${boundary}\r\n` +
+          `Content-Type: application/json; charset=UTF-8\r\n\r\n` +
+          `${metadata}\r\n` +
+          `--${boundary}\r\n` +
+          `Content-Type: application/json\r\n\r\n` +
+          `${jsonString}\r\n` +
+          `--${boundary}--`;
+
+        const createRes = await fetch(
+          'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id',
+          {
+            method: 'POST',
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': `multipart/related; boundary=${boundary}`
+            },
+            body: multipartBody
+          }
+        );
+        if (!createRes.ok) throw new Error(`Drive create failed (${createRes.status})`);
+        const created = await createRes.json();
+        return created.id;
+      }
+
+      async function pullAndMergeFromGoogleDrive(silent = false) {
+        if (!hasValidGoogleToken() || isDriveSyncing) return;
+        isDriveSyncing = true;
+        const token = googleAuthState.accessToken;
+        updateGoogleDriveUI('Syncing Delta...');
+
+        try {
+          let fileId = await findOrCreateDriveDeckFile(token);
+          if (!fileId) {
+            // Check if legacy v1 file exists so we migrate seamlessly
+            const legacyId = await findDriveFileByName(token, 'ap-spanish-srs-deck.json');
+            if (legacyId) {
+              const { parsed: legacyData } = await downloadAndValidateDriveJson(token, legacyId);
+              applyRemoteDeltaPayload(legacyData);
+              saveDeck(false);
+            }
+            isDriveSyncing = false;
+            await pushDeckToGoogleDrive(silent);
+            return;
+          }
+
+          let remotePayload;
+          try {
+            const result = await downloadAndValidateDriveJson(token, fileId);
+            remotePayload = result.parsed;
+          } catch (primaryErr) {
+            if (primaryErr.status === 404) {
+              googleAuthState.driveFileId = '';
+              isDriveSyncing = false;
+              await pushDeckToGoogleDrive(silent);
+              return;
+            }
+            // Primary file corrupted -> auto-recover from atomic backup file!
+            const backupId =
+              googleAuthState.driveBackupFileId ||
+              (await findDriveFileByName(token, DRIVE_BACKUP_FILE_NAME));
+            if (backupId) {
+              const backupRes = await downloadAndValidateDriveJson(token, backupId);
+              remotePayload = backupRes.parsed;
+              showToast('Recovered progress from automatic Drive backup!', 'info');
+            } else {
+              throw primaryErr;
+            }
+          }
+
+          const mergedChanges = applyRemoteDeltaPayload(remotePayload);
+          saveDeck(false);
+          selectNextCard();
+          if (!document.getElementById('tab-manage').classList.contains('hidden')) {
+            renderManageTable();
+          }
+          if (!silent) {
+            showToast(`Synced delta with Google Drive (${mergedChanges} update${mergedChanges === 1 ? '' : 's'} merged).`, 'success');
+          }
+
+          googleAuthState.lastSyncedAt = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+          saveGoogleAuthPrefs();
+        } catch (err) {
+          console.error('Drive pull error:', err);
+          updateGoogleDriveUI();
+          if (!silent) showToast(`Google Drive sync error: ${err.message}`, 'error');
+        } finally {
+          isDriveSyncing = false;
+        }
+      }
+
+      async function pushDeckToGoogleDrive(silent = false) {
+        if (!hasValidGoogleToken() || isDriveSyncing) return;
+        isDriveSyncing = true;
+        const token = googleAuthState.accessToken;
+        updateGoogleDriveUI('Saving Delta...');
+
+        try {
+          const existingId = await findOrCreateDriveDeckFile(token);
+
+          // Step 1: Read-Before-Write merge & copy verified state to atomic backup file
+          if (existingId) {
+            try {
+              const { parsed: remoteLatest, rawText: previousValidJson } = await downloadAndValidateDriveJson(token, existingId);
+              applyRemoteDeltaPayload(remoteLatest);
+              saveDeck(false);
+
+              const backupId =
+                googleAuthState.driveBackupFileId ||
+                (await findDriveFileByName(token, DRIVE_BACKUP_FILE_NAME));
+              const savedBackupId = await uploadJsonToDriveFile(
+                token,
+                backupId,
+                DRIVE_BACKUP_FILE_NAME,
+                previousValidJson
+              );
+              googleAuthState.driveBackupFileId = savedBackupId;
+            } catch (mergeErr) {
+              console.warn('Pre-write merge/backup skipped:', mergeErr);
+            }
+          }
+
+          // Step 2: Serialize compact delta payload (~2-15 KB) and verify valid JSON before upload
+          const deltaObj = buildCompactProgressDelta();
+          const payload = JSON.stringify(deltaObj);
+          JSON.parse(payload); // Self-check integrity before network write
+
+          const savedId = await uploadJsonToDriveFile(token, existingId, DRIVE_FILE_NAME, payload);
+          googleAuthState.driveFileId = savedId;
+          googleAuthState.lastPayloadBytes = new Blob([payload]).size;
+          googleAuthState.lastSyncedAt = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+          saveGoogleAuthPrefs();
+
+          if (!silent) {
+            showToast(`Saved ${(googleAuthState.lastPayloadBytes / 1024).toFixed(1)} KB progress delta to Drive!`, 'success');
+          }
+        } catch (err) {
+          console.error('Drive push error:', err);
+          updateGoogleDriveUI();
+          if (!silent) showToast(`Google Drive save error: ${err.message}`, 'error');
+        } finally {
+          isDriveSyncing = false;
+        }
+      }
+
+      function scheduleDriveAutoSync() {
+        if (!hasValidGoogleToken()) return;
+        if (driveSyncTimeout) clearTimeout(driveSyncTimeout);
+        driveSyncTimeout = setTimeout(() => {
+          pushDeckToGoogleDrive(true);
+        }, 2500);
+      }
+
+      function startGoogleSignInFlow() {
+        const clientId = (googleAuthState.clientId || '').trim();
+        if (!clientId) {
+          showToast('Please paste your Google OAuth Client ID first.', 'error');
+          document.getElementById('google-client-id-input').focus();
+          return;
+        }
+        if (!window.google || !window.google.accounts || !window.google.accounts.oauth2) {
+          showToast('Google Identity script is still loading—try again in 1 second.', 'info');
+          return;
+        }
+
+        tokenClient = window.google.accounts.oauth2.initTokenClient({
+          client_id: clientId,
+          scope: 'https://www.googleapis.com/auth/drive.appdata https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile',
+          callback: async (tokenResponse) => {
+            if (tokenResponse.error) {
+              showToast(`Google Sign-In failed: ${tokenResponse.error}`, 'error');
+              return;
+            }
+            googleAuthState.accessToken = tokenResponse.access_token;
+            googleAuthState.tokenExpiresAt = Date.now() + (Number(tokenResponse.expires_in) || 3600) * 1000;
+            updateGoogleDriveUI('Connected');
+            await fetchGoogleUserProfile(tokenResponse.access_token);
+            await pullAndMergeFromGoogleDrive(false);
+          }
+        });
+
+        tokenClient.requestAccessToken({ prompt: googleAuthState.userEmail ? '' : 'consent' });
+      }
+
+      function signOutGoogle() {
+        if (googleAuthState.accessToken && window.google?.accounts?.oauth2) {
+          window.google.accounts.oauth2.revoke(googleAuthState.accessToken, () => {});
+        }
+        googleAuthState.accessToken = '';
+        googleAuthState.tokenExpiresAt = 0;
+        googleAuthState.userEmail = '';
+        googleAuthState.userName = '';
+        googleAuthState.driveFileId = '';
+        googleAuthState.driveBackupFileId = '';
+        googleAuthState.lastSyncedAt = '';
+        googleAuthState.lastPayloadBytes = 0;
+        saveGoogleAuthPrefs();
+        showToast('Signed out of Google Drive sync.', 'info');
+      }
+
+      // Google Drive Sync Modal Wiring
+      const driveModal = document.getElementById('drive-sync-modal');
+      function openDriveModal() {
+        document.getElementById('google-client-id-input').value = googleAuthState.clientId || '';
+        updateGoogleDriveUI();
+        driveModal.classList.remove('hidden');
+        driveModal.classList.add('flex');
+      }
+      function closeDriveModal() {
+        driveModal.classList.add('hidden');
+        driveModal.classList.remove('flex');
+      }
+      document.getElementById('open-drive-sync-btn').onclick = openDriveModal;
+      document.getElementById('close-drive-sync-btn').onclick = closeDriveModal;
+      document.getElementById('done-drive-sync-btn').onclick = closeDriveModal;
+      driveModal.addEventListener('click', (e) => {
+        if (e.target === driveModal) closeDriveModal();
+      });
+
+      document.getElementById('save-google-client-id-btn').onclick = () => {
+        googleAuthState.clientId = document.getElementById('google-client-id-input').value.trim();
+        saveGoogleAuthPrefs();
+        showToast('Google OAuth Client ID saved.', 'success');
+      };
+      document.getElementById('google-signin-action-btn').onclick = startGoogleSignInFlow;
+      document.getElementById('google-signout-action-btn').onclick = signOutGoogle;
+      document.getElementById('drive-push-now-btn').onclick = () => pushDeckToGoogleDrive(false);
+      document.getElementById('drive-pull-now-btn').onclick = () => pullAndMergeFromGoogleDrive(false);
+
+      // ==================== TOAST & CONFIRMATION UI ====================
+      function showToast(message, type = 'info') {
+        const container = document.getElementById('toast-container');
+        const colors = {
+          success: 'bg-emerald-900 text-white border-emerald-700',
+          error: 'bg-rose-900 text-white border-rose-700',
+          info: 'bg-slate-900 text-white border-slate-700'
+        };
+        const toast = document.createElement('div');
+        toast.className = `pointer-events-auto px-4 py-3 rounded-xl shadow-lg border text-xs sm:text-sm font-medium transition-all transform translate-y-2 opacity-0 ${colors[type] || colors.info}`;
+        toast.textContent = message;
+        container.appendChild(toast);
+
+        requestAnimationFrame(() => {
+          toast.classList.remove('translate-y-2', 'opacity-0');
+        });
+
+        setTimeout(() => {
+          toast.classList.add('opacity-0', 'translate-y-2');
+          setTimeout(() => toast.remove(), 250);
+        }, 3200);
+      }
+
+      function showConfirm(title, message, onConfirm) {
+        const modal = document.getElementById('confirm-modal');
+        document.getElementById('confirm-title').textContent = title;
+        document.getElementById('confirm-message').textContent = message;
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+
+        const okBtn = document.getElementById('confirm-ok-btn');
+        const cancelBtn = document.getElementById('confirm-cancel-btn');
+
+        const cleanup = () => {
+          modal.classList.add('hidden');
+          modal.classList.remove('flex');
+          okBtn.onclick = null;
+          cancelBtn.onclick = null;
+        };
+
+        cancelBtn.onclick = cleanup;
+        okBtn.onclick = () => {
+          cleanup();
+          onConfirm();
+        };
+      }
+
+      // ==================== SPANISH HYBRID NEURAL TTS ENGINE ====================
+      function loadAudioPrefs() {
+        try {
+          const raw = localStorage.getItem(AUDIO_PREFS_KEY);
+          if (raw) {
+            audioPrefs = { ...audioPrefs, ...JSON.parse(raw) };
+          }
+        } catch (err) {
+          console.error('Error loading audio prefs:', err);
+        }
+      }
+
+      function saveAudioPrefs() {
+        try {
+          localStorage.setItem(AUDIO_PREFS_KEY, JSON.stringify(audioPrefs));
+        } catch (err) {
+          console.error('Error saving audio prefs:', err);
+        }
+        updateAudioBadgeUI();
+      }
+
+      function isRoboticLocalVoice(voice) {
+        const name = (voice.name || '').toLowerCase();
+        return (
+          name.includes('espeak') ||
+          name.includes('chrome os') ||
+          name.includes('chromeos') ||
+          (voice.localService && !name.includes('google') && !name.includes('paulina') && !name.includes('monica') && !name.includes('jorge'))
+        );
+      }
+
+      function getBestGoogleBrowserVoice() {
+        if (!spanishVoices.length) return null;
+        if (audioPrefs.selectedVoiceName) {
+          const exact = spanishVoices.find((v) => v.name === audioPrefs.selectedVoiceName);
+          if (exact) return exact;
+        }
+        // Priority 1: Google español de Estados Unidos (es-US)
+        const googleUs = spanishVoices.find(
+          (v) => v.name.toLowerCase().includes('google') && v.lang.toLowerCase() === 'es-us'
+        );
+        if (googleUs) return googleUs;
+
+        // Priority 2: Any Google Spanish voice (e.g., Google español es-ES)
+        const anyGoogle = spanishVoices.find((v) => v.name.toLowerCase().includes('google'));
+        if (anyGoogle) return anyGoogle;
+
+        // Priority 3: Natural non-robotic voices (e.g., Apple Paulina/Monica on iOS/macOS)
+        const nonRobotic = spanishVoices.find((v) => !isRoboticLocalVoice(v));
+        if (nonRobotic) return nonRobotic;
+
+        return spanishVoices[0];
+      }
+
+      function updateAudioBadgeUI() {
+        const btnEl = document.getElementById('open-audio-settings-btn');
+        const badgeEl = document.getElementById('active-voice-badge');
+        const dotEl = document.getElementById('audio-engine-dot');
+        const tier1Tag = document.getElementById('tier1-status-tag');
+        const tier2Tag = document.getElementById('tier2-status-tag');
+        const warningBox = document.getElementById('chromeos-sandbox-warning');
+
+        const bestBrowserVoice = getBestGoogleBrowserVoice();
+        const isGoogleCloudVoice = Boolean(bestBrowserVoice && bestBrowserVoice.name.toLowerCase().includes('google'));
+        const isRobotic = Boolean(bestBrowserVoice && isRoboticLocalVoice(bestBrowserVoice));
+        const hasGcpKey = Boolean(audioPrefs.gcpApiKey && audioPrefs.gcpApiKey.trim().length > 10);
+
+        if (warningBox) {
+          if (!isGoogleCloudVoice && !hasGcpKey) {
+            warningBox.classList.remove('hidden');
+          } else {
+            warningBox.classList.add('hidden');
+          }
+        }
+
+        if (hasGcpKey) {
+          tier2Tag.textContent = 'Ready (Key Saved)';
+          tier2Tag.className = 'text-[11px] font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800';
+        } else {
+          tier2Tag.textContent = 'Not Configured';
+          tier2Tag.className = 'text-[11px] font-semibold px-2 py-0.5 rounded-full bg-slate-200 text-slate-700';
+        }
+
+        if ((audioPrefs.forceGcp || !isGoogleCloudVoice) && hasGcpKey) {
+          btnEl.className = 'flex items-center gap-2 bg-sky-50 hover:bg-sky-100 border border-sky-200 text-sky-900 px-3 py-1.5 rounded-xl text-xs font-semibold transition cursor-pointer';
+          badgeEl.textContent = `Cloud Neural: ${audioPrefs.gcpVoiceName}`;
+          dotEl.className = 'w-2 h-2 rounded-full bg-sky-500';
+          tier1Tag.textContent = isGoogleCloudVoice ? 'Standby' : 'Hidden in Local/Sandbox';
+          tier1Tag.className = 'text-[11px] font-semibold px-2 py-0.5 rounded-full bg-slate-200 text-slate-700';
+        } else if (bestBrowserVoice && !isRobotic) {
+          btnEl.className = 'flex items-center gap-2 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-900 px-3 py-1.5 rounded-xl text-xs font-semibold transition cursor-pointer';
+          badgeEl.textContent = bestBrowserVoice.name;
+          dotEl.className = 'w-2 h-2 rounded-full bg-emerald-500';
+          tier1Tag.textContent = isGoogleCloudVoice ? 'Google Neural Active' : 'System Voice Active';
+          tier1Tag.className = 'text-[11px] font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800';
+        } else {
+          btnEl.className = 'flex items-center gap-2 bg-amber-50 hover:bg-amber-100 border border-amber-300 text-amber-900 px-3 py-1.5 rounded-xl text-xs font-semibold transition cursor-pointer';
+          badgeEl.textContent = 'Robotic Local Voice (Fix Audio)';
+          dotEl.className = 'w-2 h-2 rounded-full bg-amber-500 animate-pulse';
+          tier1Tag.textContent = 'Offline eSpeak Only';
+          tier1Tag.className = 'text-[11px] font-semibold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800';
+        }
+      }
+
+      function populateVoices() {
+        if (!('speechSynthesis' in window)) {
+          updateAudioBadgeUI();
+          return;
+        }
+        const allVoices = window.speechSynthesis.getVoices();
+        const rawSpanish = allVoices.filter((v) => v.lang && v.lang.toLowerCase().startsWith('es'));
+
+        // Filter out robotic ChromeOS/eSpeak voices if better voices exist
+        const cleanVoices = rawSpanish.filter((v) => !isRoboticLocalVoice(v));
+        spanishVoices = cleanVoices.length > 0 ? cleanVoices : rawSpanish;
+
+        // Sort: Google es-US first, then other Google voices, then es-AR/es-419, then others
+        spanishVoices.sort((a, b) => {
+          const score = (v) => {
+            const n = v.name.toLowerCase();
+            const l = v.lang.toLowerCase();
+            if (n.includes('google') && l === 'es-us') return 0;
+            if (n.includes('google')) return 1;
+            if (l === 'es-ar' || l === 'es-419') return 2;
+            return 3;
+          };
+          return score(a) - score(b);
+        });
+
+        const select = document.getElementById('voice-select');
+        select.innerHTML = '<option value="">Auto-Detect Google Spanish Neural Voice</option>';
+        spanishVoices.forEach((v) => {
+          const opt = document.createElement('option');
+          opt.value = v.name;
+          opt.textContent = `${v.name} (${v.lang})`;
+          select.appendChild(opt);
+        });
+
+        if (audioPrefs.selectedVoiceName && spanishVoices.some((v) => v.name === audioPrefs.selectedVoiceName)) {
+          select.value = audioPrefs.selectedVoiceName;
+        }
+        updateAudioBadgeUI();
+      }
+
+      async function speakViaGoogleCloudTTS(text, rate = 1.0) {
+        const apiKey = (audioPrefs.gcpApiKey || '').trim();
+        if (!apiKey) return false;
+
+        const voiceName = audioPrefs.gcpVoiceName || 'es-US-Neural2-B';
+        const languageCode = voiceName.slice(0, 5); // e.g., 'es-US' or 'es-ES'
+        const cacheKey = `${voiceName}|${rate}|${text}`;
+
+        try {
+          if (activeAudioElement) {
+            activeAudioElement.pause();
+            activeAudioElement = null;
+          }
+
+          let base64Audio = cloudAudioCache.get(cacheKey);
+          if (!base64Audio) {
+            const response = await fetch(
+              `https://texttospeech.googleapis.com/v1/text:synthesize?key=${encodeURIComponent(apiKey)}`,
+              {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  input: { text },
+                  voice: { languageCode, name: voiceName },
+                  audioConfig: {
+                    audioEncoding: 'MP3',
+                    speakingRate: rate
+                  }
+                })
+              }
+            );
+
+            if (!response.ok) {
+              const errData = await response.json().catch(() => ({}));
+              throw new Error(errData.error?.message || `HTTP ${response.status}`);
+            }
+
+            const data = await response.json();
+            if (!data.audioContent) throw new Error('No audio returned from Google Cloud TTS.');
+            base64Audio = data.audioContent;
+            cloudAudioCache.set(cacheKey, base64Audio);
+          }
+
+          const audio = new Audio(`data:audio/mp3;base64,${base64Audio}`);
+          activeAudioElement = audio;
+          await audio.play();
+          return true;
+        } catch (err) {
+          showToast(`Google Cloud TTS error: ${err.message}. Falling back to browser voice.`, 'error');
+          return false;
+        }
+      }
+
+      async function speakSpanish(text, rate = 1.0) {
+        const bestVoice = getBestGoogleBrowserVoice();
+        const hasGoogleBrowserVoice = bestVoice && bestVoice.name.toLowerCase().includes('google');
+        const hasGcpKey = Boolean(audioPrefs.gcpApiKey && audioPrefs.gcpApiKey.trim().length > 10);
+
+        // Tier 2: Use Google Cloud TTS if forced OR if no Google Chrome neural voice is available (e.g., iOS/Safari/Firefox)
+        if (hasGcpKey && (audioPrefs.forceGcp || !hasGoogleBrowserVoice)) {
+          const ok = await speakViaGoogleCloudTTS(text, rate);
+          if (ok) return;
+        }
+
+        // Tier 1: Browser SpeechSynthesis (prioritizing Google neural voices)
+        if (!('speechSynthesis' in window)) {
+          showToast('Text-to-speech is not supported in this browser.', 'error');
+          return;
+        }
+        window.speechSynthesis.cancel();
+        if (activeAudioElement) {
+          activeAudioElement.pause();
+          activeAudioElement = null;
+        }
+
+        const utterance = new SpeechSynthesisUtterance(text);
+        if (bestVoice) {
+          utterance.voice = bestVoice;
+          utterance.lang = bestVoice.lang;
+        } else {
+          utterance.lang = 'es-US';
+        }
+        utterance.rate = rate;
+        window.speechSynthesis.speak(utterance);
+      }
+
+      if ('speechSynthesis' in window) {
+        populateVoices();
+        window.speechSynthesis.onvoiceschanged = populateVoices;
+      }
+
+      // Audio Settings Modal Wiring
+      const audioModal = document.getElementById('audio-settings-modal');
+      function openAudioSettings() {
+        populateVoices();
+        document.getElementById('gcp-api-key-input').value = audioPrefs.gcpApiKey || '';
+        document.getElementById('gcp-voice-select').value = audioPrefs.gcpVoiceName || 'es-US-Neural2-B';
+        document.getElementById('force-gcp-checkbox').checked = Boolean(audioPrefs.forceGcp);
+        audioModal.classList.remove('hidden');
+        audioModal.classList.add('flex');
+      }
+      function closeAudioSettings() {
+        audioModal.classList.add('hidden');
+        audioModal.classList.remove('flex');
+      }
+
+      document.getElementById('open-audio-settings-btn').onclick = openAudioSettings;
+      document.getElementById('close-audio-settings-btn').onclick = closeAudioSettings;
+      document.getElementById('done-audio-settings-btn').onclick = closeAudioSettings;
+
+      // Help Guide Modal Wiring
+      const helpModal = document.getElementById('help-modal');
+      function openHelpModal() {
+        helpModal.classList.remove('hidden');
+        helpModal.classList.add('flex');
+      }
+      function closeHelpModal() {
+        helpModal.classList.add('hidden');
+        helpModal.classList.remove('flex');
+      }
+      document.getElementById('open-help-btn').onclick = openHelpModal;
+      document.getElementById('close-help-btn').onclick = closeHelpModal;
+      document.getElementById('done-help-btn').onclick = closeHelpModal;
+      helpModal.addEventListener('click', (e) => {
+        if (e.target === helpModal) closeHelpModal();
+      });
+
+      document.getElementById('voice-select').onchange = (e) => {
+        audioPrefs.selectedVoiceName = e.target.value;
+        saveAudioPrefs();
+      };
+
+      document.getElementById('gcp-voice-select').onchange = (e) => {
+        audioPrefs.gcpVoiceName = e.target.value;
+        saveAudioPrefs();
+      };
+
+      document.getElementById('force-gcp-checkbox').onchange = (e) => {
+        audioPrefs.forceGcp = e.target.checked;
+        saveAudioPrefs();
+      };
+
+      document.getElementById('save-gcp-key-btn').onclick = () => {
+        const val = document.getElementById('gcp-api-key-input').value.trim();
+        audioPrefs.gcpApiKey = val;
+        saveAudioPrefs();
+        showToast(val ? 'Google Cloud TTS API key saved locally!' : 'Cleared API key.', 'success');
+      };
+
+      document.getElementById('clear-gcp-key-btn').onclick = () => {
+        document.getElementById('gcp-api-key-input').value = '';
+        audioPrefs.gcpApiKey = '';
+        audioPrefs.forceGcp = false;
+        document.getElementById('force-gcp-checkbox').checked = false;
+        saveAudioPrefs();
+        showToast('Google Cloud TTS API key removed.', 'info');
+      };
+
+      document.getElementById('test-voice-btn').onclick = () => {
+        speakSpanish(
+          'Hola, así suena la voz neuronal en español para practicar el examen de AP.',
+          1.0
+        );
+      };
+
+      // ==================== CLOZE FORMATTING HELPER ====================
+      function escapeHtml(str) {
+        return String(str)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+      }
+
+      function escapeRegExp(str) {
+        return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      }
+
+      function formatClozeSentence(sentence, target, revealed) {
+        const safeSentence = escapeHtml(sentence);
+        const safeTarget = escapeHtml(target);
+
+        // Support multi-part targets separated by "..." (e.g., "no solo ... sino que también")
+        if (safeTarget.includes('...')) {
+          const parts = safeTarget.split('...').map((p) => p.trim()).filter(Boolean);
+          let result = safeSentence;
+          parts.forEach((part) => {
+            const regex = new RegExp(escapeRegExp(part), 'i');
+            result = result.replace(regex, (match) =>
+              revealed
+                ? `<span class="cloze-revealed">${match}</span>`
+                : `<span class="cloze-blank">[ _______ ]</span>`
+            );
+          });
+          return result;
+        }
+
+        const regex = new RegExp(escapeRegExp(safeTarget), 'i');
+        if (regex.test(safeSentence)) {
+          return safeSentence.replace(regex, (match) =>
+            revealed
+              ? `<span class="cloze-revealed">${match}</span>`
+              : `<span class="cloze-blank">[ _______ ]</span>`
+          );
+        }
+
+        // Fallback if target isn't exact substring
+        return revealed
+          ? `${safeSentence} <div class="mt-3"><span class="cloze-revealed">${safeTarget}</span></div>`
+          : `${safeSentence} <div class="mt-3"><span class="cloze-blank">[ _______ ]</span></div>`;
+      }
+
+      // ==================== TAB 1: STUDY (SRS) ====================
+      function getFilteredStudyQueue() {
+        if (studyMode === 'ALL') {
+          return deck
+            .filter(
+              (card) =>
+                (studyTheme === 'ALL' || card.theme === studyTheme) &&
+                (studyLevel === 'ALL' || String(card.level || 2) === String(studyLevel))
+            )
+            .sort((a, b) => (a.dueDate || 0) - (b.dueDate || 0));
+        }
+        return getEffectiveDueCards(studyTheme, studyLevel);
+      }
+
+      function selectNextCard() {
+        const queue = getFilteredStudyQueue();
+        if (queue.length === 0) {
+          currentCardId = null;
+          isRevealed = false;
+          renderFlashcard();
+          return;
+        }
+        // Pick earliest due card (or next different card in Practice All mode)
+        if (studyMode === 'ALL' && queue.length > 1 && queue[0].id === currentCardId) {
+          const idx = queue.findIndex((c) => c.id === currentCardId);
+          const nextCard = queue[(idx + 1) % queue.length];
+          currentCardId = nextCard.id;
+        } else {
+          currentCardId = queue[0].id;
+        }
+        isRevealed = false;
+        renderFlashcard();
+      }
+
+      function renderFlashcard() {
+        const container = document.getElementById('flashcard-area');
+        const queue = getFilteredStudyQueue();
+        const card = deck.find((c) => c.id === currentCardId);
+
+        if (!card || queue.length === 0) {
+          container.innerHTML = `
+            <div class="my-auto text-center py-8 space-y-4 max-w-md mx-auto">
+              <div class="w-16 h-16 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center mx-auto text-2xl font-bold">
+                ✓
+              </div>
+              <h3 class="text-xl font-extrabold text-slate-900">All Caught Up for Now!</h3>
+              <p class="text-sm text-slate-500 leading-relaxed">
+                You have reviewed all due chunks in this filter. Load a <strong>Grade-Level JSON Pack</strong> in Tab 4, switch to <strong>Practice All</strong>, or add phrases from your Preply session.
+              </p>
+              <div class="pt-2 flex flex-wrap justify-center gap-3">
+                <button id="empty-goto-manage-btn" class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold shadow-xs transition cursor-pointer">
+                  + Load Grade JSON Pack
+                </button>
+                <button id="empty-practice-all-btn" class="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold shadow-xs transition cursor-pointer">
+                  Switch to Practice All
+                </button>
+                <button id="empty-goto-add-btn" class="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-sm font-semibold transition cursor-pointer">
+                  + Add Preply Phrases
+                </button>
+              </div>
+            </div>
+          `;
+          document.getElementById('empty-goto-manage-btn').onclick = () => {
+            switchTab('manage');
+          };
+          document.getElementById('empty-practice-all-btn').onclick = () => {
+            setStudyMode('ALL');
+          };
+          document.getElementById('empty-goto-add-btn').onclick = () => {
+            switchTab('add');
+          };
+          return;
+        }
+
+        const formattedSentence = formatClozeSentence(card.sentence, card.target, isRevealed);
+
+        // Calculate preview intervals for SM-2 buttons
+        const previewIntervals = {
+          again: 'In 1 min',
+          hard: card.reps === 0 ? 'In 12 hrs' : `In ${Math.max(1, Math.round(card.interval * 1.2))}d`,
+          good: card.reps === 0 ? 'In 1 day' : card.reps === 1 ? 'In 3 days' : `In ${Math.round(card.interval * card.ease)}d`,
+          easy: card.reps === 0 ? 'In 4 days' : `In ${Math.round(card.interval * card.ease * 1.3)}d`
+        };
+
+        const syncStatusBadge = hasValidGoogleToken()
+          ? '<span class="text-sky-700 font-semibold">☁️ Auto-saving to Google Drive</span>'
+          : '<span class="text-slate-400">Saved locally (Sign in to sync Drive)</span>';
+
+        const levelLabels = {
+          1: { text: 'Level 1: Foundations', cls: 'bg-emerald-50 border-emerald-200 text-emerald-800' },
+          2: { text: 'Level 2: Intermediate', cls: 'bg-sky-50 border-sky-200 text-sky-800' },
+          3: { text: 'Level 3: AP Mastery', cls: 'bg-purple-50 border-purple-200 text-purple-800' }
+        };
+        const lvlBadge = levelLabels[card.level || 2] || levelLabels[2];
+
+        container.innerHTML = `
+          <!-- Top Meta Row -->
+          <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-4">
+            <div class="flex flex-wrap items-center gap-1.5">
+              <span class="px-2.5 py-1 rounded-full border text-xs font-bold ${lvlBadge.cls}">
+                ${lvlBadge.text}
+              </span>
+              <span class="px-3 py-1 rounded-full bg-indigo-50 border border-indigo-100 text-indigo-700 text-xs font-bold">
+                ${escapeHtml(card.theme)}
+              </span>
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="text-xs font-medium text-slate-400 mr-1">
+                Queue: <strong class="text-slate-700">${queue.length}</strong> remaining
+              </span>
+              <button id="card-tts-normal-btn" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-semibold transition cursor-pointer" title="Listen at Normal Speed (Shortcut: R)">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+                </svg>
+                Listen (1.0x)
+              </button>
+              <button id="card-tts-slow-btn" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition cursor-pointer" title="Listen Slowly (0.8x)">
+                🐢 0.8x
+              </button>
+            </div>
+          </div>
+
+          <!-- Center Sentence & Cue -->
+          <div class="my-auto py-8 text-center space-y-5">
+            <p class="text-xl sm:text-2xl md:text-[26px] font-medium text-slate-900 leading-relaxed max-w-3xl mx-auto">
+              ${formattedSentence}
+            </p>
+
+            <div class="inline-block bg-amber-50 border border-amber-200/80 px-4 py-2 rounded-xl">
+              <span class="text-xs font-bold uppercase tracking-wider text-amber-700 mr-1.5">Cue:</span>
+              <span class="text-sm font-semibold text-amber-950">${escapeHtml(card.hint)}</span>
+            </div>
+
+            ${
+              isRevealed && card.notes
+                ? `<div class="max-w-xl mx-auto bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs text-slate-600">
+                    <strong class="text-slate-800">AP / Usage Tip:</strong> ${escapeHtml(card.notes)}
+                  </div>`
+                : ''
+            }
+          </div>
+
+          <!-- Bottom Action Bar -->
+          <div class="pt-4 border-t border-slate-100 space-y-2.5">
+            ${
+              !isRevealed
+                ? `<button id="reveal-card-btn" class="w-full py-3.5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm sm:text-base shadow-sm transition cursor-pointer">
+                    Reveal Answer (Space)
+                  </button>`
+                : `<div class="flex items-center justify-between text-[11px] px-1">
+                    <span class="font-semibold text-slate-600">How well did you recall the missing phrase?</span>
+                    ${syncStatusBadge}
+                  </div>
+                  <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                    <button data-rate="1" class="rate-btn flex flex-col items-center py-2.5 px-3 rounded-xl bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-900 transition cursor-pointer" title="Missed it — reset card and review again in 1 minute">
+                      <span class="text-xs font-extrabold">1. Again</span>
+                      <span class="text-[11px] font-medium text-rose-700">Forgot / Missed</span>
+                      <span class="mt-0.5 px-2 py-0.5 rounded-full bg-rose-200/70 text-[10px] font-bold">${previewIntervals.again}</span>
+                    </button>
+                    <button data-rate="2" class="rate-btn flex flex-col items-center py-2.5 px-3 rounded-xl bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-900 transition cursor-pointer" title="Got it with difficulty — shorten future spacing">
+                      <span class="text-xs font-extrabold">2. Hard</span>
+                      <span class="text-[11px] font-medium text-amber-700">Struggled</span>
+                      <span class="mt-0.5 px-2 py-0.5 rounded-full bg-amber-200/70 text-[10px] font-bold">${previewIntervals.hard}</span>
+                    </button>
+                    <button data-rate="3" class="rate-btn flex flex-col items-center py-2.5 px-3 rounded-xl bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-900 transition cursor-pointer" title="Recalled correctly — standard spaced repetition interval">
+                      <span class="text-xs font-extrabold">3. Good</span>
+                      <span class="text-[11px] font-medium text-emerald-700">Recalled</span>
+                      <span class="mt-0.5 px-2 py-0.5 rounded-full bg-emerald-200/70 text-[10px] font-bold">${previewIntervals.good}</span>
+                    </button>
+                    <button data-rate="4" class="rate-btn flex flex-col items-center py-2.5 px-3 rounded-xl bg-sky-50 hover:bg-sky-100 border border-sky-200 text-sky-900 transition cursor-pointer" title="Knew it instantly — push next review further out">
+                      <span class="text-xs font-extrabold">4. Easy</span>
+                      <span class="text-[11px] font-medium text-sky-700">Effortless</span>
+                      <span class="mt-0.5 px-2 py-0.5 rounded-full bg-sky-200/70 text-[10px] font-bold">${previewIntervals.easy}</span>
+                    </button>
+                  </div>`
+            }
+          </div>
+        `;
+
+        document.getElementById('card-tts-normal-btn').onclick = () => speakSpanish(card.sentence, 1.0);
+        document.getElementById('card-tts-slow-btn').onclick = () => speakSpanish(card.sentence, 0.8);
+
+        if (!isRevealed) {
+          document.getElementById('reveal-card-btn').onclick = revealCurrentCard;
+        } else {
+          document.querySelectorAll('.rate-btn').forEach((btn) => {
+            btn.onclick = () => rateCurrentCard(Number(btn.dataset.rate));
+          });
+        }
+      }
+
+      function revealCurrentCard() {
+        const card = deck.find((c) => c.id === currentCardId);
+        if (!card || isRevealed) return;
+        isRevealed = true;
+        renderFlashcard();
+        if (document.getElementById('auto-tts-checkbox').checked) {
+          speakSpanish(card.sentence, 1.0);
+        }
+      }
+
+      // SM-2 Spaced Repetition Scheduler
+      function rateCurrentCard(quality) {
+        const card = deck.find((c) => c.id === currentCardId);
+        if (!card) return;
+
+        const now = Date.now();
+        let ease = card.ease || 2.5;
+        let reps = card.reps || 0;
+        let interval = card.interval || 0;
+        const wasUnstudiedNewCard = reps === 0;
+
+        if (quality === 1) {
+          // Again (< 1 min)
+          reps = 0;
+          interval = 0;
+          ease = Math.max(1.3, ease - 0.2);
+          card.dueDate = now + 60 * 1000;
+        } else if (quality === 2) {
+          // Hard
+          interval = reps === 0 ? 0.5 : Math.max(1, Math.round(interval * 1.2));
+          reps += 1;
+          ease = Math.max(1.3, ease - 0.15);
+          card.dueDate = now + interval * DAY_MS;
+        } else if (quality === 3) {
+          // Good
+          if (reps === 0) interval = 1;
+          else if (reps === 1) interval = 3;
+          else interval = Math.round(interval * ease);
+          reps += 1;
+          card.dueDate = now + interval * DAY_MS;
+        } else if (quality === 4) {
+          // Easy
+          if (reps === 0) interval = 4;
+          else interval = Math.round(interval * ease * 1.3);
+          reps += 1;
+          ease += 0.15;
+          card.dueDate = now + interval * DAY_MS;
+        }
+
+        // Count toward today's new-card allowance once graduated out of unstudied state
+        if (wasUnstudiedNewCard && reps > 0) {
+          const today = getTodayDateStr();
+          if (dailyPace.date !== today) {
+            dailyPace.date = today;
+            dailyPace.introducedCount = 0;
+          }
+          dailyPace.introducedCount = (dailyPace.introducedCount || 0) + 1;
+          saveDailyPace();
+        }
+
+        card.ease = Number(ease.toFixed(2));
+        card.reps = reps;
+        card.interval = interval;
+        card.updatedAt = now;
+
+        saveDeck();
+        selectNextCard();
+      }
+
+      function setStudyMode(mode) {
+        studyMode = mode;
+        const dueBtn = document.getElementById('mode-due-btn');
+        const allBtn = document.getElementById('mode-all-btn');
+        if (mode === 'DUE') {
+          dueBtn.className = 'px-3 py-1.5 rounded-lg text-xs font-semibold bg-white text-indigo-700 shadow-xs transition';
+          allBtn.className = 'px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 transition';
+        } else {
+          allBtn.className = 'px-3 py-1.5 rounded-lg text-xs font-semibold bg-white text-indigo-700 shadow-xs transition';
+          dueBtn.className = 'px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 transition';
+        }
+        selectNextCard();
+      }
+
+      document.getElementById('mode-due-btn').onclick = () => setStudyMode('DUE');
+      document.getElementById('mode-all-btn').onclick = () => setStudyMode('ALL');
+      document.getElementById('study-level-filter').onchange = (e) => {
+        studyLevel = e.target.value;
+        selectNextCard();
+      };
+      document.getElementById('study-theme-filter').onchange = (e) => {
+        studyTheme = e.target.value;
+        selectNextCard();
+      };
+      document.getElementById('daily-new-limit-select').onchange = (e) => {
+        dailyPace.dailyLimit = Number(e.target.value) || 15;
+        dailyPace.upgradedTo15 = true;
+        saveDailyPace();
+        selectNextCard();
+        showToast(
+          dailyPace.dailyLimit >= 9999
+            ? 'Daily new-card cap set to Unlimited.'
+            : `Daily new-card cap set to ${dailyPace.dailyLimit} cards/day.`,
+          'info'
+        );
+      };
+
+      // ==================== TAB 2: PREPLY QUICK-ADD ====================
+      const addSentenceInput = document.getElementById('add-sentence');
+      const addTargetInput = document.getElementById('add-target');
+      const addPreviewEl = document.getElementById('add-live-preview');
+
+      function updateLiveClozePreview() {
+        const sentence = addSentenceInput.value.trim();
+        const target = addTargetInput.value.trim();
+        if (!sentence) {
+          addPreviewEl.innerHTML = '<span class="text-slate-400 italic">Type a sentence and target chunk above to preview...</span>';
+          return;
+        }
+        if (!target) {
+          addPreviewEl.textContent = sentence;
+          return;
+        }
+        addPreviewEl.innerHTML = formatClozeSentence(sentence, target, false);
+      }
+
+      addSentenceInput.addEventListener('input', updateLiveClozePreview);
+      addTargetInput.addEventListener('input', updateLiveClozePreview);
+
+      document.getElementById('single-add-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const sentence = addSentenceInput.value.trim();
+        const target = addTargetInput.value.trim();
+        const hint = document.getElementById('add-hint').value.trim();
+        const theme = document.getElementById('add-theme').value;
+        const notes = document.getElementById('add-notes').value.trim();
+
+        if (!sentence || !target || !hint) {
+          showToast('Please fill in the sentence, target chunk, and English hint.', 'error');
+          return;
+        }
+
+        const newCard = {
+          id: 'custom-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6),
+          sentence,
+          target,
+          hint,
+          theme,
+          notes,
+          interval: 0,
+          ease: 2.5,
+          reps: 0,
+          dueDate: Date.now(),
+          updatedAt: Date.now()
+        };
+
+        deck.unshift(newCard);
+        saveDeck();
+        e.target.reset();
+        updateLiveClozePreview();
+        showToast('Chunk added to your study deck!', 'success');
+      });
+
+      // Bulk Importer
+      document.getElementById('bulk-import-btn').addEventListener('click', () => {
+        const raw = document.getElementById('bulk-textarea').value.trim();
+        const feedbackEl = document.getElementById('bulk-feedback');
+        if (!raw) {
+          showToast('Paste at least one line to import.', 'error');
+          return;
+        }
+
+        const validThemes = [
+          'Argument & Connectors',
+          'Global Challenges',
+          'Science & Technology',
+          'Contemporary Life',
+          'Personal & Public Identities',
+          'Families & Communities',
+          'Beauty & Aesthetics'
+        ];
+
+        const lines = raw.split('\n').map((l) => l.trim()).filter(Boolean);
+        let added = 0;
+        let skipped = 0;
+
+        lines.forEach((line, idx) => {
+          const parts = line.split('|').map((p) => p.trim());
+          if (parts.length < 3 || !parts[0] || !parts[1] || !parts[2]) {
+            skipped++;
+            return;
+          }
+          const matchedTheme = validThemes.find(
+            (t) => t.toLowerCase() === (parts[3] || '').toLowerCase()
+          ) || 'Argument & Connectors';
+
+          deck.unshift({
+            id: `bulk-${Date.now()}-${idx}-${Math.random().toString(36).slice(2, 5)}`,
+            sentence: parts[0],
+            target: parts[1],
+            hint: parts[2],
+            theme: matchedTheme,
+            notes: parts[4] || '',
+            interval: 0,
+            ease: 2.5,
+            reps: 0,
+            dueDate: Date.now(),
+            updatedAt: Date.now()
+          });
+          added++;
+        });
+
+        saveDeck();
+        if (added > 0) {
+          document.getElementById('bulk-textarea').value = '';
+          showToast(`Imported ${added} new chunk${added === 1 ? '' : 's'}!`, 'success');
+        }
+        feedbackEl.textContent = `Added ${added} card(s)${skipped > 0 ? ` • Skipped ${skipped} malformed line(s)` : ''}.`;
+      });
+
+      // ==================== TAB 3: 2-MIN SPEAKING CHALLENGE ====================
+      function generateSpeakingChallenge() {
+        currentPrompt = SPEAKING_PROMPTS[Math.floor(Math.random() * SPEAKING_PROMPTS.length)];
+        document.getElementById('speaking-prompt-theme').textContent = `AP Theme: ${currentPrompt.theme}`;
+        document.getElementById('speaking-prompt-es').textContent = currentPrompt.es;
+        document.getElementById('speaking-prompt-en').textContent = currentPrompt.en;
+
+        // Draw 3 random chunks from user's deck (preferring connectors/arguments + theme)
+        const shuffled = [...deck].sort(() => Math.random() - 0.5);
+        currentRequiredChunks = shuffled.slice(0, 3);
+
+        const listEl = document.getElementById('speaking-chunks-list');
+        listEl.innerHTML = '';
+
+        currentRequiredChunks.forEach((chunk, index) => {
+          const label = document.createElement('label');
+          label.className = 'flex items-start gap-3 p-3 rounded-xl bg-white border border-amber-200/80 shadow-2xs cursor-pointer hover:border-indigo-400 transition';
+          label.innerHTML = `
+            <input type="checkbox" class="speaking-chunk-cb mt-1 rounded text-indigo-600 focus:ring-indigo-500" data-idx="${index}" />
+            <div class="flex-1">
+              <div class="text-sm font-bold text-slate-900">${escapeHtml(chunk.target)}</div>
+              <div class="text-xs text-slate-500">${escapeHtml(chunk.hint)}</div>
+            </div>
+          `;
+          listEl.appendChild(label);
+        });
+
+        document.querySelectorAll('.speaking-chunk-cb').forEach((cb) => {
+          cb.addEventListener('change', updateCheckedChunksCounter);
+        });
+        updateCheckedChunksCounter();
+      }
+
+      function updateCheckedChunksCounter() {
+        const checked = document.querySelectorAll('.speaking-chunk-cb:checked').length;
+        const total = currentRequiredChunks.length;
+        document.getElementById('chunks-checked-count').textContent = `${checked} / ${total} Used`;
+      }
+
+      function formatSeconds(sec) {
+        const m = Math.floor(sec / 60);
+        const s = sec % 60;
+        return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+      }
+
+      function updateTimerDisplay() {
+        const display = document.getElementById('timer-display');
+        display.textContent = formatSeconds(timeRemaining);
+        if (timeRemaining <= 15 && timeRemaining > 0) {
+          display.classList.add('text-rose-600');
+          display.classList.remove('text-slate-900');
+        } else {
+          display.classList.remove('text-rose-600');
+          display.classList.add('text-slate-900');
+        }
+      }
+
+      function stopTimer() {
+        if (timerInterval) {
+          clearInterval(timerInterval);
+          timerInterval = null;
+        }
+      }
+
+      function setTimerMode(mode) {
+        stopTimer();
+        timerMode = mode;
+        timeRemaining = mode === 'SPEAK' ? 120 : 240;
+        updateTimerDisplay();
+
+        const speakBtn = document.getElementById('timer-mode-speak');
+        const prepBtn = document.getElementById('timer-mode-prep');
+        if (mode === 'SPEAK') {
+          speakBtn.className = 'px-3 py-1.5 rounded-lg text-xs font-bold bg-white text-slate-900 shadow-xs transition';
+          prepBtn.className = 'px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 transition';
+        } else {
+          prepBtn.className = 'px-3 py-1.5 rounded-lg text-xs font-bold bg-white text-slate-900 shadow-xs transition';
+          speakBtn.className = 'px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 transition';
+        }
+      }
+
+      document.getElementById('timer-mode-speak').onclick = () => setTimerMode('SPEAK');
+      document.getElementById('timer-mode-prep').onclick = () => setTimerMode('PREP');
+      document.getElementById('new-speaking-challenge-btn').onclick = generateSpeakingChallenge;
+      document.getElementById('speak-prompt-btn').onclick = () => {
+        if (currentPrompt) speakSpanish(currentPrompt.es);
+      };
+
+      document.getElementById('timer-start-btn').onclick = () => {
+        if (timerInterval) return;
+        if (timeRemaining <= 0) {
+          timeRemaining = timerMode === 'SPEAK' ? 120 : 240;
+        }
+        timerInterval = setInterval(() => {
+          timeRemaining--;
+          updateTimerDisplay();
+          if (timeRemaining <= 0) {
+            stopTimer();
+            showToast(
+              timerMode === 'PREP'
+                ? '4-Minute Prep complete! Switch to 2:00 Speaking timer.'
+                : '¡Tiempo! 2-Minute AP Cultural Comparison complete.',
+              'info'
+            );
+          }
+        }, 1000);
+      };
+
+      document.getElementById('timer-pause-btn').onclick = stopTimer;
+      document.getElementById('timer-reset-btn').onclick = () => {
+        stopTimer();
+        timeRemaining = timerMode === 'SPEAK' ? 120 : 240;
+        updateTimerDisplay();
+      };
+
+      // ==================== TAB 4: MANAGE & SYNC DECK ====================
+      function renderManageTable() {
+        const tbody = document.getElementById('manage-table-body');
+        const query = document.getElementById('manage-search').value.trim().toLowerCase();
+        const themeFilter = document.getElementById('manage-theme-filter').value;
+        const now = Date.now();
+
+        const filtered = deck.filter((c) => {
+          const matchesTheme = themeFilter === 'ALL' || c.theme === themeFilter;
+          const matchesQuery =
+            !query ||
+            c.sentence.toLowerCase().includes(query) ||
+            c.target.toLowerCase().includes(query) ||
+            c.hint.toLowerCase().includes(query);
+          return matchesTheme && matchesQuery;
+        });
+
+        if (filtered.length === 0) {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="5" class="py-8 text-center text-sm text-slate-400">
+                No cards match your search filter.
+              </td>
+            </tr>
+          `;
+          return;
+        }
+
+        tbody.innerHTML = filtered
+          .map((card) => {
+            const isDue = (card.dueDate || 0) <= now;
+            const statusBadge = isDue
+              ? '<span class="px-2 py-0.5 rounded-md bg-amber-100 text-amber-800 text-[11px] font-bold">Due Now</span>'
+              : `<span class="px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800 text-[11px] font-bold">Next: ${card.interval}d</span>`;
+
+            return `
+              <tr class="hover:bg-slate-50/80 transition">
+                <td class="py-3 px-4 align-top">
+                  <div class="font-bold text-indigo-700">${escapeHtml(card.target)}</div>
+                  <div class="text-xs text-slate-500">${escapeHtml(card.hint)}</div>
+                </td>
+                <td class="py-3 px-4 align-top text-xs sm:text-sm text-slate-700 max-w-md">
+                  ${escapeHtml(card.sentence)}
+                </td>
+                <td class="py-3 px-4 align-top whitespace-nowrap">
+                  <span class="px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 text-[11px] font-semibold">
+                    ${escapeHtml(card.theme)}
+                  </span>
+                </td>
+                <td class="py-3 px-4 align-top whitespace-nowrap">
+                  ${statusBadge}
+                </td>
+                <td class="py-3 px-4 align-top text-right whitespace-nowrap space-x-1.5">
+                  <button data-speak-id="${card.id}" class="tbl-speak-btn px-2 py-1 rounded-lg bg-slate-100 hover:bg-indigo-100 text-slate-700 hover:text-indigo-700 text-xs font-semibold transition cursor-pointer" title="Listen">
+                    🔊
+                  </button>
+                  <button data-reset-id="${card.id}" class="tbl-reset-btn px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-amber-100 text-slate-700 hover:text-amber-800 text-xs font-semibold transition cursor-pointer" title="Reset SRS Progress">
+                    Reset
+                  </button>
+                  <button data-del-id="${card.id}" class="tbl-del-btn px-2.5 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-semibold transition cursor-pointer" title="Delete Card">
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            `;
+          })
+          .join('');
+
+        tbody.querySelectorAll('.tbl-speak-btn').forEach((btn) => {
+          btn.onclick = () => {
+            const card = deck.find((c) => c.id === btn.dataset.speakId);
+            if (card) speakSpanish(card.sentence);
+          };
+        });
+
+        tbody.querySelectorAll('.tbl-reset-btn').forEach((btn) => {
+          btn.onclick = () => {
+            const card = deck.find((c) => c.id === btn.dataset.resetId);
+            if (!card) return;
+            card.interval = 0;
+            card.reps = 0;
+            card.ease = 2.5;
+            card.dueDate = Date.now();
+            card.updatedAt = Date.now();
+            saveDeck();
+            renderManageTable();
+            showToast('Card progress reset to Due Now.', 'info');
+          };
+        });
+
+        tbody.querySelectorAll('.tbl-del-btn').forEach((btn) => {
+          btn.onclick = () => {
+            const delId = btn.dataset.delId;
+            deletedCardIds.add(delId);
+            deck = deck.filter((c) => c.id !== delId);
+            saveDeck();
+            renderManageTable();
+            showToast('Card deleted from deck.', 'info');
+          };
+        });
+      }
+
+      document.getElementById('manage-search').addEventListener('input', renderManageTable);
+      document.getElementById('manage-theme-filter').addEventListener('change', renderManageTable);
+
+      // Export JSON
+      document.getElementById('export-json-btn').addEventListener('click', () => {
+        const dateStamp = new Date().toISOString().slice(0, 10);
+        const blob = new Blob([JSON.stringify(deck, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `ap-spanish-deck-${dateStamp}.json`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+        showToast('Exported deck backup (.json)!', 'success');
+      });
+
+      // Import / Merge JSON
+      function mergeImportedCardsArray(imported, sourceLabel = 'deck', silent = false) {
+        if (!Array.isArray(imported)) {
+          throw new Error('Invalid JSON structure: expected an array of cards.');
+        }
+        const existingIds = new Set(deck.map((c) => c.id));
+        const existingSentences = new Set(deck.map((c) => c.sentence.toLowerCase().trim()));
+        let mergedCount = 0;
+
+        imported.forEach((item) => {
+          if (!item.sentence || !item.target || !item.hint) return;
+          const idExists = item.id && existingIds.has(item.id);
+          const sentenceExists = existingSentences.has(item.sentence.toLowerCase().trim());
+
+          if (!idExists && !sentenceExists) {
+            const newId = item.id || `imp-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
+            deletedCardIds.delete(newId);
+            deck.push({
+              id: newId,
+              level: Number(item.level) || 1,
+              sentence: item.sentence,
+              target: item.target,
+              hint: item.hint,
+              theme: item.theme || 'Argument & Connectors',
+              notes: item.notes || '',
+              interval: Number(item.interval) || 0,
+              ease: Number(item.ease) || 2.5,
+              reps: Number(item.reps) || 0,
+              dueDate: Number(item.dueDate) || Date.now(),
+              updatedAt: Number(item.updatedAt) || Date.now()
+            });
+            existingIds.add(newId);
+            existingSentences.add(item.sentence.toLowerCase().trim());
+            mergedCount++;
+          }
+        });
+
+        saveDeck();
+        renderManageTable();
+        selectNextCard();
+        if (!silent) {
+          const driveNote = hasValidGoogleToken() ? ' & synced to Google Drive' : '';
+          showToast(`Merged ${mergedCount} new card(s) from ${sourceLabel}${driveNote}!`, 'success');
+        }
+      }
+
+      async function fetchAndMergeRemoteJsonPack(url, label) {
+        if (!url) {
+          showToast('Enter a valid .json URL first.', 'error');
+          return;
+        }
+        try {
+          showToast(`Fetching ${label || url}...`, 'info');
+          const res = await fetch(url);
+          if (!res.ok) {
+            throw new Error(`File not found (HTTP ${res.status}). Upload ${url} to your GitHub/Netlify /packs/ folder or use Import (.json).`);
+          }
+          const data = await res.json();
+          const cardsArray = Array.isArray(data) ? data : data.cards || data.deck;
+          mergeImportedCardsArray(cardsArray, label || url);
+        } catch (err) {
+          showToast(err.message, 'error');
+        }
+      }
+
+      document.querySelectorAll('.load-remote-pack-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          fetchAndMergeRemoteJsonPack(btn.dataset.packUrl, btn.dataset.packName);
+        });
+      });
+
+      document.getElementById('fetch-remote-pack-btn').addEventListener('click', () => {
+        const url = document.getElementById('remote-pack-url-input').value.trim();
+        fetchAndMergeRemoteJsonPack(url, 'remote JSON pack');
+      });
+
+      document.getElementById('import-json-input').addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          try {
+            const imported = JSON.parse(ev.target.result);
+            const cardsArray = Array.isArray(imported) ? imported : imported.deck;
+            mergeImportedCardsArray(cardsArray, file.name);
+          } catch (err) {
+            showToast('Failed to import JSON: ' + err.message, 'error');
+          } finally {
+            e.target.value = '';
+          }
+        };
+        reader.readAsText(file);
+      });
+
+      // Reset to Default Deck
+      document.getElementById('reset-default-btn').addEventListener('click', () => {
+        showConfirm(
+          'Reset Local Deck?',
+          'This clears your local deck back to the starter sample so you can re-import clean grade-level JSON packs. Export a .json backup first if you want to keep custom Preply cards.',
+          () => {
+            deletedCardIds.clear();
+            deck = JSON.parse(JSON.stringify(BOOTSTRAP_SAMPLE_DECK)).map((c) => ({
+              ...c,
+              dueDate: Date.now(),
+              updatedAt: 0
+            }));
+            saveDeck();
+            renderManageTable();
+            selectNextCard();
+            showToast('Deck reset! Load any Grade JSON pack above to populate.', 'info');
+          }
+        );
+      });
+
+      // ==================== NAVIGATION & KEYBOARD SHORTCUTS ====================
+      function switchTab(tabName) {
+        document.querySelectorAll('.tab-btn').forEach((btn) => {
+          if (btn.dataset.tab === tabName) {
+            btn.className = 'tab-btn active px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition whitespace-nowrap bg-indigo-600 text-white shadow-xs';
+          } else {
+            btn.className = 'tab-btn px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition whitespace-nowrap text-slate-600 hover:bg-slate-100';
+          }
+        });
+
+        document.querySelectorAll('.tab-panel').forEach((panel) => {
+          panel.classList.add('hidden');
+        });
+        document.getElementById(`tab-${tabName}`).classList.remove('hidden');
+
+        if (tabName === 'study') selectNextCard();
+        if (tabName === 'manage') renderManageTable();
+        if (tabName === 'speaking' && !currentPrompt) generateSpeakingChallenge();
+      }
+
+      document.querySelectorAll('.tab-btn').forEach((btn) => {
+        btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+      });
+
+      // Global Keyboard Shortcuts on Study Tab
+      document.addEventListener('keydown', (e) => {
+        const activeTag = document.activeElement ? document.activeElement.tagName : '';
+        if (['INPUT', 'TEXTAREA', 'SELECT'].includes(activeTag)) return;
+
+        const studyPanelVisible = !document.getElementById('tab-study').classList.contains('hidden');
+        if (!studyPanelVisible || !currentCardId) return;
+
+        if (e.code === 'Space') {
+          e.preventDefault();
+          if (!isRevealed) revealCurrentCard();
+        } else if (e.key.toLowerCase() === 'r') {
+          const card = deck.find((c) => c.id === currentCardId);
+          if (card) speakSpanish(card.sentence);
+        } else if (isRevealed && ['1', '2', '3', '4'].includes(e.key)) {
+          rateCurrentCard(Number(e.key));
+        }
+      });
+
+      // ==================== BOOTSTRAP APP ====================
+      loadAudioPrefs();
+      populateVoices();
+      loadGoogleAuthPrefs();
+      loadDailyPace();
+      loadDeck();
+      updateStats();
+      selectNextCard();
+      generateSpeakingChallenge();
+    })();
+  </script>
+</body>
+</html>

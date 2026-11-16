@@ -1,0 +1,1089 @@
+{
+    "packId": "grade9-foundations",
+    "title": "9th Grade Foundations — Core Building Blocks Across All 7 AP Themes",
+    "gradeLevel": 9,
+    "level": 1,
+    "description": "Approachable, everyday Spanish chunks and foundational connectors organized across all AP Spanish themes to build confidence before advancing to Grade 10–12 packs.",
+    "cards": [
+        {
+            "id": "g9-001",
+            "level": 1,
+            "theme": "Contemporary Life",
+            "sentence": "Juan come manzanas frescas todas las mañanas antes de ir a la escuela.",
+            "target": "come manzanas",
+            "hint": "eats apples",
+            "notes": "Notice how Spanish drops 'unos/unas' before plural food items in general statements."
+        },
+        {
+            "id": "g9-002",
+            "level": 1,
+            "theme": "Contemporary Life",
+            "sentence": "A mí me gusta mucho practicar deportes con mis amigos los fines de semana.",
+            "target": "A mí me gusta mucho",
+            "hint": "I really like",
+            "notes": "'Gustar' agrees with the activity liked ('practicar' -> singular 'gusta')."
+        },
+        {
+            "id": "g9-003",
+            "level": 1,
+            "theme": "Contemporary Life",
+            "sentence": "Por lo general, desayuno pan tostado con café o jugo de naranja antes de clase.",
+            "target": "Por lo general",
+            "hint": "Generally / Usually",
+            "notes": "Clean, natural everyday opener for speaking about daily routines."
+        },
+        {
+            "id": "g9-004",
+            "level": 1,
+            "theme": "Families & Communities",
+            "sentence": "Mi familia y yo solemos cenar juntos alrededor de las ocho de la noche.",
+            "target": "solemos cenar juntos",
+            "hint": "usually have dinner together",
+            "notes": "'Soler + infinitive' means 'to usually do something' — very natural in conversation."
+        },
+        {
+            "id": "g9-005",
+            "level": 1,
+            "theme": "Contemporary Life",
+            "sentence": "Hoy en día, casi todos los estudiantes usan el teléfono para comunicarse con sus amigos.",
+            "target": "Hoy en día",
+            "hint": "Nowadays / Today",
+            "notes": "Everyday transition that scales all the way up to AP argumentative essays."
+        },
+        {
+            "id": "g9-006",
+            "level": 1,
+            "theme": "Argument & Connectors",
+            "sentence": "En mi opinión, aprender otro idioma abre muchas puertas en el futuro.",
+            "target": "En mi opinión",
+            "hint": "In my opinion",
+            "notes": "Clear, confident way to state a viewpoint."
+        },
+        {
+            "id": "g9-007",
+            "level": 1,
+            "theme": "Argument & Connectors",
+            "sentence": "Por ejemplo, en Argentina es muy común tomar mate con amigos en el parque.",
+            "target": "Por ejemplo",
+            "hint": "For example",
+            "notes": "Essential for backing up any statement with a concrete cultural detail."
+        },
+        {
+            "id": "g9-008",
+            "level": 1,
+            "theme": "Contemporary Life",
+            "sentence": "Cuando tengo tiempo libre, prefiero escuchar música o salir a caminar por el barrio.",
+            "target": "Cuando tengo tiempo libre",
+            "hint": "When I have free time",
+            "notes": "Uses indicative 'tengo' because it describes a habitual routine."
+        },
+        {
+            "id": "g9-009",
+            "level": 1,
+            "theme": "Families & Communities",
+            "sentence": "Mis abuelos viven cerca de nuestra casa y nos visitan cada domingo para almorzar.",
+            "target": "viven cerca de",
+            "hint": "live close to / near",
+            "notes": "Remember: 'cerca de' always requires 'de' before a noun."
+        },
+        {
+            "id": "g9-010",
+            "level": 1,
+            "theme": "Science & Technology",
+            "sentence": "Uso la computadora todos los días para hacer la tarea y buscar información.",
+            "target": "para hacer la tarea",
+            "hint": "in order to do homework",
+            "notes": "'Para + infinitive' expresses purpose ('in order to')."
+        },
+        {
+            "id": "g9-011",
+            "level": 1,
+            "theme": "Argument & Connectors",
+            "sentence": "Sin embargo, a veces paso demasiado tiempo mirando videos en Internet.",
+            "target": "Sin embargo",
+            "hint": "However",
+            "notes": "Your #1 contrast connector from 9th grade through the AP exam."
+        },
+        {
+            "id": "g9-012",
+            "level": 1,
+            "theme": "Contemporary Life",
+            "sentence": "Me encanta probar comidas típicas cuando visito una ciudad o un país nuevo.",
+            "target": "Me encanta probar",
+            "hint": "I love trying / tasting",
+            "notes": "'Probar' = to try/taste food or try out a new activity."
+        },
+        {
+            "id": "g9-013",
+            "level": 1,
+            "theme": "Personal & Public Identities",
+            "sentence": "En mi casa hablamos dos idiomas, lo cual me ayuda a entender dos culturas.",
+            "target": "hablamos dos idiomas",
+            "hint": "we speak two languages",
+            "notes": "Notice 'el idioma' is masculine ('dos idiomas importantes')."
+        },
+        {
+            "id": "g9-014",
+            "level": 1,
+            "theme": "Contemporary Life",
+            "sentence": "Es importante dormir bien para tener energía durante las clases de la mañana.",
+            "target": "Es importante dormir bien",
+            "hint": "It is important to sleep well",
+            "notes": "General statement without 'que' takes the infinitive ('dormir')."
+        },
+        {
+            "id": "g9-015",
+            "level": 1,
+            "theme": "Argument & Connectors",
+            "sentence": "Además, estudiar con un tutor me permite practicar la conversación cada semana.",
+            "target": "Además",
+            "hint": "Furthermore / In addition",
+            "notes": "Simple, high-utility connector for adding a second supporting point."
+        },
+        {
+            "id": "g9-016",
+            "level": 1,
+            "theme": "Families & Communities",
+            "sentence": "Los vecinos de mi barrio son muy amables y siempre se saludan en la calle.",
+            "target": "siempre se saludan",
+            "hint": "always greet each other",
+            "notes": "Reciprocal reflexive 'se saludan' = greet one another."
+        },
+        {
+            "id": "g9-017",
+            "level": 1,
+            "theme": "Contemporary Life",
+            "sentence": "Prefiero viajar en autobús o en tren porque es más barato y ecológico.",
+            "target": "Prefiero viajar en",
+            "hint": "I prefer to travel by",
+            "notes": "Use 'en' + mode of transport ('en autobús', 'en avión', 'en tren')."
+        },
+        {
+            "id": "g9-018",
+            "level": 1,
+            "theme": "Beauty & Aesthetics",
+            "sentence": "Me gusta el arte callejero porque llena de color las paredes de la ciudad.",
+            "target": "el arte callejero",
+            "hint": "street art",
+            "notes": "Accessible entry point into the Beauty & Aesthetics theme."
+        },
+        {
+            "id": "g9-019",
+            "level": 1,
+            "theme": "Global Challenges",
+            "sentence": "Todos podemos ayudar al planeta si reciclamos botellas y ahorramos agua en casa.",
+            "target": "si reciclamos botellas",
+            "hint": "if we recycle bottles",
+            "notes": "Real-world 'si' clause using simple present tense."
+        },
+        {
+            "id": "g9-020",
+            "level": 1,
+            "theme": "Argument & Connectors",
+            "sentence": "Por eso, creo que debemos cuidar los parques y espacios verdes del barrio.",
+            "target": "Por eso",
+            "hint": "That is why / Therefore",
+            "notes": "Conversational cousin of 'por lo tanto'."
+        },
+        {
+            "id": "g9-021",
+            "level": 1,
+            "theme": "Contemporary Life",
+            "sentence": "Ayer fui al mercado con mi madre para comprar frutas y verduras frescas.",
+            "target": "fui al mercado",
+            "hint": "I went to the market",
+            "notes": "Preterite of 'ir' ('fui') for a completed past action."
+        },
+        {
+            "id": "g9-022",
+            "level": 1,
+            "theme": "Contemporary Life",
+            "sentence": "Cuando era niño, jugaba al fútbol en el parque todas las tardes después de la escuela.",
+            "target": "jugaba al fútbol",
+            "hint": "I used to play soccer",
+            "notes": "Imperfect tense ('jugaba') for habitual childhood actions."
+        },
+        {
+            "id": "g9-023",
+            "level": 1,
+            "theme": "Personal & Public Identities",
+            "sentence": "Me siento orgulloso de mis raíces y de las tradiciones de mi familia.",
+            "target": "Me siento orgulloso de",
+            "hint": "I feel proud of",
+            "notes": "Note 'sentirse' + adjective ('orgulloso/orgullosa')."
+        },
+        {
+            "id": "g9-024",
+            "level": 1,
+            "theme": "Science & Technology",
+            "sentence": "Las videollamadas hacen posible hablar con familiares que viven muy lejos.",
+            "target": "hacen posible hablar",
+            "hint": "make it possible to talk",
+            "notes": "Clean, natural phrasing without needing complex grammar."
+        },
+        {
+            "id": "g9-025",
+            "level": 1,
+            "theme": "Argument & Connectors",
+            "sentence": "Aunque hace frío en invierno, me gusta caminar al aire libre por la mañana.",
+            "target": "Aunque",
+            "hint": "Although / Even though",
+            "notes": "Versatile connector for everyday speech and writing."
+        },
+        {
+            "id": "g9-026",
+            "level": 1,
+            "theme": "Contemporary Life",
+            "sentence": "En mi escuela hay muchos clubes deportivos y actividades interesantes después de clases.",
+            "target": "hay muchos clubes",
+            "hint": "there are many clubs",
+            "notes": "'Hay' means both 'there is' and 'there are'."
+        },
+        {
+            "id": "g9-027",
+            "level": 1,
+            "theme": "Families & Communities",
+            "sentence": "Ayudar en casa con las tareas diarias demuestra respeto y cariño por la familia.",
+            "target": "Ayudar en casa",
+            "hint": "Helping at home",
+            "notes": "Infinitive as a subject ('Ayudar...') translates to '-ing' in English."
+        },
+        {
+            "id": "g9-028",
+            "level": 1,
+            "theme": "Beauty & Aesthetics",
+            "sentence": "La música en español tiene ritmos muy alegres que invitan a bailar y cantar.",
+            "target": "ritmos muy alegres",
+            "hint": "very upbeat / lively rhythms",
+            "notes": "Great conversation starter with Argentine or Bolivian Preply tutors."
+        },
+        {
+            "id": "g9-029",
+            "level": 1,
+            "theme": "Global Challenges",
+            "sentence": "El transporte público reduce el tráfico y mantiene el aire más limpio en la ciudad.",
+            "target": "mantiene el aire más limpio",
+            "hint": "keeps the air cleaner",
+            "notes": "Clear cause-and-effect sentence."
+        },
+        {
+            "id": "g9-030",
+            "level": 1,
+            "theme": "Argument & Connectors",
+            "sentence": "En resumen, llevar una vida equilibrada mejora nuestra salud y nuestra felicidad.",
+            "target": "En resumen",
+            "hint": "In summary / To sum up",
+            "notes": "Easy, natural wrap-up phrase for any 9th-grade presentation."
+        },
+        {
+            "id": "g9-031",
+            "level": 1,
+            "theme": "Families & Communities",
+            "sentence": "Los domingos nos reunimos en casa de mis tíos para compartir un asado delicioso.",
+            "target": "nos reunimos en casa de",
+            "hint": "we gather at the house of",
+            "notes": "'Asado' is the iconic Argentine weekend family barbecue tradition."
+        },
+        {
+            "id": "g9-032",
+            "level": 1,
+            "theme": "Personal & Public Identities",
+            "sentence": "Celebrar los cumpleaños en familia fortalece nuestro sentido de unión y alegría.",
+            "target": "fortalece nuestro sentido de unión",
+            "hint": "strengthens our sense of unity",
+            "notes": "Bridge phrase between simple 9th-grade ideas and AP identity themes."
+        },
+        {
+            "id": "g9-033",
+            "level": 1,
+            "theme": "Science & Technology",
+            "sentence": "Es necesario apagar el teléfono antes de dormir para descansar mejor por la noche.",
+            "target": "apagar el teléfono",
+            "hint": "to turn off the phone",
+            "notes": "Everyday tech verb ('apagar' = turn off, 'encender/prender' = turn on)."
+        },
+        {
+            "id": "g9-034",
+            "level": 1,
+            "theme": "Beauty & Aesthetics",
+            "sentence": "Los museos locales permiten conocer la historia y el arte de nuestra región.",
+            "target": "conocer la historia y el arte",
+            "hint": "to learn about the history and art",
+            "notes": "Use 'conocer' (not 'saber') for becoming familiar with art, places, or history."
+        },
+        {
+            "id": "g9-035",
+            "level": 1,
+            "theme": "Global Challenges",
+            "sentence": "Plantar árboles en las escuelas y parques ayuda a dar sombra y proteger la naturaleza.",
+            "target": "proteger la naturaleza",
+            "hint": "to protect nature",
+            "notes": "Simple, high-utility environmental phrase."
+        },
+        {
+            "id": "g9-036",
+            "level": 1,
+            "theme": "Argument & Connectors",
+            "sentence": "En primer lugar, creo que todos los estudiantes deberían aprender a cocinar platos básicos.",
+            "target": "En primer lugar",
+            "hint": "First of all / In the first place",
+            "notes": "Great opener to structure a 2-minute speech or paragraph."
+        },
+        {
+            "id": "g9-037",
+            "level": 1,
+            "theme": "Argument & Connectors",
+            "sentence": "En segundo lugar, hacer ejercicio diario mejora tanto el cuerpo como la mente.",
+            "target": "En segundo lugar",
+            "hint": "Secondly / In the second place",
+            "notes": "Pairs directly with 'En primer lugar'."
+        },
+        {
+            "id": "g9-038",
+            "level": 1,
+            "theme": "Argument & Connectors",
+            "sentence": "Por un lado, las redes sociales conectan a las personas; por otro lado, pueden distraernos.",
+            "target": "Por un lado ... por otro lado",
+            "hint": "On one hand ... on the other hand",
+            "notes": "Essential balanced-argument frame for AP essays and discussions."
+        },
+        {
+            "id": "g9-039",
+            "level": 1,
+            "theme": "Argument & Connectors",
+            "sentence": "De hecho, muchos jóvenes prefieren leer libros digitales porque son fáciles de llevar.",
+            "target": "De hecho",
+            "hint": "In fact / Actually",
+            "notes": "Note: 'Actualmente' means 'currently', NOT 'actually' — use 'de hecho' for 'actually'!"
+        },
+        {
+            "id": "g9-040",
+            "level": 1,
+            "theme": "Argument & Connectors",
+            "sentence": "Es decir, necesitamos encontrar un equilibrio entre el estudio y el descanso.",
+            "target": "Es decir",
+            "hint": "That is to say / In other words",
+            "notes": "Helps clarify an idea when speaking spontaneously with a tutor."
+        },
+        {
+            "id": "g9-041",
+            "level": 1,
+            "theme": "Argument & Connectors",
+            "sentence": "A diferencia de mis hermanos, a mí me gusta levantarme muy temprano los sábados.",
+            "target": "A diferencia de",
+            "hint": "Unlike / In contrast to",
+            "notes": "Core comparison phrase for AP Speaking Task 4."
+        },
+        {
+            "id": "g9-042",
+            "level": 1,
+            "theme": "Argument & Connectors",
+            "sentence": "Al igual que en mi ciudad, en Buenos Aires hay muchos cafés históricos.",
+            "target": "Al igual que",
+            "hint": "Just like / Similarly to",
+            "notes": "Core similarity phrase for AP Speaking Task 4."
+        },
+        {
+            "id": "g9-043",
+            "level": 1,
+            "theme": "Argument & Connectors",
+            "sentence": "Sin duda, la música es una parte fundamental de la cultura en todo el mundo.",
+            "target": "Sin duda",
+            "hint": "Without a doubt",
+            "notes": "Adds confidence and emphasis to your thesis."
+        },
+        {
+            "id": "g9-044",
+            "level": 1,
+            "theme": "Argument & Connectors",
+            "sentence": "A menudo escucho podcasts en español mientras camino hacia la parada del autobús.",
+            "target": "A menudo",
+            "hint": "Often / Frequently",
+            "notes": "Natural synonym for 'frecuentemente'."
+        },
+        {
+            "id": "g9-045",
+            "level": 1,
+            "theme": "Argument & Connectors",
+            "sentence": "En conclusión, pequeñas acciones diarias pueden generar cambios positivos en la comunidad.",
+            "target": "En conclusión",
+            "hint": "In conclusion",
+            "notes": "Clean closing transition for essays and speeches."
+        },
+        {
+            "id": "g9-046",
+            "level": 1,
+            "theme": "Contemporary Life",
+            "sentence": "Los lunes por la mañana siempre tengo clase de matemáticas y educación física.",
+            "target": "Los lunes por la mañana",
+            "hint": "On Monday mornings",
+            "notes": "Use 'los + day of week' (not 'en los') to mean 'on [day]s'."
+        },
+        {
+            "id": "g9-047",
+            "level": 1,
+            "theme": "Contemporary Life",
+            "sentence": "Me cuesta mucho trabajo despertarme temprano cuando hace frío afuera.",
+            "target": "Me cuesta mucho trabajo",
+            "hint": "It is very hard for me to",
+            "notes": "'Costar trabajo + infinitive' is how native speakers say 'to have a hard time doing something'."
+        },
+        {
+            "id": "g9-048",
+            "level": 1,
+            "theme": "Contemporary Life",
+            "sentence": "Después de terminar mis deberes, suelo tocar la guitarra durante media hora.",
+            "target": "Después de terminar",
+            "hint": "After finishing",
+            "notes": "'Después de' is followed directly by an infinitive verb."
+        },
+        {
+            "id": "g9-049",
+            "level": 1,
+            "theme": "Contemporary Life",
+            "sentence": "Ahorro parte de mi dinero cada mes para comprar una bicicleta nueva en verano.",
+            "target": "Ahorro parte de mi dinero",
+            "hint": "I save part of my money",
+            "notes": "'Ahorrar' = to save money, time, or energy."
+        },
+        {
+            "id": "g9-050",
+            "level": 1,
+            "theme": "Contemporary Life",
+            "sentence": "En el supermercado siempre revisamos los precios antes de elegir los productos.",
+            "target": "antes de elegir",
+            "hint": "before choosing",
+            "notes": "'Antes de' + infinitive ('elegir' = to choose)."
+        },
+        {
+            "id": "g9-051",
+            "level": 1,
+            "theme": "Contemporary Life",
+            "sentence": "Mi asignatura favorita es la historia porque me gusta aprender sobre otras épocas.",
+            "target": "Mi asignatura favorita",
+            "hint": "My favorite school subject",
+            "notes": "'Asignatura' or 'materia' = school subject."
+        },
+        {
+            "id": "g9-052",
+            "level": 1,
+            "theme": "Contemporary Life",
+            "sentence": "Llevo una dieta saludable que incluye muchas verduras, frutas y agua fresca.",
+            "target": "Llevo una dieta saludable",
+            "hint": "I follow a healthy diet",
+            "notes": "'Llevar una vida / dieta' = to lead a life / follow a diet."
+        },
+        {
+            "id": "g9-053",
+            "level": 1,
+            "theme": "Contemporary Life",
+            "sentence": "Cuando salimos de vacaciones, nos gusta visitar parques nacionales y acampar.",
+            "target": "salimos de vacaciones",
+            "hint": "we go on vacation",
+            "notes": "'Salir de vacaciones' or 'ir de vacaciones'."
+        },
+        {
+            "id": "g9-054",
+            "level": 1,
+            "theme": "Contemporary Life",
+            "sentence": "Hacer deporte en equipo enseña a colaborar y respetar las reglas del juego.",
+            "target": "Hacer deporte en equipo",
+            "hint": "Playing team sports",
+            "notes": "Spanish uses 'hacer deporte' or 'practicar deporte' rather than 'jugar deporte'."
+        },
+        {
+            "id": "g9-055",
+            "level": 1,
+            "theme": "Contemporary Life",
+            "sentence": "Los fines de semana voy a la biblioteca pública para leer novelas de aventuras.",
+            "target": "voy a la biblioteca pública",
+            "hint": "I go to the public library",
+            "notes": "Reminder: 'biblioteca' = library; 'librería' = bookstore."
+        },
+        {
+            "id": "g9-056",
+            "level": 1,
+            "theme": "Families & Communities",
+            "sentence": "Me llevo muy bien con mi hermana menor aunque a veces discutimos por la televisión.",
+            "target": "Me llevo muy bien con",
+            "hint": "I get along very well with",
+            "notes": "'Llevarse bien/mal con alguien' = to get along well/badly with someone."
+        },
+        {
+            "id": "g9-057",
+            "level": 1,
+            "theme": "Families & Communities",
+            "sentence": "Mis padres siempre me apoyan cuando tengo un examen difícil o un partido importante.",
+            "target": "siempre me apoyan",
+            "hint": "always support me",
+            "notes": "'Apoyar' = to support emotionally or practically."
+        },
+        {
+            "id": "g9-058",
+            "level": 1,
+            "theme": "Families & Communities",
+            "sentence": "En nuestra comunidad organizamos eventos para ayudar a los vecinos mayores.",
+            "target": "ayudar a los vecinos mayores",
+            "hint": "to help elderly neighbors",
+            "notes": "Personal 'a' is used before people ('ayudar a los vecinos')."
+        },
+        {
+            "id": "g9-059",
+            "level": 1,
+            "theme": "Families & Communities",
+            "sentence": "Los voluntarios limpian el parque del barrio el primer sábado de cada mes.",
+            "target": "Los voluntarios limpian",
+            "hint": "The volunteers clean",
+            "notes": "Community service vocabulary is common on AP prompts."
+        },
+        {
+            "id": "g9-060",
+            "level": 1,
+            "theme": "Families & Communities",
+            "sentence": "Cuando era pequeño, mis abuelos me contaban cuentos antes de dormir.",
+            "target": "me contaban cuentos",
+            "hint": "used to tell me stories",
+            "notes": "'Contar un cuento' = to tell a story."
+        },
+        {
+            "id": "g9-061",
+            "level": 1,
+            "theme": "Families & Communities",
+            "sentence": "En Bolivia muchas familias trabajan juntas en la comunidad para construir escuelas.",
+            "target": "trabajan juntas en la comunidad",
+            "hint": "work together in the community",
+            "notes": "Reflects Andean traditions of collective community work ('minka/ayni')."
+        },
+        {
+            "id": "g9-062",
+            "level": 1,
+            "theme": "Families & Communities",
+            "sentence": "Es fundamental pasar tiempo de calidad con la familia sin mirar pantallas.",
+            "target": "pasar tiempo de calidad",
+            "hint": "to spend quality time",
+            "notes": "Notice 'pasar tiempo' (not 'gastar tiempo') for spending time."
+        },
+        {
+            "id": "g9-063",
+            "level": 1,
+            "theme": "Families & Communities",
+            "sentence": "Mi tío nos enseñó a preparar empanadas caseras durante las fiestas de invierno.",
+            "target": "nos enseñó a preparar",
+            "hint": "taught us how to prepare",
+            "notes": "'Enseñar a + infinitive' = to teach how to do something."
+        },
+        {
+            "id": "g9-064",
+            "level": 1,
+            "theme": "Families & Communities",
+            "sentence": "La plaza central del pueblo es el lugar donde todos se reúnen para charlar.",
+            "target": "es el lugar donde",
+            "hint": "is the place where",
+            "notes": "'Charlar' = to chat casually."
+        },
+        {
+            "id": "g9-065",
+            "level": 1,
+            "theme": "Families & Communities",
+            "sentence": "Respetar las opiniones de los demás hace que la convivencia sea más pacífica.",
+            "target": "la convivencia",
+            "hint": "living together / coexistence",
+            "notes": "High-value AP word introduced here in a clear, simple context."
+        },
+        {
+            "id": "g9-066",
+            "level": 1,
+            "theme": "Science & Technology",
+            "sentence": "Descargué una aplicación nueva para practicar vocabulario en español diez minutos al día.",
+            "target": "Descargué una aplicación",
+            "hint": "I downloaded an app",
+            "notes": "Spelling note: '-gar' verbs change 'g' to 'gu' in first-person preterite ('descargué')."
+        },
+        {
+            "id": "g9-067",
+            "level": 1,
+            "theme": "Science & Technology",
+            "sentence": "Debemos proteger nuestras contraseñas y no compartir datos personales en línea.",
+            "target": "no compartir datos personales",
+            "hint": "not sharing personal data",
+            "notes": "'En línea' = online."
+        },
+        {
+            "id": "g9-068",
+            "level": 1,
+            "theme": "Science & Technology",
+            "sentence": "La energía solar permite generar electricidad limpia usando la luz del sol.",
+            "target": "generar electricidad limpia",
+            "hint": "to generate clean electricity",
+            "notes": "Connects Science & Technology with Global Challenges."
+        },
+        {
+            "id": "g9-069",
+            "level": 1,
+            "theme": "Science & Technology",
+            "sentence": "Hoy tenemos acceso inmediato a noticias de todo el mundo gracias a Internet.",
+            "target": "gracias a Internet",
+            "hint": "thanks to the Internet",
+            "notes": "'Gracias a' + noun explains positive causes."
+        },
+        {
+            "id": "g9-070",
+            "level": 1,
+            "theme": "Science & Technology",
+            "sentence": "A veces la conexión a Internet es lenta y se corta durante la clase virtual.",
+            "target": "se corta durante la clase",
+            "hint": "cuts out / drops during class",
+            "notes": "Super useful real-life phrase for Preply tutoring sessions!"
+        },
+        {
+            "id": "g9-071",
+            "level": 1,
+            "theme": "Science & Technology",
+            "sentence": "Los científicos investigan nuevas formas de curar enfermedades y mejorar la salud.",
+            "target": "investigan nuevas formas de",
+            "hint": "research new ways to",
+            "notes": "'Investigar' = to research / investigate."
+        },
+        {
+            "id": "g9-072",
+            "level": 1,
+            "theme": "Science & Technology",
+            "sentence": "Prefiero tomar apuntes a mano en mi cuaderno porque recuerdo mejor la información.",
+            "target": "tomar apuntes a mano",
+            "hint": "to take notes by hand",
+            "notes": "'Tomar apuntes' = to take class notes."
+        },
+        {
+            "id": "g9-073",
+            "level": 1,
+            "theme": "Science & Technology",
+            "sentence": "Los teléfonos inteligentes funcionan como cámaras, mapas y relojes al mismo tiempo.",
+            "target": "al mismo tiempo",
+            "hint": "at the same time",
+            "notes": "Everyday time expression."
+        },
+        {
+            "id": "g9-074",
+            "level": 1,
+            "theme": "Science & Technology",
+            "sentence": "Es importante verificar si una noticia en las redes sociales es verdadera o falsa.",
+            "target": "es verdadera o falsa",
+            "hint": "is true or false",
+            "notes": "Early foundation for media literacy discussions."
+        },
+        {
+            "id": "g9-075",
+            "level": 1,
+            "theme": "Science & Technology",
+            "sentence": "En el laboratorio de ciencias hicimos un experimento muy interesante sobre el agua.",
+            "target": "hicimos un experimento",
+            "hint": "we did an experiment",
+            "notes": "Preterite of 'hacer' ('hicimos')."
+        },
+        {
+            "id": "g9-076",
+            "level": 1,
+            "theme": "Global Challenges",
+            "sentence": "Apagar las luces cuando salimos de una habitación ayuda a ahorrar energía.",
+            "target": "ahorrar energía",
+            "hint": "to save energy",
+            "notes": "Simple environmental habit."
+        },
+        {
+            "id": "g9-077",
+            "level": 1,
+            "theme": "Global Challenges",
+            "sentence": "Llevo mi propia botella reutilizable a la escuela para usar menos plástico.",
+            "target": "botella reutilizable",
+            "hint": "reusable bottle",
+            "notes": "Practical everyday sustainability vocabulary."
+        },
+        {
+            "id": "g9-078",
+            "level": 1,
+            "theme": "Global Challenges",
+            "sentence": "El cambio climático afecta a los glaciares de los Andes en Bolivia y Argentina.",
+            "target": "El cambio climático",
+            "hint": "Climate change",
+            "notes": "Core AP Global Challenges term tied to South American geography."
+        },
+        {
+            "id": "g9-079",
+            "level": 1,
+            "theme": "Global Challenges",
+            "sentence": "Muchas familias compran frutas locales en el mercado para apoyar a los agricultores.",
+            "target": "apoyar a los agricultores",
+            "hint": "to support farmers",
+            "notes": "'Agricultor' = farmer."
+        },
+        {
+            "id": "g9-080",
+            "level": 1,
+            "theme": "Global Challenges",
+            "sentence": "No debemos tirar basura en los ríos ni en las playas porque contamina el agua.",
+            "target": "tirar basura",
+            "hint": "to litter / throw trash",
+            "notes": "'Basura' = trash/garbage."
+        },
+        {
+            "id": "g9-081",
+            "level": 1,
+            "theme": "Global Challenges",
+            "sentence": "Caminar o andar en bicicleta para ir a la escuela reduce la contaminación del aire.",
+            "target": "andar en bicicleta",
+            "hint": "riding a bicycle",
+            "notes": "In Latin America, 'andar en bicicleta' is very common alongside 'montar en bicicleta'."
+        },
+        {
+            "id": "g9-082",
+            "level": 1,
+            "theme": "Global Challenges",
+            "sentence": "El agua potable es un recurso muy valioso que debemos cuidar todos los días.",
+            "target": "El agua potable",
+            "hint": "Clean drinking water",
+            "notes": "Note: feminine noun 'agua' takes 'el' in singular ('el agua limpia') to avoid double 'a' sound."
+        },
+        {
+            "id": "g9-083",
+            "level": 1,
+            "theme": "Global Challenges",
+            "sentence": "La educación gratuita permite que todos los niños tengan oportunidades para aprender.",
+            "target": "La educación gratuita",
+            "hint": "Free education",
+            "notes": "'Gratuito/a' = free of charge (whereas 'libre' = free/not busy)."
+        },
+        {
+            "id": "g9-084",
+            "level": 1,
+            "theme": "Global Challenges",
+            "sentence": "Los incendios forestales destruyen el hogar de muchos animales silvestres.",
+            "target": "animales silvestres",
+            "hint": "wild animals",
+            "notes": "'Silvestre' = wild (for plants/animals in nature)."
+        },
+        {
+            "id": "g9-085",
+            "level": 1,
+            "theme": "Global Challenges",
+            "sentence": "Donar ropa y libros que ya no usamos ayuda a las personas necesitadas.",
+            "target": "Donar ropa y libros",
+            "hint": "Donating clothes and books",
+            "notes": "'Donar' = to donate."
+        },
+        {
+            "id": "g9-086",
+            "level": 1,
+            "theme": "Personal & Public Identities",
+            "sentence": "Aprender español me permite hablar directamente con personas de veinte países.",
+            "target": "hablar directamente con",
+            "hint": "to speak directly with",
+            "notes": "Spanish is the official language in 20 countries (plus Puerto Rico)."
+        },
+        {
+            "id": "g9-087",
+            "level": 1,
+            "theme": "Personal & Public Identities",
+            "sentence": "Cada país hispanohablante tiene su propio acento y palabras especiales muy interesantes.",
+            "target": "su propio acento",
+            "hint": "its own accent",
+            "notes": "Great observation when comparing Argentine and Bolivian tutors!"
+        },
+        {
+            "id": "g9-088",
+            "level": 1,
+            "theme": "Personal & Public Identities",
+            "sentence": "Me considero una persona curiosa a la que le gusta hacer muchas preguntas.",
+            "target": "Me considero una persona",
+            "hint": "I consider myself a person",
+            "notes": "Useful self-description phrase for interviews and conversations."
+        },
+        {
+            "id": "g9-089",
+            "level": 1,
+            "theme": "Personal & Public Identities",
+            "sentence": "La comida casera de mi abuela siempre me recuerda a las reuniones familiares.",
+            "target": "siempre me recuerda a",
+            "hint": "always reminds me of",
+            "notes": "'Recordar a' = to remind someone of something."
+        },
+        {
+            "id": "g9-090",
+            "level": 1,
+            "theme": "Personal & Public Identities",
+            "sentence": "En Argentina la gente usa 'vos' en lugar de 'tú' cuando habla con amigos.",
+            "target": "en lugar de",
+            "hint": "instead of",
+            "notes": "Key cultural & linguistic fact for his Argentine Preply sessions."
+        },
+        {
+            "id": "g9-091",
+            "level": 1,
+            "theme": "Personal & Public Identities",
+            "sentence": "Mis amigos y yo compartimos intereses parecidos, como la música y los videojuegos.",
+            "target": "compartimos intereses parecidos",
+            "hint": "we share similar interests",
+            "notes": "'Parecido/a' = similar."
+        },
+        {
+            "id": "g9-092",
+            "level": 1,
+            "theme": "Personal & Public Identities",
+            "sentence": "Viajar a otros lugares nos enseña a respetar diferentes formas de vivir.",
+            "target": "diferentes formas de vivir",
+            "hint": "different ways of living",
+            "notes": "Simple, thoughtful cultural reflection."
+        },
+        {
+            "id": "g9-093",
+            "level": 1,
+            "theme": "Personal & Public Identities",
+            "sentence": "El bilingüismo es una gran ventaja cuando buscamos trabajo o estudiamos en la universidad.",
+            "target": "una gran ventaja",
+            "hint": "a great advantage",
+            "notes": "'Ventaja' = advantage; 'desventaja' = disadvantage."
+        },
+        {
+            "id": "g9-094",
+            "level": 1,
+            "theme": "Personal & Public Identities",
+            "sentence": "Las fiestas tradicionales mantienen vivas las costumbres de nuestros antepasados.",
+            "target": "mantienen vivas las costumbres",
+            "hint": "keep customs alive",
+            "notes": "'Antepasados' = ancestors."
+        },
+        {
+            "id": "g9-095",
+            "level": 1,
+            "theme": "Personal & Public Identities",
+            "sentence": "Es normal cometer errores al hablar otro idioma porque así es como aprendemos.",
+            "target": "cometer errores",
+            "hint": "to make mistakes",
+            "notes": "Spanish uses 'cometer un error' (not 'hacer un error')."
+        },
+        {
+            "id": "g9-096",
+            "level": 1,
+            "theme": "Beauty & Aesthetics",
+            "sentence": "En mi tiempo libre me gusta dibujar paisajes y pintar con acuarelas.",
+            "target": "dibujar paisajes",
+            "hint": "to draw landscapes",
+            "notes": "'Paisaje' = landscape/scenery."
+        },
+        {
+            "id": "g9-097",
+            "level": 1,
+            "theme": "Beauty & Aesthetics",
+            "sentence": "Los tejidos tradicionales de Bolivia tienen colores brillantes y diseños geométricos.",
+            "target": "Los tejidos tradicionales",
+            "hint": "Traditional textiles / weavings",
+            "notes": "Bolivian textiles ('aguayo') are a classic AP Beauty & Aesthetics example."
+        },
+        {
+            "id": "g9-098",
+            "level": 1,
+            "theme": "Beauty & Aesthetics",
+            "sentence": "La arquitectura antigua del centro histórico atrae a muchos turistas cada año.",
+            "target": "atrae a muchos turistas",
+            "hint": "attracts many tourists",
+            "notes": "'Atraer' = to attract."
+        },
+        {
+            "id": "g9-099",
+            "level": 1,
+            "theme": "Beauty & Aesthetics",
+            "sentence": "Una buena película puede hacernos reír, llorar y pensar sobre la vida.",
+            "target": "hacernos reír",
+            "hint": "make us laugh",
+            "notes": "'Reír' = to laugh; 'llorar' = to cry."
+        },
+        {
+            "id": "g9-100",
+            "level": 1,
+            "theme": "Beauty & Aesthetics",
+            "sentence": "En el teatro de nuestra escuela los estudiantes presentan obras cada primavera.",
+            "target": "presentan obras",
+            "hint": "perform plays",
+            "notes": "'Una obra de teatro' = a stage play."
+        },
+        {
+            "id": "g9-101",
+            "level": 1,
+            "theme": "Beauty & Aesthetics",
+            "sentence": "El tango es un baile famoso que nació en los barrios de Buenos Aires.",
+            "target": "nació en los barrios de",
+            "hint": "was born in the neighborhoods of",
+            "notes": "Great Argentine cultural reference for AP speaking tasks."
+        },
+        {
+            "id": "g9-102",
+            "level": 1,
+            "theme": "Beauty & Aesthetics",
+            "sentence": "Leer cuentos cortos en español mejora nuestro vocabulario y nuestra imaginación.",
+            "target": "Leer cuentos cortos",
+            "hint": "Reading short stories",
+            "notes": "'Cuento corto' = short story."
+        },
+        {
+            "id": "g9-103",
+            "level": 1,
+            "theme": "Beauty & Aesthetics",
+            "sentence": "La fotografía permite capturar momentos especiales de la vida cotidiana.",
+            "target": "capturar momentos especiales",
+            "hint": "to capture special moments",
+            "notes": "'Vida cotidiana' = daily life."
+        },
+        {
+            "id": "g9-104",
+            "level": 1,
+            "theme": "Beauty & Aesthetics",
+            "sentence": "Los festivales de música al aire libre reúnen a familias y jóvenes de toda la ciudad.",
+            "target": "al aire libre",
+            "hint": "outdoors / in the open air",
+            "notes": "High-frequency descriptive phrase."
+        },
+        {
+            "id": "g9-105",
+            "level": 1,
+            "theme": "Beauty & Aesthetics",
+            "sentence": "Cada artista expresa sus emociones de una manera única a través de su obra.",
+            "target": "a través de",
+            "hint": "through / by means of",
+            "notes": "Essential connector for discussing art, literature, and media."
+        },
+        {
+            "id": "g9-106",
+            "level": 1,
+            "theme": "Contemporary Life",
+            "sentence": "Tengo ganas de viajar a Sudamérica algún día para practicar mi español en persona.",
+            "target": "Tengo ganas de",
+            "hint": "I feel like / I look forward to",
+            "notes": "'Tener ganas de + infinitive' is one of the most common everyday idioms."
+        },
+        {
+            "id": "g9-107",
+            "level": 1,
+            "theme": "Contemporary Life",
+            "sentence": "Acabo de terminar mi proyecto de ciencias y ahora voy a descansar un rato.",
+            "target": "Acabo de terminar",
+            "hint": "I just finished",
+            "notes": "'Acabar de + infinitive' = to have just done something."
+        },
+        {
+            "id": "g9-108",
+            "level": 1,
+            "theme": "Contemporary Life",
+            "sentence": "Hace dos años que estudio español y cada mes entiendo mucho más.",
+            "target": "Hace dos años que",
+            "hint": "I have been ... for two years",
+            "notes": "'Hace + time + que + present tense' expresses ongoing duration."
+        },
+        {
+            "id": "g9-109",
+            "level": 1,
+            "theme": "Families & Communities",
+            "sentence": "Cuando tengo un problema, siempre puedo contar con el consejo de mis padres.",
+            "target": "puedo contar con",
+            "hint": "I can count on",
+            "notes": "'Contar con' = to count on / rely on."
+        },
+        {
+            "id": "g9-110",
+            "level": 1,
+            "theme": "Global Challenges",
+            "sentence": "Tenemos que cuidar los bosques porque producen el oxígeno que respiramos.",
+            "target": "Tenemos que cuidar",
+            "hint": "We have to take care of",
+            "notes": "'Tener que + infinitive' = to have to."
+        },
+        {
+            "id": "g9-111",
+            "level": 1,
+            "theme": "Science & Technology",
+            "sentence": "Me di cuenta de que estudiar un poco cada día funciona mejor que estudiar todo la noche anterior.",
+            "target": "Me di cuenta de que",
+            "hint": "I realized that",
+            "notes": "'Darse cuenta de que' = to realize that (very high frequency!)."
+        },
+        {
+            "id": "g9-112",
+            "level": 1,
+            "theme": "Personal & Public Identities",
+            "sentence": "Poco a poco me siento más cómodo hablando español sin miedo a equivocarme.",
+            "target": "Poco a poco",
+            "hint": "Little by little / Gradually",
+            "notes": "Great conversational phrase to describe progress."
+        },
+        {
+            "id": "g9-113",
+            "level": 1,
+            "theme": "Argument & Connectors",
+            "sentence": "Sobre todo, lo más importante es disfrutar el proceso de aprender cosas nuevas.",
+            "target": "Sobre todo",
+            "hint": "Above all / Especially",
+            "notes": "Written as two words ('sobre todo' = especially); one word ('sobretodo') means overcoat."
+        },
+        {
+            "id": "g9-114",
+            "level": 1,
+            "theme": "Beauty & Aesthetics",
+            "sentence": "La gastronomía peruana y boliviana usa ingredientes variados como la papa y el maíz.",
+            "target": "ingredientes variados",
+            "hint": "varied ingredients",
+            "notes": "Over 3,000 varieties of potatoes are native to the Andes!"
+        },
+        {
+            "id": "g9-115",
+            "level": 1,
+            "theme": "Contemporary Life",
+            "sentence": "Vale la pena esforzarse en la escuela para alcanzar nuestras metas en el futuro.",
+            "target": "Vale la pena",
+            "hint": "It is worth it",
+            "notes": "'Valer la pena + infinitive' = to be worth doing."
+        },
+        {
+            "id": "g9-116",
+            "level": 1,
+            "theme": "Families & Communities",
+            "sentence": "En mi barrio hay una feria los domingos donde venden pan casero y artesanías.",
+            "target": "pan casero y artesanías",
+            "hint": "homemade bread and handicrafts",
+            "notes": "'Casero/a' = homemade; 'artesanías' = local handicrafts."
+        },
+        {
+            "id": "g9-117",
+            "level": 1,
+            "theme": "Science & Technology",
+            "sentence": "Antes de enviar un correo electrónico al profesor, siempre reviso la ortografía.",
+            "target": "reviso la ortografía",
+            "hint": "I check the spelling",
+            "notes": "Directly relevant to the AP Spanish Email Reply task!"
+        },
+        {
+            "id": "g9-118",
+            "level": 1,
+            "theme": "Global Challenges",
+            "sentence": "Reducir el desperdicio de comida es una manera sencilla de ayudar al planeta.",
+            "target": "el desperdicio de comida",
+            "hint": "food waste",
+            "notes": "'Desperdicio' = waste (of food, water, or resources)."
+        },
+        {
+            "id": "g9-119",
+            "level": 1,
+            "theme": "Personal & Public Identities",
+            "sentence": "Dar las gracias y saludar con una sonrisa son gestos importantes de cortesía.",
+            "target": "Dar las gracias",
+            "hint": "To say thank you / give thanks",
+            "notes": "'Dar las gracias' = to thank."
+        },
+        {
+            "id": "g9-120",
+            "level": 1,
+            "theme": "Argument & Connectors",
+            "sentence": "En realidad, aprender vocabulario en frases completas es mucho más fácil que memorizar listas.",
+            "target": "En realidad",
+            "hint": "In reality / Actually",
+            "notes": "Another great alternative to 'de hecho' for 'actually'."
+        }
+    ]
+}
