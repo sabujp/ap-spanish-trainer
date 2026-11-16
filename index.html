@@ -122,15 +122,15 @@
             <span>Total: <strong id="stat-total">0</strong></span>
           </div>
 
-          <!-- Google Sign-In & Drive Sync Button -->
-          <button id="open-drive-sync-btn" type="button" class="flex items-center gap-2 bg-white hover:bg-slate-50 border border-slate-300 text-slate-800 px-3 py-1.5 rounded-xl text-xs font-semibold shadow-2xs transition cursor-pointer" title="Sign in with Google to save & sync progress to Google Drive">
+          <!-- 1-Click Sign in with Google Button -->
+          <button id="header-google-signin-btn" type="button" class="flex items-center gap-2 bg-white hover:bg-slate-50 border border-slate-300 text-slate-800 px-3.5 py-1.5 rounded-xl text-xs font-semibold shadow-2xs transition cursor-pointer" title="Sign in with Google to save & sync your progress to Google Drive">
             <svg class="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24">
               <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"/>
               <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.11-6.72-4.96H1.29v3.14C3.26 21.3 7.37 24 12 24z"/>
               <path fill="#FBBC05" d="M5.28 14.24c-.24-.72-.38-1.49-.38-2.24s.14-1.52.38-2.24V6.62H1.29C.47 8.24 0 10.06 0 12s.47 3.76 1.29 5.38l3.99-3.14z"/>
               <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.37 0 3.26 2.7 1.29 6.62l3.99 3.14c.95-2.85 3.6-4.96 6.72-4.96z"/>
             </svg>
-            <span id="drive-sync-badge" class="max-w-[160px] truncate">Google Drive Sync</span>
+            <span id="drive-sync-badge" class="max-w-[160px] truncate">Sign in with Google</span>
           </button>
 
           <!-- How to Use Guide Button -->
@@ -200,7 +200,7 @@
           <!-- Daily New-Card Pace Cap -->
           <div class="flex items-center gap-1.5 bg-indigo-50/80 border border-indigo-100 px-3 py-1.5 rounded-xl text-xs">
             <span class="font-semibold text-indigo-900">New Today:</span>
-            <strong id="daily-new-progress" class="text-indigo-700">0 / 10</strong>
+            <strong id="daily-new-progress" class="text-indigo-700">0 / 15</strong>
             <label for="daily-new-limit-select" class="sr-only">New cards per day limit</label>
             <select id="daily-new-limit-select" class="ml-1 bg-white border border-indigo-200 rounded-lg px-1.5 py-0.5 text-[11px] font-bold text-indigo-800 focus:outline-none" title="Maximum new unstudied cards introduced per day">
               <option value="5">5/day</option>
@@ -521,64 +521,39 @@
 
   </main>
 
-  <!-- ==================== GOOGLE SIGN-IN & DRIVE SYNC MODAL ==================== -->
+  <!-- ==================== GOOGLE ACCOUNT & DRIVE SYNC STATUS MODAL (SHOWN ONLY WHEN SIGNED IN) ==================== -->
   <div id="drive-sync-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 hidden items-center justify-center p-4">
-    <div class="bg-white rounded-3xl shadow-2xl max-w-lg w-full p-6 border border-slate-200 space-y-5 max-h-[90vh] overflow-y-auto">
+    <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full p-6 border border-slate-200 space-y-5">
       <div class="flex items-start justify-between gap-3 border-b border-slate-100 pb-3">
         <div>
-          <h3 class="text-lg font-extrabold text-slate-900">Google Sign-In &amp; Drive Sync</h3>
-          <p class="text-xs text-slate-500 mt-0.5">Save each user's custom Preply phrases and SRS progress directly to their own Google Drive.</p>
+          <h3 class="text-lg font-extrabold text-slate-900">Google Drive Sync</h3>
+          <p class="text-xs text-slate-500 mt-0.5">Your progress automatically backs up to your personal Google Drive.</p>
         </div>
         <button id="close-drive-sync-btn" type="button" class="text-slate-400 hover:text-slate-700 p-1 rounded-lg text-lg font-bold leading-none cursor-pointer">
           ✕
         </button>
       </div>
 
-      <!-- Connection Status Card -->
       <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-3">
-        <div class="flex items-center justify-between gap-2">
-          <div>
-            <div id="google-user-name" class="text-sm font-bold text-slate-900">Not Signed In (Local Browser Mode)</div>
-            <div id="google-sync-status-detail" class="text-xs text-slate-500 mt-0.5">Connect a Google account to sync progress across devices.</div>
-          </div>
+        <div>
+          <div id="google-user-name" class="text-sm font-bold text-slate-900">Connected to Google Drive</div>
+          <div id="google-sync-status-detail" class="text-xs text-slate-500 mt-0.5">Automatic cloud sync active.</div>
         </div>
 
-        <div class="flex flex-wrap items-center gap-2 pt-1">
-          <button id="google-signin-action-btn" type="button" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-xs transition cursor-pointer">
-            Sign in with Google
+        <div class="flex flex-wrap items-center gap-2 pt-2 border-t border-slate-200/80">
+          <button id="drive-push-now-btn" type="button" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold transition cursor-pointer">
+            ↑ Sync Now
           </button>
-          <button id="google-signout-action-btn" type="button" class="hidden px-3.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-semibold transition cursor-pointer">
+          <button id="drive-pull-now-btn" type="button" class="px-3.5 py-2 rounded-xl bg-white hover:bg-slate-100 border border-slate-300 text-slate-700 text-xs font-semibold transition cursor-pointer">
+            ↓ Restore from Drive
+          </button>
+          <button id="google-signout-action-btn" type="button" class="px-3.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-semibold transition cursor-pointer ml-auto">
             Sign Out
           </button>
         </div>
-
-        <div id="drive-manual-actions" class="hidden flex flex-wrap items-center gap-2 pt-2 border-t border-slate-200/80">
-          <button id="drive-push-now-btn" type="button" class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold transition cursor-pointer">
-            ↑ Save Now to Drive
-          </button>
-          <button id="drive-pull-now-btn" type="button" class="px-3 py-1.5 rounded-lg bg-white hover:bg-slate-100 border border-slate-300 text-slate-700 text-xs font-semibold transition cursor-pointer">
-            ↓ Pull &amp; Merge from Drive
-          </button>
-        </div>
       </div>
 
-      <!-- Google OAuth Client ID Setup -->
-      <div class="bg-sky-50/70 border border-sky-200 rounded-2xl p-4 space-y-2.5">
-        <label for="google-client-id-input" class="block text-xs font-bold text-sky-950">
-          Google OAuth 2.0 Web Client ID
-        </label>
-        <p class="text-[11px] text-sky-900 leading-relaxed">
-          Enable <strong>Google Drive API</strong> in Google Cloud Console, create a Web OAuth Client ID with your Netlify URL under Authorized JavaScript Origins, and paste it below:
-        </p>
-        <div class="flex gap-2">
-          <input type="text" id="google-client-id-input" placeholder="1234567890-abcdefg.apps.googleusercontent.com" class="flex-1 rounded-xl border border-sky-300 px-3 py-2 text-xs font-mono bg-white focus:ring-2 focus:ring-sky-500 focus:outline-none" />
-          <button id="save-google-client-id-btn" type="button" class="px-3.5 py-2 rounded-xl bg-sky-700 hover:bg-sky-800 text-white text-xs font-semibold transition cursor-pointer shrink-0">
-            Save ID
-          </button>
-        </div>
-      </div>
-
-      <div class="flex justify-end pt-1">
+      <div class="flex justify-end">
         <button id="done-drive-sync-btn" type="button" class="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs sm:text-sm font-semibold transition cursor-pointer">
           Done
         </button>
@@ -623,7 +598,7 @@
 
         <div class="bg-amber-50/70 border border-amber-100 rounded-2xl p-4">
           <h4 class="font-bold text-amber-950 mb-1">4. Natural Google Voices &amp; Google Drive Sync</h4>
-          <p>When hosted over <code>https://</code> on Netlify, Chrome automatically unlocks natural <strong>Google español</strong> voices (or add a free-tier Google Cloud TTS key in Audio Settings for offline/iOS). When signed in with <strong>Google Drive Sync</strong>, every card rating, interval, ease score, and custom Preply phrase automatically backs up to your personal Google Drive.</p>
+          <p>When hosted over <code>https://</code> on Netlify, Chrome automatically unlocks natural <strong>Google español</strong> voices (or add a free-tier Google Cloud TTS key in Audio Settings for offline/iOS). Click <strong>Sign in with Google</strong> in the top bar so every card rating and custom phrase automatically backs up to your personal Google Drive.</p>
         </div>
       </div>
 
@@ -716,6 +691,13 @@
   <script>
     (function () {
       'use strict';
+
+      // =========================================================================
+      // APP-WIDE PUBLIC GOOGLE OAUTH CLIENT ID (Set once by site owner)
+      // Create a Web OAuth 2.0 Client ID in Google Cloud Console with your
+      // Netlify URL in Authorized JavaScript Origins and paste it below.
+      // =========================================================================
+      const DEFAULT_GOOGLE_CLIENT_ID = 'YOUR_GOOGLE_OAUTH_CLIENT_ID.apps.googleusercontent.com';
 
       const STORAGE_KEY = 'ap_spanish_srs_deck_v1';
       const DELETED_IDS_KEY = 'ap_spanish_deleted_ids_v1';
@@ -879,7 +861,7 @@
       };
 
       let googleAuthState = {
-        clientId: '',
+        clientId: DEFAULT_GOOGLE_CLIENT_ID,
         accessToken: '',
         tokenExpiresAt: 0,
         userEmail: '',
@@ -1201,7 +1183,6 @@
           const raw = localStorage.getItem(GOOGLE_AUTH_PREFS_KEY);
           if (raw) {
             const parsed = JSON.parse(raw);
-            googleAuthState.clientId = parsed.clientId || '';
             googleAuthState.userEmail = parsed.userEmail || '';
             googleAuthState.userName = parsed.userName || '';
             googleAuthState.driveFileId = parsed.driveFileId || '';
@@ -1212,6 +1193,7 @@
         } catch (err) {
           console.error('Failed to load Google auth prefs:', err);
         }
+        googleAuthState.clientId = DEFAULT_GOOGLE_CLIENT_ID;
         updateGoogleDriveUI();
       }
 
@@ -1220,7 +1202,6 @@
           localStorage.setItem(
             GOOGLE_AUTH_PREFS_KEY,
             JSON.stringify({
-              clientId: googleAuthState.clientId,
               userEmail: googleAuthState.userEmail,
               userName: googleAuthState.userName,
               driveFileId: googleAuthState.driveFileId,
@@ -1241,39 +1222,30 @@
 
       function updateGoogleDriveUI(syncStatusText = '') {
         const badge = document.getElementById('drive-sync-badge');
-        const btn = document.getElementById('open-drive-sync-btn');
+        const btn = document.getElementById('header-google-signin-btn');
         const userNameEl = document.getElementById('google-user-name');
         const detailEl = document.getElementById('google-sync-status-detail');
-        const signInBtn = document.getElementById('google-signin-action-btn');
-        const signOutBtn = document.getElementById('google-signout-action-btn');
-        const manualActions = document.getElementById('drive-manual-actions');
 
         if (hasValidGoogleToken()) {
           const displayLabel = googleAuthState.userName || googleAuthState.userEmail || 'Drive Connected';
           const sizeLabel = googleAuthState.lastPayloadBytes
-            ? ` (${(googleAuthState.lastPayloadBytes / 1024).toFixed(1)} KB delta)`
+            ? ` (${(googleAuthState.lastPayloadBytes / 1024).toFixed(1)} KB)`
             : '';
           badge.textContent = syncStatusText || displayLabel;
-          btn.className = 'flex items-center gap-2 bg-sky-50 hover:bg-sky-100 border border-sky-200 text-sky-900 px-3 py-1.5 rounded-xl text-xs font-semibold shadow-2xs transition cursor-pointer';
-          userNameEl.textContent = googleAuthState.userEmail
-            ? `${googleAuthState.userName || 'Signed In'} (${googleAuthState.userEmail})`
-            : 'Connected to Google Drive';
-          detailEl.textContent = googleAuthState.lastSyncedAt
-            ? `Last delta sync: ${googleAuthState.lastSyncedAt}${sizeLabel} • Atomic backup active`
-            : 'Connected — lightweight delta sync & atomic backup active.';
-          signInBtn.textContent = 'Refresh Session';
-          signOutBtn.classList.remove('hidden');
-          manualActions.classList.remove('hidden');
+          btn.className = 'flex items-center gap-2 bg-sky-50 hover:bg-sky-100 border border-sky-200 text-sky-900 px-3.5 py-1.5 rounded-xl text-xs font-semibold shadow-2xs transition cursor-pointer';
+          if (userNameEl) {
+            userNameEl.textContent = googleAuthState.userEmail
+              ? `${googleAuthState.userName || 'Signed In'} (${googleAuthState.userEmail})`
+              : 'Connected to Google Drive';
+          }
+          if (detailEl) {
+            detailEl.textContent = googleAuthState.lastSyncedAt
+              ? `Last synced at ${googleAuthState.lastSyncedAt}${sizeLabel}`
+              : 'Connected — automatic Google Drive backup active.';
+          }
         } else {
-          badge.textContent = googleAuthState.userEmail ? 'Reconnect Drive' : 'Google Drive Sync';
-          btn.className = 'flex items-center gap-2 bg-white hover:bg-slate-50 border border-slate-300 text-slate-800 px-3 py-1.5 rounded-xl text-xs font-semibold shadow-2xs transition cursor-pointer';
-          userNameEl.textContent = googleAuthState.userEmail
-            ? `Signed Out (${googleAuthState.userEmail})`
-            : 'Not Signed In (Local Browser Mode)';
-          detailEl.textContent = 'Connect a Google account to save progress deltas directly to Google Drive.';
-          signInBtn.textContent = 'Sign in with Google';
-          signOutBtn.classList.add('hidden');
-          manualActions.classList.add('hidden');
+          badge.textContent = 'Sign in with Google';
+          btn.className = 'flex items-center gap-2 bg-white hover:bg-slate-50 border border-slate-300 text-slate-800 px-3.5 py-1.5 rounded-xl text-xs font-semibold shadow-2xs transition cursor-pointer';
         }
       }
 
@@ -1509,14 +1481,13 @@
       }
 
       function startGoogleSignInFlow() {
-        const clientId = (googleAuthState.clientId || '').trim();
-        if (!clientId) {
-          showToast('Please paste your Google OAuth Client ID first.', 'error');
-          document.getElementById('google-client-id-input').focus();
+        const clientId = (DEFAULT_GOOGLE_CLIENT_ID || '').trim();
+        if (!clientId || clientId.startsWith('YOUR_GOOGLE_OAUTH_CLIENT_ID')) {
+          showToast('Google Sign-In is not configured yet—add DEFAULT_GOOGLE_CLIENT_ID in index.html.', 'info');
           return;
         }
         if (!window.google || !window.google.accounts || !window.google.accounts.oauth2) {
-          showToast('Google Identity script is still loading—try again in 1 second.', 'info');
+          showToast('Google Sign-In is still loading—try again in 1 second.', 'info');
           return;
         }
 
@@ -1536,7 +1507,7 @@
           }
         });
 
-        tokenClient.requestAccessToken({ prompt: googleAuthState.userEmail ? '' : 'consent' });
+        tokenClient.requestAccessToken({ prompt: '' });
       }
 
       function signOutGoogle() {
@@ -1552,13 +1523,13 @@
         googleAuthState.lastSyncedAt = '';
         googleAuthState.lastPayloadBytes = 0;
         saveGoogleAuthPrefs();
-        showToast('Signed out of Google Drive sync.', 'info');
+        closeDriveModal();
+        showToast('Signed out of Google.', 'info');
       }
 
-      // Google Drive Sync Modal Wiring
+      // Google Sign-In Header Button & Connected Account Modal Wiring
       const driveModal = document.getElementById('drive-sync-modal');
       function openDriveModal() {
-        document.getElementById('google-client-id-input').value = googleAuthState.clientId || '';
         updateGoogleDriveUI();
         driveModal.classList.remove('hidden');
         driveModal.classList.add('flex');
@@ -1567,19 +1538,19 @@
         driveModal.classList.add('hidden');
         driveModal.classList.remove('flex');
       }
-      document.getElementById('open-drive-sync-btn').onclick = openDriveModal;
+      document.getElementById('header-google-signin-btn').onclick = () => {
+        if (hasValidGoogleToken()) {
+          openDriveModal();
+        } else {
+          startGoogleSignInFlow();
+        }
+      };
       document.getElementById('close-drive-sync-btn').onclick = closeDriveModal;
       document.getElementById('done-drive-sync-btn').onclick = closeDriveModal;
       driveModal.addEventListener('click', (e) => {
         if (e.target === driveModal) closeDriveModal();
       });
 
-      document.getElementById('save-google-client-id-btn').onclick = () => {
-        googleAuthState.clientId = document.getElementById('google-client-id-input').value.trim();
-        saveGoogleAuthPrefs();
-        showToast('Google OAuth Client ID saved.', 'success');
-      };
-      document.getElementById('google-signin-action-btn').onclick = startGoogleSignInFlow;
       document.getElementById('google-signout-action-btn').onclick = signOutGoogle;
       document.getElementById('drive-push-now-btn').onclick = () => pushDeckToGoogleDrive(false);
       document.getElementById('drive-pull-now-btn').onclick = () => pullAndMergeFromGoogleDrive(false);
@@ -2073,7 +2044,7 @@
 
         const syncStatusBadge = hasValidGoogleToken()
           ? '<span class="text-sky-700 font-semibold">☁️ Auto-saving to Google Drive</span>'
-          : '<span class="text-slate-400">Saved locally (Sign in to sync Drive)</span>';
+          : '<span class="text-slate-400">Saved locally (Sign in with Google to sync)</span>';
 
         const levelLabels = {
           1: { text: 'Level 1: Foundations', cls: 'bg-emerald-50 border-emerald-200 text-emerald-800' },
