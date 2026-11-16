@@ -1,4 +1,4 @@
-# AP Spanish Chunk & Spaced Repetition Trainer
+# AP Spanish Trainer
 
 A lightweight, zero-build static web application designed to prepare students for the **AP Spanish Language and Culture** exam from 9th through 12th grade.
 
