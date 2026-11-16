@@ -1,13 +1,13 @@
-<!-- ==================== TAB 3: 2-MIN SPEAKING CHALLENGE ==================== -->
+<!-- ==================== TAB 3: SPEAKING CHALLENGE (2-MIN / 4-MIN / CUSTOM + TRANSLATE & GRADE) ==================== -->
 <section id="tab-speaking" class="tab-panel hidden space-y-6">
   <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 sm:p-8 space-y-6">
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
       <div>
         <span class="inline-block px-2.5 py-1 rounded-lg bg-purple-100 text-purple-800 text-xs font-bold uppercase tracking-wider mb-1">
-          AP Task 4 Simulator
+          AP Task 4 Simulator • Auto-Translate &amp; Grade
         </span>
-        <h2 class="text-xl font-extrabold text-slate-900">2-Minute Cultural Comparison Challenge</h2>
-        <p class="text-xs text-slate-500 mt-0.5">Compare your community with a Spanish-speaking region (e.g., Argentina or Bolivia) using the 3 target chunks below.</p>
+        <h2 class="text-xl font-extrabold text-slate-900">AP Cultural Comparison Speaking Challenge</h2>
+        <p class="text-xs text-slate-500 mt-0.5">Choose 2 min, 4 min, or custom length. Speak into your mic, then translate to English &amp; grade your speech automatically.</p>
       </div>
       <button id="new-speaking-challenge-btn" class="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold shadow-xs transition shrink-0 cursor-pointer">
         ↻ New Prompt &amp; Chunks
@@ -16,7 +16,7 @@
 
     <!-- Prompt Card -->
     <div class="bg-slate-900 text-white rounded-2xl p-6 space-y-3 shadow-inner">
-      <div class="flex items-center justify-between">
+      <div class="flex items-center justify-between gap-2 flex-wrap">
         <span id="speaking-prompt-theme" class="text-xs font-bold uppercase tracking-wider text-indigo-300">Theme</span>
         <button id="speak-prompt-btn" class="inline-flex items-center gap-1.5 text-xs bg-white/10 hover:bg-white/20 text-white px-3 py-1.5 rounded-lg transition cursor-pointer">
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -29,7 +29,7 @@
       <p id="speaking-prompt-en" class="text-xs sm:text-sm text-slate-300 italic"></p>
     </div>
 
-    <!-- Two Column: Required Chunks Checklist + Exam Timer -->
+    <!-- Two Column: Required Chunks Checklist + Exam Timer & Mic Controls -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
       <!-- Required Chunks -->
       <div class="bg-amber-50/60 border border-amber-200 rounded-2xl p-5 space-y-3">
@@ -37,39 +37,94 @@
           <span>Required Chunks to Weave In:</span>
           <span id="chunks-checked-count" class="text-xs font-semibold px-2 py-0.5 rounded-full bg-amber-200/80 text-amber-900">0 / 3 Used</span>
         </h3>
-        <p class="text-xs text-amber-800">Check each phrase off as you say it out loud during your 2-minute speech:</p>
+        <p class="text-xs text-amber-800">Auto-checked as you say them into your mic (or check manually):</p>
         <div id="speaking-chunks-list" class="space-y-2.5 pt-1">
           <!-- Populated dynamically -->
         </div>
       </div>
 
-      <!-- AP Timer Box -->
+      <!-- AP Timer & Live Mic Box -->
       <div class="bg-slate-50 border border-slate-200 rounded-2xl p-5 flex flex-col items-center justify-center text-center space-y-4">
-        <div class="inline-flex rounded-xl bg-slate-200/80 p-1">
-          <button id="timer-mode-speak" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-white text-slate-900 shadow-xs transition">
-            Speaking (2:00)
+        <div class="flex flex-wrap items-center justify-center gap-1 rounded-xl bg-slate-200/80 p-1">
+          <button id="timer-mode-speak2" type="button" class="px-2.5 py-1.5 rounded-lg text-xs font-bold bg-white text-slate-900 shadow-xs transition cursor-pointer">
+            Speak (2:00)
           </button>
-          <button id="timer-mode-prep" class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 transition">
-            AP Prep (4:00)
+          <button id="timer-mode-speak4" type="button" class="px-2.5 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 transition cursor-pointer">
+            Speak (4:00)
+          </button>
+          <button id="timer-mode-custom" type="button" class="px-2.5 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 transition cursor-pointer">
+            Custom
+          </button>
+          <button id="timer-mode-prep" type="button" class="px-2.5 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 transition cursor-pointer">
+            Prep (4:00)
           </button>
         </div>
 
-        <div id="timer-display" class="text-5xl sm:text-6xl font-extrabold font-mono tracking-tight text-slate-900 py-2">
+        <div id="speaking-custom-duration-row" class="hidden items-center justify-center gap-2 text-xs">
+          <label for="speaking-custom-minutes" class="font-semibold text-slate-700">Minutes:</label>
+          <input type="number" id="speaking-custom-minutes" min="1" max="15" value="3" class="w-16 rounded-lg border border-slate-300 bg-white px-2 py-1 text-center text-xs font-bold focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
+        </div>
+
+        <div id="timer-display" class="text-5xl sm:text-6xl font-extrabold font-mono tracking-tight text-slate-900 py-1">
           02:00
         </div>
 
-        <div class="flex items-center gap-2.5 w-full justify-center">
-          <button id="timer-start-btn" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm shadow-xs transition cursor-pointer">
-            Start Timer
+        <!-- Primary Mic + Timer Action Controls -->
+        <div class="flex flex-wrap items-center gap-2 w-full justify-center">
+          <button id="speaking-mic-start-btn" type="button" class="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs sm:text-sm shadow-xs transition cursor-pointer">
+            🎙️ Start Speaking + Mic
           </button>
-          <button id="timer-pause-btn" class="px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-semibold text-sm shadow-xs transition cursor-pointer">
+          <button id="speaking-stop-grade-btn" type="button" class="hidden inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs sm:text-sm shadow-xs transition cursor-pointer">
+            ■ Stop, Translate &amp; Grade
+          </button>
+          <button id="timer-start-btn" type="button" class="px-3.5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs sm:text-sm shadow-xs transition cursor-pointer" title="Run timer without microphone">
+            Timer Only
+          </button>
+          <button id="timer-pause-btn" type="button" class="px-3.5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-semibold text-xs sm:text-sm shadow-xs transition cursor-pointer">
             Pause
           </button>
-          <button id="timer-reset-btn" class="px-4 py-2.5 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 font-semibold text-sm transition cursor-pointer">
+          <button id="timer-reset-btn" type="button" class="px-3.5 py-2.5 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 font-semibold text-xs sm:text-sm transition cursor-pointer">
             Reset
           </button>
         </div>
+
+        <div id="speaking-mic-status" class="text-[11px] font-medium text-slate-500">
+          Ready — click <strong>Start Speaking + Mic</strong> to transcribe your Spanish live.
+        </div>
       </div>
+    </div>
+
+    <!-- Live Spanish Transcript & Playback -->
+    <div class="bg-slate-50 border border-slate-200 rounded-2xl p-5 space-y-3">
+      <div class="flex flex-wrap items-center justify-between gap-2">
+        <div class="flex items-center gap-2">
+          <h3 class="text-sm font-extrabold text-slate-900">Your Spanish Speech Transcript</h3>
+          <span id="speaking-live-meta" class="px-2 py-0.5 rounded-full bg-white border border-slate-200 text-[11px] font-semibold text-slate-600">0 words</span>
+        </div>
+        <div class="flex flex-wrap items-center gap-2">
+          <button id="speaking-translate-grade-btn" type="button" class="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-2xs transition cursor-pointer">
+            Translate &amp; Grade Speech
+          </button>
+          <button id="speaking-clear-transcript-btn" type="button" class="px-2.5 py-1.5 rounded-xl bg-white hover:bg-slate-100 border border-slate-300 text-slate-600 text-xs font-semibold transition cursor-pointer">
+            Clear
+          </button>
+        </div>
+      </div>
+
+      <textarea
+        id="speaking-transcript-input"
+        rows="4"
+        placeholder="Start speaking into your microphone (or paste/edit Spanish speech text here)..."
+        class="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 leading-relaxed focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+      ></textarea>
+
+      <audio id="speaking-playback-audio" controls class="hidden w-full h-9"></audio>
+    </div>
+
+    <!-- Step 1 (English Translation) & Step 2 (AP Grade Report) -->
+    <div id="speaking-results-panel" class="hidden space-y-4">
+      <div id="speaking-translation-output"></div>
+      <div id="speaking-grade-output"></div>
     </div>
   </div>
 </section>

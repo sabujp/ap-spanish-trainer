@@ -9,14 +9,15 @@ Instead of memorizing isolated 50-word translation lists, this app trains high-u
 ## Key Features
 
 - **Three Study Modes Under Tab 1 (`Study`):**
-  1. **Chunk / Phrase Tests (SM-2 SRS):** Learn phrases inside full AP-level sentences with customizable daily pacing (default: 20 new chunks/day, 7,300/year), grade-level filtering, and optional **Word Lookup** (default Off; hover or highlight any Spanish word for an instant local English definition + audio).
-  2. **Vocab Test (Typed Only):** Forward (`ES → EN`), backward (`EN → ES`), or mixed typed recall quizzes built from `packs/vocabulary.json` (`2,492` unique words & `536` AP phrases), prioritizing words and phrases from the Phrase Tests alongside additional matching vocabulary.
-  3. **Conjugation Test (Full 6-Person Matrix w/ `vosotros`):** 2-stage verb drill across all `397` verbs extracted from the phrase packs (`packs/verbs.json`): English infinitive → type Spanish infinitive → complete the full 6-person conjugation matrix across 8 AP tenses.
+  1. **Chunk / Phrase Tests (SM-2 SRS):** Learn phrases inside full AP-level sentences with customizable daily pacing (default: 20 new chunks/day, 7,300/year), grade-level filtering, optional **Word Lookup** (default Off; hover or highlight any Spanish word for an instant local English definition + audio), and optional **Speaking Detection Mode** (`🎙️ Voice Mode`).
+  2. **Vocab Test (Type or Speak):** Forward (`ES → EN`), backward (`EN → ES`), or mixed typed/spoken recall quizzes built from `packs/vocabulary.json` (`2,492` unique words & `536` AP phrases), prioritizing words and phrases from the Phrase Tests alongside additional matching vocabulary.
+  3. **Conjugation Test (Full 6-Person Matrix w/ `vosotros`):** 2-stage verb drill across all `397` verbs extracted from the phrase packs (`packs/verbs.json`): English infinitive → type or speak Spanish infinitive → complete the full 6-person conjugation matrix across 8 AP tenses (with automatic pronoun prefix trimming in Voice Mode).
+- **Speaking Detection Mode (`🎙️ Voice Mode`):** Speak Spanish or English answers directly into input boxes with automatic Spanish accent restoration (`autoAccents: true` by default), default **fill-box & wait-for-Enter** behavior, or configurable **Auto-Submit After Silence** (default `3s`, `1`–`10`s), saved to Google Drive.
 - **Modular JSON Curriculum Packs (`/packs/`):** 7,300 unique phrases per grade level (**29,200 total**), balanced across all 7 AP themes (`grade9-foundations.json` through `grade12-foundations.json`), plus `vocabulary.json` and `verbs.json`.
 - **Preply Tutor "Gap Phrase" Capture:** Add single sentences or bulk-paste pipe-separated lines (`Spanish sentence | target chunk | English hint | AP Theme`) directly from tutoring chat logs.
-- **2-Minute AP Cultural Comparison Simulator:** Simulates AP Speaking Task 4 with timed prep/speaking modes and 3 randomly drawn learned chunks to weave into your response.
+- **AP Cultural Comparison Simulator (`2:00`, `4:00`, or Custom Duration) + Translation & Grading:** Simulates AP Speaking Task 4 with live continuous microphone transcription, audio playback, **Spanish → English translation first** (Chrome on-device `Translator` API when available + local AP phrase/conjugated-verb dictionary), followed by automated **AP 1–5 rubric grading**, optional Chrome Gemini Nano feedback, and a 1-click prompt copy bridge to `gemini.google.com` — **zero Gemini API keys required**.
 - **Hybrid Google Neural Audio & Multi-Theme Accessibility:** Chrome built-in `Google español` neural voices + optional Google Cloud TTS (`Neural2`), plus Light, Dark, Midnight, Sepia, High Contrast, and Colorblind-Friendly modes.
-- **Multi-User Google Sign-In & Google Drive Sync:** Uses Google Identity Services and the privacy-first `drive.appdata` scope to store compact, delta-merged progress, shared grade-level preference, daily pace, Word Lookup toggle, and Vocab/Verb test stats with automatic atomic backups.
+- **Multi-User Google Sign-In & Google Drive Sync:** Uses Google Identity Services and the privacy-first `drive.appdata` scope to store compact, delta-merged progress, shared grade-level preference, daily pace, Word Lookup toggle, Voice Mode settings, and Vocab/Verb test stats with automatic atomic backups.
 
 ## Repository Structure
 
@@ -25,10 +26,10 @@ ap-spanish-trainer/
 ├── index.html                        # Clean HTML shell, header, and partial mount slots
 ├── partials/
 │   ├── study-chunks.html             # Study Sub-Tab 1: Contextual SM-2 Chunk/Phrase trainer
-│   ├── vocab-quiz.html               # Study Sub-Tab 2: Typed-only Vocab Test
+│   ├── vocab-quiz.html               # Study Sub-Tab 2: Typed/Spoken Vocab Test
 │   ├── conjugation.html              # Study Sub-Tab 3: 6-Person Verb Conjugation Test
 │   ├── preply-add.html               # Tab 2: Preply Quick-Add (single & bulk import)
-│   ├── speaking.html                 # Tab 3: 2-Min AP Cultural Comparison Simulator
+│   ├── speaking.html                 # Tab 3: AP Cultural Comparison Simulator & Grader
 │   ├── manage-deck.html              # Tab 4: Deck Browser & JSON Export/Import
 │   └── modals.html                   # Google Drive Sync, How to Use, & Settings modals
 ├── styles/
@@ -42,12 +43,14 @@ ap-spanish-trainer/
 │   ├── audio.js                      # Hybrid Web Speech + Google Cloud TTS engine
 │   ├── packs.js                      # 4-grade deck loader + IndexedDB-cached vocabulary & verb indices
 │   ├── sync.js                       # Google Sign-In OAuth + Google Drive AppData delta sync
+│   ├── speechInput.js                # Speaking Detection Mode (Web Speech API, auto-accents, auto-submit)
+│   ├── speakingAnalyzer.js           # Zero-API-key ES->EN translator & AP Task 4 speech grader
 │   ├── wordLookup.js                 # Study Chunk-only instant hover & drag-highlight definitions
-│   ├── studyChunks.js                # SM-2 scheduler & typed cloze flashcards
-│   ├── vocabQuiz.js                  # Typed-only forward/backward Vocab Test
+│   ├── studyChunks.js                # SM-2 scheduler & cloze flashcards
+│   ├── vocabQuiz.js                  # Typed/spoken forward/backward Vocab Test
 │   ├── conjugation.js                # 2-stage AP verb conjugation trainer (with vosotros)
 │   ├── preplyAdd.js                  # Single & bulk Preply gap-phrase capture
-│   ├── speaking.js                   # AP Task 4 2-minute Cultural Comparison simulator
+│   ├── speaking.js                   # AP Task 4 Cultural Comparison simulator & live speech pipeline
 │   └── manageDeck.js                 # Deck table browser, search, delete, & JSON import/export
 ├── config.js                         # Optional local OAuth Client ID config (injected via Netlify env var)
 ├── netlify.toml                      # Netlify build/deploy configuration

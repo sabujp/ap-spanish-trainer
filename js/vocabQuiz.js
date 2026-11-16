@@ -6,8 +6,18 @@ import {
   stripSpanishDiacritics
 } from './constants.js';
 import { speakSpanish } from './audio.js';
-import { getActivePhrasePriority, loadVocabularyPack } from './packs.js';
+import { getActivePhrasePriority, loadVerbsPack, loadVocabularyPack } from './packs.js';
+import {
+  cancelAutoSubmitCountdown,
+  getVoicePrefs,
+  isSpeechRecognitionSupported,
+  scheduleAutoSubmitCountdown,
+  setVoiceModeEnabled,
+  startSingleShotVoiceInput,
+  stopSpeechSession
+} from './speechInput.js';
 import { appHooks, appState, saveUserPrefs, saveVocabStats, setSharedStudyLevel } from './storage.js';
+import { showToast } from './ui.js';
 
 const quizState = {
   items: [],
@@ -17,6 +27,7 @@ const quizState = {
   currentDirection: 'es_en',
   answered: false,
   lastGrade: null, // { status, typed, expected }
+  draftInput: '',
   streak: 0,
   correctCount: 0,
   answeredCount: 0,
@@ -197,6 +208,7 @@ function selectWeightedVocabItems(pool, targetLen) {
 }
 
 export async function startVocabRound(customItems = null) {
+  stopSpeechSession();
   const area = document.getElementById('vocab-quiz-area');
   if (!appState.vocabPack) {
     quizState.loading = true;
@@ -226,6 +238,7 @@ export async function startVocabRound(customItems = null) {
   quizState.results = [];
   quizState.answered = false;
   quizState.lastGrade = null;
+  quizState.draftInput = '';
   quizState.streak = 0;
   quizState.correctCount = 0;
   quizState.answeredCount = 0;
@@ -237,11 +250,13 @@ export async function startVocabRound(customItems = null) {
 
 function submitVocabAnswer(skipAsReveal = false) {
   if (quizState.answered || quizState.isSummary) return;
+  stopSpeechSession();
   const item = quizState.items[quizState.index];
   if (!item) return;
 
   const input = document.getElementById('vocab-answer-input');
   const typed = skipAsReveal ? '' : (input ? input.value.trim() : '');
+  quizState.draftInput = '';
   const dir = quizState.currentDirection;
   const expected = dir === 'es_en' ? item.en : item.es;
   const status = skipAsReveal
@@ -287,6 +302,7 @@ function submitVocabAnswer(skipAsReveal = false) {
 
 function advanceVocabQuestion() {
   if (!quizState.answered) return;
+  stopSpeechSession();
   const prefs = getPrefs();
   quizState.index += 1;
 
@@ -307,6 +323,7 @@ function advanceVocabQuestion() {
 
   quizState.answered = false;
   quizState.lastGrade = null;
+  quizState.draftInput = '';
   quizState.currentDirection = pickDirectionForItem(prefs.direction, quizState.index);
   renderVocabQuiz();
 }
@@ -496,6 +513,39 @@ export function renderVocabQuiz() {
     }
   }
 
+  const voicePrefs = getVoicePrefs();
+  const voiceOn = Boolean(voicePrefs.enabled);
+  if (voiceOn && !appState.verbsPack) {
+    loadVerbsPack().catch(() => {});
+  }
+  const sttLang = dir === 'es_en' ? 'en-US' : voicePrefs.lang;
+  const sttLangLabel = dir === 'es_en' ? 'English' : `Spanish (${voicePrefs.lang})`;
+
+  const voiceBarHtml =
+    !quizState.answered && voiceOn
+      ? `<div class="flex flex-col items-center gap-2 pt-1">
+          <div class="flex flex-wrap items-center justify-center gap-2">
+            <button id="vocab-mic-btn" type="button" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-800 text-xs font-bold shadow-2xs transition cursor-pointer">
+              🎙️ Speak ${sttLangLabel} Answer
+            </button>
+            <span class="px-2.5 py-1 rounded-full bg-slate-100 text-slate-600 text-[11px] font-semibold">
+              ${
+                voicePrefs.autoSubmit
+                  ? `Auto-submit: ${voicePrefs.autoSubmitDelaySec}s delay`
+                  : 'Fill box & press Enter'
+              }${dir === 'en_es' && voicePrefs.autoAccents ? ' • Auto-Accents' : ''}
+            </span>
+          </div>
+          <div id="vocab-voice-status" class="text-[11px] font-medium text-slate-500 min-h-[16px]">
+            ${
+              isSpeechRecognitionSupported()
+                ? `Click mic and speak your ${dir === 'es_en' ? 'English' : 'Spanish'} translation.`
+                : 'Speech recognition requires Chrome or Edge desktop/Android.'
+            }
+          </div>
+        </div>`
+      : '';
+
   const accentBarHtml =
     !quizState.answered && dir === 'en_es'
       ? `<div class="flex flex-wrap items-center justify-center gap-1.5">
@@ -533,11 +583,11 @@ export function renderVocabQuiz() {
       }
     </div>
 
-    <!-- Center Prompt & Typed Answer -->
+    <!-- Center Prompt & Typed / Spoken Answer -->
     <div class="my-auto py-7 text-center space-y-5">
       <div class="space-y-2">
         <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400">
-          ${dir === 'es_en' ? 'Translate to English (Typed Only)' : 'Type the Spanish Word / Phrase'}
+          ${dir === 'es_en' ? (voiceOn ? 'Translate to English (Type or Speak)' : 'Translate to English (Typed Only)') : voiceOn ? 'Type or Speak the Spanish Word / Phrase' : 'Type the Spanish Word / Phrase'}
         </div>
         <div class="flex items-center justify-center gap-2.5 flex-wrap">
           <h3 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">${escapeHtml(promptMain)}</h3>
@@ -554,7 +604,7 @@ export function renderVocabQuiz() {
           type="text"
           id="vocab-answer-input"
           class="${inputClass}"
-          value="${quizState.answered ? escapeHtml(quizState.lastGrade.typed) : ''}"
+          value="${quizState.answered ? escapeHtml(quizState.lastGrade.typed) : escapeHtml(quizState.draftInput || '')}"
           ${quizState.answered ? 'readonly' : ''}
           placeholder="${dir === 'es_en' ? 'Type English meaning...' : 'Type Spanish translation...'}"
           autocomplete="off"
@@ -562,6 +612,7 @@ export function renderVocabQuiz() {
           autocapitalize="off"
           spellcheck="false"
         />
+        ${voiceBarHtml}
         ${accentBarHtml}
       </div>
 
@@ -591,25 +642,117 @@ export function renderVocabQuiz() {
   }
 
   const input = document.getElementById('vocab-answer-input');
+  const voiceStatusEl = document.getElementById('vocab-voice-status');
+  const vocabMicBtn = document.getElementById('vocab-mic-btn');
+  const setVoiceStatus = (msg, cls = 'text-slate-500') => {
+    if (!voiceStatusEl) return;
+    voiceStatusEl.className = `text-[11px] font-medium min-h-[16px] ${cls}`;
+    voiceStatusEl.textContent = msg;
+  };
+
   if (!quizState.answered) {
     if (input) {
       input.focus();
+      input.addEventListener('input', () => {
+        quizState.draftInput = input.value;
+        cancelAutoSubmitCountdown(() => {
+          if (voiceOn) setVoiceStatus('Auto-submit cancelled — press Enter when ready.');
+        });
+      });
       input.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
           e.preventDefault();
+          cancelAutoSubmitCountdown();
           submitVocabAnswer(false);
+        } else if (e.key === 'Escape') {
+          cancelAutoSubmitCountdown(() => {
+            if (voiceOn) setVoiceStatus('Auto-submit cancelled — press Enter when ready.');
+          });
+          input.blur();
         }
       });
     }
+
+    if (vocabMicBtn) {
+      vocabMicBtn.onclick = () => {
+        cancelAutoSubmitCountdown();
+        const vp = getVoicePrefs();
+        const englishCandidates =
+          dir === 'es_en'
+            ? String(item.en || '')
+                .replace(/\([^)]*\)/g, '')
+                .split(/[\/;|,]+/)
+                .map((s) => s.trim())
+                .filter(Boolean)
+            : [item.es];
+
+        startSingleShotVoiceInput({
+          lang: sttLang,
+          expectedCandidates: englishCandidates,
+          onStateChange: (state) => {
+            if (!document.body.contains(vocabMicBtn)) return;
+            if (state === 'listening') {
+              vocabMicBtn.classList.add('ring-2', 'ring-rose-400', 'bg-rose-600', 'text-white');
+              vocabMicBtn.classList.remove('bg-rose-50', 'text-rose-800');
+              vocabMicBtn.textContent = '🛑 Listening... (click to stop)';
+              setVoiceStatus(`Listening in ${sttLangLabel}...`, 'text-rose-700 font-semibold');
+            } else {
+              vocabMicBtn.classList.remove('ring-2', 'ring-rose-400', 'bg-rose-600', 'text-white');
+              vocabMicBtn.classList.add('bg-rose-50', 'text-rose-800');
+              vocabMicBtn.textContent = `🎙️ Speak ${sttLangLabel} Answer`;
+            }
+          },
+          onInterim: (interim) => {
+            if (input && document.body.contains(input)) {
+              input.value = interim;
+              quizState.draftInput = interim;
+            }
+          },
+          onResult: (finalText) => {
+            if (input && document.body.contains(input)) {
+              input.value = finalText;
+              quizState.draftInput = finalText;
+              input.focus();
+              if (!vp.autoSubmit) {
+                setVoiceStatus('Filled box — review or press Enter to check.', 'text-emerald-700');
+              }
+            }
+          },
+          onAutoSubmitCountdown: (delaySec) => {
+            scheduleAutoSubmitCountdown(
+              delaySec,
+              (secLeft) => {
+                if (secLeft > 0) {
+                  setVoiceStatus(
+                    `Auto-submitting in ${secLeft}s... (type or press Esc to cancel)`,
+                    'text-amber-700 font-semibold'
+                  );
+                }
+              },
+              () => {
+                submitVocabAnswer(false);
+              }
+            );
+          },
+          onError: (msg) => {
+            setVoiceStatus(msg, 'text-rose-700');
+            if (!isSpeechRecognitionSupported()) showToast(msg, 'error');
+          }
+        });
+      };
+    }
+
     container.querySelectorAll('.vocab-accent-btn').forEach((btn) => {
       btn.addEventListener('mousedown', (e) => {
         e.preventDefault();
+        cancelAutoSubmitCountdown();
         if (!input) return;
         const ch = btn.dataset.char || '';
         const start = input.selectionStart ?? input.value.length;
         const end = input.selectionEnd ?? input.value.length;
         input.value = input.value.slice(0, start) + ch + input.value.slice(end);
         input.selectionStart = input.selectionEnd = start + ch.length;
+        quizState.draftInput = input.value;
         input.focus();
       });
     });
@@ -652,6 +795,18 @@ export function initVocabQuiz() {
     }
   };
 
+  appHooks.onVoicePrefsChanged = ((prevHook) => () => {
+    if (typeof prevHook === 'function') prevHook();
+    cancelAutoSubmitCountdown();
+    const inp = document.getElementById('vocab-answer-input');
+    if (inp && !quizState.answered) {
+      quizState.draftInput = inp.value;
+    }
+    if (appState.vocabPack && quizState.items.length > 0 && !quizState.isSummary) {
+      renderVocabQuiz();
+    }
+  })(appHooks.onVoicePrefsChanged);
+
   const prefs = getPrefs();
   const bindFilter = (id, key, isBool = false, isNum = false) => {
     const el = document.getElementById(id);
@@ -674,6 +829,18 @@ export function initVocabQuiz() {
   bindFilter('vocab-pool-select', 'pool');
   bindFilter('vocab-length-select', 'length', false, true);
   bindFilter('vocab-weak-only-checkbox', 'weakOnly', true);
+
+  const vocabVoiceCb = document.getElementById('vocab-voice-mode-checkbox');
+  if (vocabVoiceCb) {
+    vocabVoiceCb.checked = Boolean(getVoicePrefs().enabled);
+    vocabVoiceCb.addEventListener('change', (e) => {
+      const inp = document.getElementById('vocab-answer-input');
+      if (inp && !quizState.answered) {
+        quizState.draftInput = inp.value;
+      }
+      setVoiceModeEnabled(e.target.checked, true);
+    });
+  }
 
   const restartBtn = document.getElementById('vocab-restart-btn');
   if (restartBtn) {

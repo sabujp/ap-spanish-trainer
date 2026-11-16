@@ -10,6 +10,7 @@ import {
   appHooks,
   appState,
   applySharedLevelToPrefsAndUI,
+  normalizeVoiceInputPrefs,
   resolveUnifiedStudyLevel,
   saveAudioPrefs,
   saveDailyPace,
@@ -342,6 +343,7 @@ export async function applyRemoteDeltaPayload(remotePayload) {
       appState.userPrefs = {
         ...appState.userPrefs,
         ...rPrefs,
+        voiceInput: normalizeVoiceInputPrefs({ ...appState.userPrefs.voiceInput, ...(rPrefs.voiceInput || {}) }),
         vocabPrefs: { ...appState.userPrefs.vocabPrefs, ...(rPrefs.vocabPrefs || {}) },
         conjPrefs: { ...appState.userPrefs.conjPrefs, ...(rPrefs.conjPrefs || {}) }
       };
@@ -350,6 +352,7 @@ export async function applyRemoteDeltaPayload(remotePayload) {
       applySharedLevelToPrefsAndUI(unifiedLevel);
       saveUserPrefs(false, false);
       syncUserPrefsToUI();
+      appHooks.onVoicePrefsChanged();
       if (unifiedLevel !== prevLevel) {
         appHooks.onSharedLevelChanged(unifiedLevel, 'sync');
       }

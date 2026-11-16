@@ -54,6 +54,13 @@ export const appState = {
     autoSpeak: true,
     autoFocusType: false,
     wordLookupEnabled: false, // Strictly default OFF unless user enables
+    voiceInput: {
+      enabled: false,
+      lang: 'es-US',
+      autoSubmit: false, // Default OFF: fills input box and waits for Enter
+      autoSubmitDelaySec: 3, // Default 3-second silence delay when autoSubmit is enabled
+      autoAccents: true // Default ON: auto-restore Spanish accents in voice mode
+    },
     vocabPrefs: {
       level: 'ALL',
       theme: 'ALL',
@@ -105,7 +112,8 @@ export const appState = {
   // Speaking Challenge State
   currentPrompt: null,
   currentRequiredChunks: [],
-  timerMode: 'SPEAK',
+  timerMode: 'SPEAK_2', // 'SPEAK_2' | 'SPEAK_4' | 'SPEAK_CUSTOM' | 'PREP'
+  customSpeakMinutes: 3,
   timeRemaining: 120,
   timerInterval: null
 };
@@ -124,7 +132,10 @@ export const appHooks = {
   hideWordLookupPopover: () => {},
   onVocabStatsUpdated: () => {},
   onVerbStatsUpdated: () => {},
-  onSharedLevelChanged: () => {}
+  onSharedLevelChanged: () => {},
+  refreshStudySubTabOnSync: () => {},
+  onVoicePrefsChanged: () => {},
+  stopActiveVoiceSession: () => {}
 };
 
 // ==================== INDEXEDDB HELPERS ====================
@@ -278,10 +289,24 @@ export function setSharedStudyLevel(newLevel, options = {}) {
   return lvl;
 }
 
+export function normalizeVoiceInputPrefs(rawVoice) {
+  const src = rawVoice && typeof rawVoice === 'object' ? rawVoice : {};
+  const delayNum = Number(src.autoSubmitDelaySec);
+  const clampedDelay = Number.isFinite(delayNum) ? Math.min(10, Math.max(1, Math.round(delayNum))) : 3;
+  return {
+    enabled: Boolean(src.enabled),
+    lang: typeof src.lang === 'string' && src.lang.trim() ? src.lang.trim() : 'es-US',
+    autoSubmit: Boolean(src.autoSubmit),
+    autoSubmitDelaySec: clampedDelay,
+    autoAccents: src.autoAccents !== false
+  };
+}
+
 export function syncUserPrefsToUI() {
   const prefs = appState.userPrefs;
   const unifiedLevel = resolveUnifiedStudyLevel(prefs);
   applySharedLevelToPrefsAndUI(unifiedLevel);
+  prefs.voiceInput = normalizeVoiceInputPrefs(prefs.voiceInput);
 
   appState.studyTheme = prefs.studyTheme || 'ALL';
   appState.studyMode = prefs.studyMode === 'ALL' ? 'ALL' : 'DUE';
@@ -306,6 +331,26 @@ export function syncUserPrefsToUI() {
   const lookupEnabled = Boolean(prefs.wordLookupEnabled);
   if (wordLookupCb) wordLookupCb.checked = lookupEnabled;
   if (settingsWordLookupCb) settingsWordLookupCb.checked = lookupEnabled;
+
+  // Sync Voice Input Mode controls across Study sub-tabs & Settings
+  const vi = prefs.voiceInput;
+  for (const id of [
+    'chunks-voice-mode-checkbox',
+    'vocab-voice-mode-checkbox',
+    'conj-voice-mode-checkbox',
+    'settings-voice-mode-checkbox'
+  ]) {
+    const el = document.getElementById(id);
+    if (el) el.checked = vi.enabled;
+  }
+  const sttLangSel = document.getElementById('settings-stt-lang-select');
+  if (sttLangSel) sttLangSel.value = vi.lang;
+  const autoAccentsCb = document.getElementById('settings-voice-accents-checkbox');
+  if (autoAccentsCb) autoAccentsCb.checked = vi.autoAccents;
+  const autoSubCb = document.getElementById('settings-voice-autosubmit-checkbox');
+  if (autoSubCb) autoSubCb.checked = vi.autoSubmit;
+  const autoSubDelayEl = document.getElementById('settings-voice-delay-input');
+  if (autoSubDelayEl) autoSubDelayEl.value = String(vi.autoSubmitDelaySec);
 
   // Sync Vocab Quiz filter controls if present
   const vp = prefs.vocabPrefs || {};
@@ -340,6 +385,7 @@ export function loadUserPrefs() {
       appState.userPrefs = {
         ...appState.userPrefs,
         ...parsed,
+        voiceInput: normalizeVoiceInputPrefs({ ...appState.userPrefs.voiceInput, ...(parsed.voiceInput || {}) }),
         vocabPrefs: { ...appState.userPrefs.vocabPrefs, ...(parsed.vocabPrefs || {}) },
         conjPrefs: { ...appState.userPrefs.conjPrefs, ...(parsed.conjPrefs || {}) }
       };

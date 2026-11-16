@@ -1,9 +1,11 @@
 import { THEME_MODE_LABELS } from './constants.js';
+import { isSpeechRecognitionSupported, setVoiceModeEnabled } from './speechInput.js';
 import {
   appHooks,
   appState,
   applyAppearancePrefs,
   getEffectiveDueCards,
+  normalizeVoiceInputPrefs,
   saveDailyPace,
   saveUserPrefs,
   syncDailyLimitSelectsUI,
@@ -11,8 +13,8 @@ import {
 } from './storage.js';
 
 const STUDY_SUBTAB_SUMMARIES = {
-  chunks: 'Contextual SRS sentences with SM-2 spacing & optional Word Lookup',
-  vocab: 'Typed-only Spanish ↔ English vocabulary & AP phrase drill',
+  chunks: 'Contextual SRS sentences with SM-2 spacing, Voice Mode & Word Lookup',
+  vocab: 'Typed or Voice Spanish ↔ English vocabulary & AP phrase drill',
   conjugation: 'English infinitive → Spanish infinitive → full 6-person matrix (with vosotros)'
 };
 
@@ -100,6 +102,16 @@ export function openSettingsModal(initialTab = 'appearance') {
   applyAppearancePrefs();
   syncDailyLimitSelectsUI();
   syncUserPrefsToUI();
+  const sttBadge = document.getElementById('stt-support-badge');
+  if (sttBadge) {
+    if (isSpeechRecognitionSupported()) {
+      sttBadge.textContent = 'Mic Speech Ready';
+      sttBadge.className = 'text-[11px] font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800';
+    } else {
+      sttBadge.textContent = 'Use Chrome / Edge for Mic';
+      sttBadge.className = 'text-[11px] font-semibold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800';
+    }
+  }
   document.getElementById('gcp-api-key-input').value = appState.audioPrefs.gcpApiKey || '';
   document.getElementById('gcp-voice-select').value = appState.audioPrefs.gcpVoiceName || 'es-US-Neural2-B';
   document.getElementById('force-gcp-checkbox').checked = Boolean(appState.audioPrefs.forceGcp);
@@ -130,6 +142,8 @@ export function closeHelpModal() {
 export function switchStudySubTab(subTabName = 'chunks', options = {}) {
   const validSubTabs = ['chunks', 'vocab', 'conjugation'];
   const nextSub = validSubTabs.includes(subTabName) ? subTabName : 'chunks';
+
+  appHooks.stopActiveVoiceSession();
 
   if (nextSub !== 'chunks') {
     appHooks.hideWordLookupPopover();
@@ -173,6 +187,8 @@ export function switchStudySubTab(subTabName = 'chunks', options = {}) {
 export function switchTab(tabName, options = {}) {
   const validTabs = ['study', 'add', 'speaking', 'manage'];
   const nextTab = validTabs.includes(tabName) ? tabName : 'study';
+
+  appHooks.stopActiveVoiceSession();
 
   if (nextTab !== 'study') {
     appHooks.hideWordLookupPopover();
@@ -243,6 +259,57 @@ export function initModalsAndNav() {
       saveUserPrefs(true, true);
     });
   });
+
+  // Voice Input Settings controls
+  const settingsVoiceCb = document.getElementById('settings-voice-mode-checkbox');
+  if (settingsVoiceCb) {
+    settingsVoiceCb.addEventListener('change', (e) => setVoiceModeEnabled(e.target.checked, true));
+  }
+  const sttLangSel = document.getElementById('settings-stt-lang-select');
+  if (sttLangSel) {
+    sttLangSel.addEventListener('change', (e) => {
+      appState.userPrefs.voiceInput = normalizeVoiceInputPrefs({
+        ...appState.userPrefs.voiceInput,
+        lang: e.target.value
+      });
+      saveUserPrefs(true, true);
+      appHooks.onVoicePrefsChanged();
+    });
+  }
+  const voiceAccentsCb = document.getElementById('settings-voice-accents-checkbox');
+  if (voiceAccentsCb) {
+    voiceAccentsCb.addEventListener('change', (e) => {
+      appState.userPrefs.voiceInput = normalizeVoiceInputPrefs({
+        ...appState.userPrefs.voiceInput,
+        autoAccents: e.target.checked
+      });
+      saveUserPrefs(true, true);
+      appHooks.onVoicePrefsChanged();
+    });
+  }
+  const voiceAutoSubCb = document.getElementById('settings-voice-autosubmit-checkbox');
+  if (voiceAutoSubCb) {
+    voiceAutoSubCb.addEventListener('change', (e) => {
+      appState.userPrefs.voiceInput = normalizeVoiceInputPrefs({
+        ...appState.userPrefs.voiceInput,
+        autoSubmit: e.target.checked
+      });
+      saveUserPrefs(true, true);
+      appHooks.onVoicePrefsChanged();
+    });
+  }
+  const voiceDelayEl = document.getElementById('settings-voice-delay-input');
+  if (voiceDelayEl) {
+    voiceDelayEl.addEventListener('change', (e) => {
+      appState.userPrefs.voiceInput = normalizeVoiceInputPrefs({
+        ...appState.userPrefs.voiceInput,
+        autoSubmitDelaySec: e.target.value
+      });
+      e.target.value = String(appState.userPrefs.voiceInput.autoSubmitDelaySec);
+      saveUserPrefs(true, true);
+      appHooks.onVoicePrefsChanged();
+    });
+  }
 
   const helpModal = document.getElementById('help-modal');
   document.getElementById('open-help-btn').onclick = openHelpModal;

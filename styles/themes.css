@@ -220,20 +220,20 @@ html[data-theme]:not([data-theme="light"]):not([data-theme="colorblind"]) kbd {
 }
 
 /* Dark / Midnight / High-Contrast Colored Pill & Card Overrides */
-html[data-theme="dark"] .bg-indigo-50, html[data-theme="dark"] .bg-indigo-50\/70, html[data-theme="dark"] .bg-indigo-50\/80, html[data-theme="dark"] .bg-indigo-100,
-html[data-theme="midnight"] .bg-indigo-50, html[data-theme="midnight"] .bg-indigo-50\/70, html[data-theme="midnight"] .bg-indigo-50\/80, html[data-theme="midnight"] .bg-indigo-100 {
+html[data-theme="dark"] .bg-indigo-50, html[data-theme="dark"] .bg-indigo-50\/40, html[data-theme="dark"] .bg-indigo-50\/70, html[data-theme="dark"] .bg-indigo-50\/80, html[data-theme="dark"] .bg-indigo-100,
+html[data-theme="midnight"] .bg-indigo-50, html[data-theme="midnight"] .bg-indigo-50\/40, html[data-theme="midnight"] .bg-indigo-50\/70, html[data-theme="midnight"] .bg-indigo-50\/80, html[data-theme="midnight"] .bg-indigo-100 {
   background-color: rgba(99, 102, 241, 0.16) !important;
 }
 html[data-theme="dark"] .bg-emerald-50, html[data-theme="dark"] .bg-emerald-50\/70, html[data-theme="dark"] .bg-emerald-100,
 html[data-theme="midnight"] .bg-emerald-50, html[data-theme="midnight"] .bg-emerald-50\/70, html[data-theme="midnight"] .bg-emerald-100 {
   background-color: rgba(16, 185, 129, 0.15) !important;
 }
-html[data-theme="dark"] .bg-amber-50, html[data-theme="dark"] .bg-amber-100,
-html[data-theme="midnight"] .bg-amber-50, html[data-theme="midnight"] .bg-amber-100 {
+html[data-theme="dark"] .bg-amber-50, html[data-theme="dark"] .bg-amber-50\/60, html[data-theme="dark"] .bg-amber-50\/70, html[data-theme="dark"] .bg-amber-100,
+html[data-theme="midnight"] .bg-amber-50, html[data-theme="midnight"] .bg-amber-50\/60, html[data-theme="midnight"] .bg-amber-50\/70, html[data-theme="midnight"] .bg-amber-100 {
   background-color: rgba(245, 158, 11, 0.15) !important;
 }
-html[data-theme="dark"] .bg-rose-50, html[data-theme="dark"] .bg-rose-100,
-html[data-theme="midnight"] .bg-rose-50, html[data-theme="midnight"] .bg-rose-100 {
+html[data-theme="dark"] .bg-rose-50, html[data-theme="dark"] .bg-rose-50\/70, html[data-theme="dark"] .bg-rose-100,
+html[data-theme="midnight"] .bg-rose-50, html[data-theme="midnight"] .bg-rose-50\/70, html[data-theme="midnight"] .bg-rose-100 {
   background-color: rgba(244, 63, 94, 0.16) !important;
 }
 html[data-theme="dark"] .bg-sky-50, html[data-theme="dark"] .bg-sky-50\/70, html[data-theme="dark"] .bg-sky-100,
@@ -256,8 +256,8 @@ html[data-theme="dark"] .text-amber-950, html[data-theme="dark"] .text-amber-900
 html[data-theme="midnight"] .text-amber-950, html[data-theme="midnight"] .text-amber-900, html[data-theme="midnight"] .text-amber-800, html[data-theme="midnight"] .text-amber-700 {
   color: #fcd34d !important;
 }
-html[data-theme="dark"] .text-rose-950, html[data-theme="dark"] .text-rose-900, html[data-theme="dark"] .text-rose-700,
-html[data-theme="midnight"] .text-rose-950, html[data-theme="midnight"] .text-rose-900, html[data-theme="midnight"] .text-rose-700 {
+html[data-theme="dark"] .text-rose-950, html[data-theme="dark"] .text-rose-900, html[data-theme="dark"] .text-rose-800, html[data-theme="dark"] .text-rose-700,
+html[data-theme="midnight"] .text-rose-950, html[data-theme="midnight"] .text-rose-900, html[data-theme="midnight"] .text-rose-800, html[data-theme="midnight"] .text-rose-700 {
   color: #fda4af !important;
 }
 html[data-theme="dark"] .text-sky-950, html[data-theme="dark"] .text-sky-900, html[data-theme="dark"] .text-sky-700,
@@ -317,10 +317,10 @@ html[data-theme="midnight"] .cloze-blank {
 }
 
 /* High Contrast Specifics */
-html[data-theme="high-contrast"] .bg-indigo-50, html[data-theme="high-contrast"] .bg-indigo-50\/70, html[data-theme="high-contrast"] .bg-indigo-50\/80, html[data-theme="high-contrast"] .bg-indigo-100,
+html[data-theme="high-contrast"] .bg-indigo-50, html[data-theme="high-contrast"] .bg-indigo-50\/40, html[data-theme="high-contrast"] .bg-indigo-50\/70, html[data-theme="high-contrast"] .bg-indigo-50\/80, html[data-theme="high-contrast"] .bg-indigo-100,
 html[data-theme="high-contrast"] .bg-emerald-50, html[data-theme="high-contrast"] .bg-emerald-50\/70, html[data-theme="high-contrast"] .bg-emerald-100,
-html[data-theme="high-contrast"] .bg-amber-50, html[data-theme="high-contrast"] .bg-amber-100,
-html[data-theme="high-contrast"] .bg-rose-50, html[data-theme="high-contrast"] .bg-rose-100,
+html[data-theme="high-contrast"] .bg-amber-50, html[data-theme="high-contrast"] .bg-amber-50\/60, html[data-theme="high-contrast"] .bg-amber-50\/70, html[data-theme="high-contrast"] .bg-amber-100,
+html[data-theme="high-contrast"] .bg-rose-50, html[data-theme="high-contrast"] .bg-rose-50\/70, html[data-theme="high-contrast"] .bg-rose-100,
 html[data-theme="high-contrast"] .bg-sky-50, html[data-theme="high-contrast"] .bg-sky-50\/70, html[data-theme="high-contrast"] .bg-sky-100,
 html[data-theme="high-contrast"] .bg-purple-50, html[data-theme="high-contrast"] .bg-purple-50\/70, html[data-theme="high-contrast"] .bg-purple-100 {
   background-color: #141414 !important;
@@ -336,7 +336,7 @@ html[data-theme="high-contrast"] .text-emerald-950, html[data-theme="high-contra
 html[data-theme="high-contrast"] .text-amber-950, html[data-theme="high-contrast"] .text-amber-900, html[data-theme="high-contrast"] .text-amber-800, html[data-theme="high-contrast"] .text-amber-700 {
   color: #fde047 !important;
 }
-html[data-theme="high-contrast"] .text-rose-950, html[data-theme="high-contrast"] .text-rose-900, html[data-theme="high-contrast"] .text-rose-700 {
+html[data-theme="high-contrast"] .text-rose-950, html[data-theme="high-contrast"] .text-rose-900, html[data-theme="high-contrast"] .text-rose-800, html[data-theme="high-contrast"] .text-rose-700 {
   color: #fda4af !important;
 }
 html[data-theme="high-contrast"] .cloze-input {
@@ -351,7 +351,8 @@ html[data-theme="high-contrast"] .cloze-revealed {
 }
 html[data-theme="high-contrast"] button,
 html[data-theme="high-contrast"] select,
-html[data-theme="high-contrast"] input {
+html[data-theme="high-contrast"] input,
+html[data-theme="high-contrast"] textarea {
   border-width: 1.5px !important;
 }
 
@@ -362,7 +363,7 @@ html[data-theme="sepia"] .bg-indigo-600 {
 html[data-theme="sepia"] .hover\:bg-indigo-700:hover {
   background-color: #733910 !important;
 }
-html[data-theme="sepia"] .bg-indigo-50, html[data-theme="sepia"] .bg-indigo-50\/70, html[data-theme="sepia"] .bg-indigo-50\/80, html[data-theme="sepia"] .bg-indigo-100 {
+html[data-theme="sepia"] .bg-indigo-50, html[data-theme="sepia"] .bg-indigo-50\/40, html[data-theme="sepia"] .bg-indigo-50\/70, html[data-theme="sepia"] .bg-indigo-50\/80, html[data-theme="sepia"] .bg-indigo-100 {
   background-color: #f0e3ce !important;
 }
 html[data-theme="sepia"] .text-indigo-950, html[data-theme="sepia"] .text-indigo-900, html[data-theme="sepia"] .text-indigo-800, html[data-theme="sepia"] .text-indigo-700 {
@@ -385,6 +386,7 @@ html[data-theme="sepia"] .cloze-revealed {
 
 /* Colorblind-Friendly Mode (Okabe-Ito Safe Palette: Blue vs Vermilion/Orange, never Red vs Green) */
 html[data-theme="colorblind"] .bg-rose-50,
+html[data-theme="colorblind"] .bg-rose-50\/70,
 html[data-theme="colorblind"] .bg-rose-100 {
   background-color: #fff0e5 !important;
 }
@@ -396,6 +398,7 @@ html[data-theme="colorblind"] .border-rose-200 {
 }
 html[data-theme="colorblind"] .text-rose-950,
 html[data-theme="colorblind"] .text-rose-900,
+html[data-theme="colorblind"] .text-rose-800,
 html[data-theme="colorblind"] .text-rose-700,
 html[data-theme="colorblind"] .text-rose-500 {
   color: #9e3d00 !important;

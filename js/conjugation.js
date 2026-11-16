@@ -8,8 +8,18 @@ import {
   stripSpanishDiacritics
 } from './constants.js';
 import { speakSpanish } from './audio.js';
-import { getActivePhrasePriority, loadVerbsPack } from './packs.js';
+import { getActivePhrasePriority, loadVerbsPack, loadVocabularyPack } from './packs.js';
+import {
+  cancelAutoSubmitCountdown,
+  getVoicePrefs,
+  isSpeechRecognitionSupported,
+  scheduleAutoSubmitCountdown,
+  setVoiceModeEnabled,
+  startSingleShotVoiceInput,
+  stopSpeechSession
+} from './speechInput.js';
 import { appHooks, appState, saveUserPrefs, saveVerbStats, setSharedStudyLevel } from './storage.js';
+import { showToast } from './ui.js';
 
 const ALL_TENSE_KEYS = Object.keys(CONJUGATION_TENSE_LABELS);
 
@@ -124,6 +134,7 @@ function pickTenseForVerb() {
 }
 
 function setupVerbTurn(verb) {
+  stopSpeechSession();
   conjState.currentVerb = verb || null;
   conjState.activeTense = pickTenseForVerb();
   conjState.stage = 'infinitive';
@@ -172,6 +183,7 @@ export async function startConjugationDeck(advanceToNext = false) {
 }
 
 function checkInfinitiveStage(revealOnly = false) {
+  stopSpeechSession();
   const verb = conjState.currentVerb;
   if (!verb) return;
   const input = document.getElementById('conj-infinitive-input');
@@ -220,6 +232,7 @@ function checkInfinitiveStage(revealOnly = false) {
 }
 
 function enterMatrixStage() {
+  stopSpeechSession();
   conjState.stage = 'matrix';
   renderConjugation();
 }
@@ -227,6 +240,7 @@ function enterMatrixStage() {
 function gradeMatrixStage(revealAll = false) {
   const verb = conjState.currentVerb;
   if (!verb || conjState.matrixGraded) return;
+  stopSpeechSession();
   const expectedForms = (verb.tenses && verb.tenses[conjState.activeTense]) || [];
   if (expectedForms.length !== 6) return;
 
@@ -367,7 +381,13 @@ export function renderConjugation() {
       <span>Session: <strong class="text-emerald-700">${conjState.sessionRightForms}/${conjState.sessionTotalForms}</strong> forms</span>
     </div>`;
 
-  // ===== STAGE 1: ENGLISH INFINITIVE -> TYPE SPANISH INFINITIVE =====
+  const voicePrefs = getVoicePrefs();
+  const voiceOn = Boolean(voicePrefs.enabled);
+  if (voiceOn && !appState.vocabPack) {
+    loadVocabularyPack().catch(() => {});
+  }
+
+  // ===== STAGE 1: ENGLISH INFINITIVE -> TYPE OR SPEAK SPANISH INFINITIVE =====
   if (conjState.stage === 'infinitive') {
     const isWrong = conjState.infinitiveGrade === 'wrong';
     const isRevealed = conjState.infinitiveGrade === 'revealed';
@@ -376,6 +396,31 @@ export function renderConjugation() {
     const inputCls = doneCheck
       ? 'conj-input is-wrong w-full max-w-md mx-auto block rounded-2xl border-2 px-4 py-3 text-center text-lg font-extrabold focus:outline-none'
       : 'conj-input w-full max-w-md mx-auto block rounded-2xl border-2 border-indigo-200 bg-slate-50 px-4 py-3 text-center text-lg font-extrabold text-slate-900 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/15 focus:outline-none transition';
+
+    const stage1VoiceHtml =
+      !doneCheck && voiceOn
+        ? `<div class="flex flex-col items-center gap-2 pt-1">
+            <div class="flex flex-wrap items-center justify-center gap-2">
+              <button id="conj-inf-mic-btn" type="button" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-800 text-xs font-bold shadow-2xs transition cursor-pointer">
+                🎙️ Speak Spanish Infinitive (${escapeHtml(voicePrefs.lang)})
+              </button>
+              <span class="px-2.5 py-1 rounded-full bg-slate-100 text-slate-600 text-[11px] font-semibold">
+                ${
+                  voicePrefs.autoSubmit
+                    ? `Auto-submit: ${voicePrefs.autoSubmitDelaySec}s delay`
+                    : 'Fill box & press Enter'
+                }${voicePrefs.autoAccents ? ' • Auto-Accents' : ''}
+              </span>
+            </div>
+            <div id="conj-voice-status" class="text-[11px] font-medium text-slate-500 min-h-[16px]">
+              ${
+                isSpeechRecognitionSupported()
+                  ? 'Click mic and say the Spanish infinitive.'
+                  : 'Speech recognition requires Chrome or Edge desktop/Android.'
+              }
+            </div>
+          </div>`
+        : '';
 
     container.innerHTML = `
       <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-4">
@@ -392,7 +437,7 @@ export function renderConjugation() {
       <div class="my-auto py-8 text-center space-y-5">
         <div class="space-y-1.5">
           <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400">
-            Type the Spanish Infinitive For:
+            ${voiceOn ? 'Type or Speak the Spanish Infinitive For:' : 'Type the Spanish Infinitive For:'}
           </div>
           <h3 class="text-2xl sm:text-3xl font-extrabold text-slate-900">${escapeHtml(verb.english)}</h3>
           ${verb.reflexive ? `<div class="text-xs font-semibold text-indigo-600">(Reflexive verb — remember the <code>-se</code> ending)</div>` : ''}
@@ -411,6 +456,7 @@ export function renderConjugation() {
             autocapitalize="off"
             spellcheck="false"
           />
+          ${stage1VoiceHtml}
           ${
             !doneCheck
               ? `<div class="flex flex-wrap items-center justify-center gap-1.5">
@@ -456,22 +502,101 @@ export function renderConjugation() {
     `;
 
     const infInput = document.getElementById('conj-infinitive-input');
+    const conjVoiceStatusEl = document.getElementById('conj-voice-status');
+    const conjInfMicBtn = document.getElementById('conj-inf-mic-btn');
+    const setConjVoiceStatus = (msg, cls = 'text-slate-500') => {
+      if (!conjVoiceStatusEl) return;
+      conjVoiceStatusEl.className = `text-[11px] font-medium min-h-[16px] ${cls}`;
+      conjVoiceStatusEl.textContent = msg;
+    };
+
     if (!doneCheck) {
       if (infInput) {
         infInput.focus();
         infInput.addEventListener('input', () => {
           conjState.infinitiveInput = infInput.value;
+          cancelAutoSubmitCountdown(() => {
+            if (voiceOn) setConjVoiceStatus('Auto-submit cancelled — press Enter when ready.');
+          });
         });
         infInput.addEventListener('keydown', (e) => {
           if (e.key === 'Enter') {
             e.preventDefault();
+            cancelAutoSubmitCountdown();
             checkInfinitiveStage(false);
+          } else if (e.key === 'Escape') {
+            cancelAutoSubmitCountdown(() => {
+              if (voiceOn) setConjVoiceStatus('Auto-submit cancelled — press Enter when ready.');
+            });
+            infInput.blur();
           }
         });
       }
+
+      if (conjInfMicBtn) {
+        conjInfMicBtn.onclick = () => {
+          cancelAutoSubmitCountdown();
+          const vp = getVoicePrefs();
+          startSingleShotVoiceInput({
+            lang: vp.lang,
+            expectedCandidates: [verb.infinitive],
+            onStateChange: (state) => {
+              if (!document.body.contains(conjInfMicBtn)) return;
+              if (state === 'listening') {
+                conjInfMicBtn.classList.add('ring-2', 'ring-rose-400', 'bg-rose-600', 'text-white');
+                conjInfMicBtn.classList.remove('bg-rose-50', 'text-rose-800');
+                conjInfMicBtn.textContent = '🛑 Listening... (click to stop)';
+                setConjVoiceStatus('Listening in Spanish...', 'text-rose-700 font-semibold');
+              } else {
+                conjInfMicBtn.classList.remove('ring-2', 'ring-rose-400', 'bg-rose-600', 'text-white');
+                conjInfMicBtn.classList.add('bg-rose-50', 'text-rose-800');
+                conjInfMicBtn.textContent = `🎙️ Speak Spanish Infinitive (${vp.lang})`;
+              }
+            },
+            onInterim: (interim) => {
+              if (infInput && document.body.contains(infInput)) {
+                infInput.value = interim;
+                conjState.infinitiveInput = interim;
+              }
+            },
+            onResult: (finalText) => {
+              if (infInput && document.body.contains(infInput)) {
+                infInput.value = finalText;
+                conjState.infinitiveInput = finalText;
+                infInput.focus();
+                if (!vp.autoSubmit) {
+                  setConjVoiceStatus('Filled box — review or press Enter to continue.', 'text-emerald-700');
+                }
+              }
+            },
+            onAutoSubmitCountdown: (delaySec) => {
+              scheduleAutoSubmitCountdown(
+                delaySec,
+                (secLeft) => {
+                  if (secLeft > 0) {
+                    setConjVoiceStatus(
+                      `Auto-submitting in ${secLeft}s... (type or press Esc to cancel)`,
+                      'text-amber-700 font-semibold'
+                    );
+                  }
+                },
+                () => {
+                  checkInfinitiveStage(false);
+                }
+              );
+            },
+            onError: (msg) => {
+              setConjVoiceStatus(msg, 'text-rose-700');
+              if (!isSpeechRecognitionSupported()) showToast(msg, 'error');
+            }
+          });
+        };
+      }
+
       container.querySelectorAll('.conj-accent-btn').forEach((btn) => {
         btn.addEventListener('mousedown', (e) => {
           e.preventDefault();
+          cancelAutoSubmitCountdown();
           if (!infInput) return;
           const ch = btn.dataset.char || '';
           const start = infInput.selectionStart ?? infInput.value.length;
@@ -508,6 +633,32 @@ export function renderConjugation() {
     ? conjState.matrixResults.filter((r) => r.status === 'exact' || r.status === 'accent').length
     : 0;
 
+  const activePronounLabel =
+    (CONJUGATION_PRONOUNS[conjState.lastFocusedIdx]?.label || 'yo').split('/')[0].trim();
+
+  const stage2VoiceHtml =
+    !conjState.matrixGraded && voiceOn
+      ? `<div class="bg-rose-50/70 border border-rose-200 rounded-2xl p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2 my-1">
+          <div class="flex flex-wrap items-center gap-2">
+            <button id="conj-matrix-mic-btn" type="button" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold shadow-2xs transition cursor-pointer">
+              🎙️ Speak Cell (${escapeHtml(activePronounLabel)})
+            </button>
+            <span class="text-[11px] font-medium text-rose-900">
+              Say e.g. "<em>vosotros habláis</em>" or "<em>habláis</em>" — pronoun prefixes auto-trim.
+            </span>
+          </div>
+          <div id="conj-voice-status" class="text-[11px] font-semibold text-slate-600 min-h-[16px]">
+            ${
+              isSpeechRecognitionSupported()
+                ? voicePrefs.autoSubmit
+                  ? `Auto-submit all 6: ${voicePrefs.autoSubmitDelaySec}s delay`
+                  : 'Fill cells & press Enter'
+                : 'Speech recognition requires Chrome or Edge'
+            }
+          </div>
+        </div>`
+      : '';
+
   container.innerHTML = `
     <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-4">
       <div class="flex flex-wrap items-center gap-1.5">
@@ -533,6 +684,8 @@ export function renderConjugation() {
         Tense: ${escapeHtml(tenseLabel)}
       </div>
     </div>
+
+    ${stage2VoiceHtml}
 
     <!-- Accent Helper Bar -->
     ${
@@ -635,25 +788,121 @@ export function renderConjugation() {
 
   if (!conjState.matrixGraded) {
     const inputs = CONJUGATION_PRONOUNS.map((_, idx) => document.getElementById(`conj-matrix-input-${idx}`));
+    const matrixMicBtn = document.getElementById('conj-matrix-mic-btn');
+    const matrixVoiceStatus = document.getElementById('conj-voice-status');
+    const expectedForms = (verb.tenses && verb.tenses[conjState.activeTense]) || [];
+
+    const setMatrixStatus = (msg, cls = 'text-slate-600') => {
+      if (!matrixVoiceStatus) return;
+      matrixVoiceStatus.className = `text-[11px] font-semibold min-h-[16px] ${cls}`;
+      matrixVoiceStatus.textContent = msg;
+    };
+    const updateMicBtnLabel = (state = 'idle') => {
+      if (!matrixMicBtn || !document.body.contains(matrixMicBtn)) return;
+      if (state === 'listening') {
+        matrixMicBtn.classList.add('ring-2', 'ring-rose-400', 'bg-rose-700');
+        matrixMicBtn.textContent = '🛑 Listening... (click to stop)';
+      } else {
+        matrixMicBtn.classList.remove('ring-2', 'ring-rose-400', 'bg-rose-700');
+        const pName = (CONJUGATION_PRONOUNS[conjState.lastFocusedIdx]?.label || 'yo').split('/')[0].trim();
+        matrixMicBtn.textContent = `🎙️ Speak Cell (${pName})`;
+      }
+    };
+
     inputs.forEach((inp, idx) => {
       if (!inp) return;
       inp.addEventListener('focus', () => {
         conjState.lastFocusedIdx = idx;
+        updateMicBtnLabel('idle');
       });
       inp.addEventListener('input', () => {
         conjState.matrixInputs[idx] = inp.value;
+        cancelAutoSubmitCountdown(() => {
+          if (voiceOn) setMatrixStatus('Auto-submit cancelled — press Enter when ready.');
+        });
       });
       inp.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
           e.preventDefault();
+          cancelAutoSubmitCountdown();
           if (idx < inputs.length - 1) {
             inputs[idx + 1]?.focus();
           } else {
             gradeMatrixStage(false);
           }
+        } else if (e.key === 'Escape') {
+          cancelAutoSubmitCountdown(() => {
+            if (voiceOn) setMatrixStatus('Auto-submit cancelled — press Enter when ready.');
+          });
+          inp.blur();
         }
       });
     });
+
+    if (matrixMicBtn) {
+      matrixMicBtn.onclick = () => {
+        cancelAutoSubmitCountdown();
+        const vp = getVoicePrefs();
+        const targetIdx = conjState.lastFocusedIdx || 0;
+        const targetInput = inputs[targetIdx] || inputs[0];
+        const expectedCell = expectedForms[targetIdx] || '';
+
+        startSingleShotVoiceInput({
+          lang: vp.lang,
+          expectedCandidates: expectedCell ? [expectedCell] : [],
+          stripPronounForVerb: true,
+          onStateChange: (state) => {
+            updateMicBtnLabel(state);
+            if (state === 'listening') {
+              const pName = (CONJUGATION_PRONOUNS[targetIdx]?.label || '').split('/')[0].trim();
+              setMatrixStatus(`Listening for "${pName}"...`, 'text-rose-700');
+            }
+          },
+          onInterim: (interim) => {
+            if (targetInput && document.body.contains(targetInput)) {
+              targetInput.value = interim;
+              conjState.matrixInputs[targetIdx] = interim;
+            }
+          },
+          onResult: (finalText) => {
+            if (targetInput && document.body.contains(targetInput)) {
+              targetInput.value = finalText;
+              conjState.matrixInputs[targetIdx] = finalText;
+              const nextEmptyIdx = conjState.matrixInputs.findIndex((v) => !String(v || '').trim());
+              if (nextEmptyIdx !== -1 && inputs[nextEmptyIdx]) {
+                inputs[nextEmptyIdx].focus();
+                const nextLabel = (CONJUGATION_PRONOUNS[nextEmptyIdx]?.label || '').split('/')[0].trim();
+                setMatrixStatus(`Filled! Next empty cell: ${nextLabel}.`, 'text-indigo-700');
+              } else {
+                targetInput.focus();
+                if (!vp.autoSubmit) {
+                  setMatrixStatus('All 6 cells filled — review or press Enter to grade.', 'text-emerald-700');
+                }
+              }
+            }
+          },
+          onAutoSubmitCountdown: (delaySec) => {
+            const anyEmpty = conjState.matrixInputs.some((v) => !String(v || '').trim());
+            if (anyEmpty) return;
+            scheduleAutoSubmitCountdown(
+              delaySec,
+              (secLeft) => {
+                if (secLeft > 0) {
+                  setMatrixStatus(`Auto-grading all 6 in ${secLeft}s... (Esc to cancel)`, 'text-amber-700');
+                }
+              },
+              () => {
+                gradeMatrixStage(false);
+              }
+            );
+          },
+          onError: (msg) => {
+            setMatrixStatus(msg, 'text-rose-700');
+            if (!isSpeechRecognitionSupported()) showToast(msg, 'error');
+          }
+        });
+      };
+    }
 
     if (inputs[conjState.lastFocusedIdx]) {
       inputs[conjState.lastFocusedIdx].focus();
@@ -664,6 +913,7 @@ export function renderConjugation() {
     container.querySelectorAll('.conj-matrix-accent-btn').forEach((btn) => {
       btn.addEventListener('mousedown', (e) => {
         e.preventDefault();
+        cancelAutoSubmitCountdown();
         const targetInput = inputs[conjState.lastFocusedIdx] || inputs[0];
         if (!targetInput) return;
         const ch = btn.dataset.char || '';
@@ -725,6 +975,24 @@ export function initConjugation() {
     }
   };
 
+  appHooks.onVoicePrefsChanged = ((prevHook) => () => {
+    if (typeof prevHook === 'function') prevHook();
+    cancelAutoSubmitCountdown();
+    const infInp = document.getElementById('conj-infinitive-input');
+    if (infInp && conjState.stage === 'infinitive') {
+      conjState.infinitiveInput = infInp.value;
+    }
+    if (conjState.stage === 'matrix' && !conjState.matrixGraded) {
+      CONJUGATION_PRONOUNS.forEach((_, idx) => {
+        const el = document.getElementById(`conj-matrix-input-${idx}`);
+        if (el) conjState.matrixInputs[idx] = el.value;
+      });
+    }
+    if (appState.verbsPack && conjState.currentVerb) {
+      renderConjugation();
+    }
+  })(appHooks.onVoicePrefsChanged);
+
   const prefs = getPrefs();
   const bindFilter = (id, key, isBool = false, rebuildQueue = true) => {
     const el = document.getElementById(id);
@@ -753,6 +1021,24 @@ export function initConjugation() {
   bindFilter('conj-tense-select', 'tense', false, false);
   bindFilter('conj-category-select', 'category', false, true);
   bindFilter('conj-weak-only-checkbox', 'weakOnly', true, true);
+
+  const conjVoiceCb = document.getElementById('conj-voice-mode-checkbox');
+  if (conjVoiceCb) {
+    conjVoiceCb.checked = Boolean(getVoicePrefs().enabled);
+    conjVoiceCb.addEventListener('change', (e) => {
+      const infInp = document.getElementById('conj-infinitive-input');
+      if (infInp && conjState.stage === 'infinitive') {
+        conjState.infinitiveInput = infInp.value;
+      }
+      if (conjState.stage === 'matrix' && !conjState.matrixGraded) {
+        CONJUGATION_PRONOUNS.forEach((_, idx) => {
+          const el = document.getElementById(`conj-matrix-input-${idx}`);
+          if (el) conjState.matrixInputs[idx] = el.value;
+        });
+      }
+      setVoiceModeEnabled(e.target.checked, true);
+    });
+  }
 
   const nextVerbToolbarBtn = document.getElementById('conj-next-btn');
   if (nextVerbToolbarBtn) {

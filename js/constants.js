@@ -59,6 +59,14 @@ export const CONJUGATION_TENSE_LABELS = {
 
 export const SPANISH_ACCENT_CHARS = ['á', 'é', 'í', 'ó', 'ú', 'ü', 'ñ', '¿', '¡'];
 
+export const VOICE_RECOGNITION_LANGS = [
+  { code: 'es-US', label: 'Spanish (US / Latin America — es-US)' },
+  { code: 'es-ES', label: 'Spanish (Spain / Vosotros — es-ES)' },
+  { code: 'es-419', label: 'Spanish (Latin America — es-419)' },
+  { code: 'es-MX', label: 'Spanish (Mexico — es-MX)' },
+  { code: 'es-AR', label: 'Spanish (Argentina — es-AR)' }
+];
+
 export const OFFICIAL_PACK_CATALOG = [
   { url: './packs/grade9-foundations.json', label: '9th Grade Foundations (7,300)', regex: /^g9-\d+$/ },
   { url: './packs/grade10-foundations.json', label: '10th Grade Intermediate (7,300)', regex: /^g10-\d+$/ },

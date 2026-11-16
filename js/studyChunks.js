@@ -10,7 +10,16 @@ import {
   stripSpanishDiacritics
 } from './constants.js';
 import { speakSpanish } from './audio.js';
-import { loadVocabularyPack, saveDeck } from './packs.js';
+import { loadVerbsPack, loadVocabularyPack, saveDeck } from './packs.js';
+import {
+  cancelAutoSubmitCountdown,
+  getVoicePrefs,
+  isSpeechRecognitionSupported,
+  scheduleAutoSubmitCountdown,
+  setVoiceModeEnabled,
+  startSingleShotVoiceInput,
+  stopSpeechSession
+} from './speechInput.js';
 import {
   appHooks,
   appState,
@@ -176,6 +185,7 @@ export function getFilteredStudyQueue() {
 
 export function selectNextCard(options = {}) {
   hideWordLookupPopover();
+  stopSpeechSession();
   const queue = getFilteredStudyQueue();
   appState.typedAnswers = [];
   appState.expectedAnswers = [];
@@ -318,6 +328,13 @@ export function renderFlashcard() {
     }
   }
 
+  const voicePrefs = getVoicePrefs();
+  const voiceOn = Boolean(voicePrefs.enabled);
+  if (voiceOn) {
+    if (!appState.vocabPack) loadVocabularyPack().catch(() => {});
+    if (!appState.verbsPack) loadVerbsPack().catch(() => {});
+  }
+
   const hasTypedTextNow = appState.typedAnswers.some((v) => String(v || '').trim().length > 0);
   const accentHelperHtml = !appState.isRevealed
     ? `<div class="flex flex-wrap items-center justify-center gap-1.5 pt-1" aria-label="Spanish accent helper">
@@ -328,6 +345,31 @@ export function renderFlashcard() {
         ).join('')}
       </div>`
     : '';
+
+  const voiceBarHtml =
+    !appState.isRevealed && voiceOn
+      ? `<div class="flex flex-col items-center gap-2 pt-1">
+          <div class="flex flex-wrap items-center justify-center gap-2">
+            <button id="chunks-mic-btn" type="button" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-800 text-xs font-bold shadow-2xs transition cursor-pointer">
+              🎙️ Speak Missing Phrase (${escapeHtml(voicePrefs.lang)})
+            </button>
+            <span class="px-2.5 py-1 rounded-full bg-slate-100 text-slate-600 text-[11px] font-semibold">
+              ${
+                voicePrefs.autoSubmit
+                  ? `Auto-submit: ${voicePrefs.autoSubmitDelaySec}s delay`
+                  : 'Fill box & press Enter'
+              }${voicePrefs.autoAccents ? ' • Auto-Accents' : ''}
+            </span>
+          </div>
+          <div id="chunks-voice-status" class="text-[11px] font-medium text-slate-500 min-h-[16px]">
+            ${
+              isSpeechRecognitionSupported()
+                ? 'Click "Speak Missing Phrase" to dictate directly into the active blank.'
+                : 'Speech recognition requires Chrome or Edge desktop/Android.'
+            }
+          </div>
+        </div>`
+      : '';
 
   const previewIntervals = {
     again: 'In 1 min',
@@ -384,6 +426,7 @@ export function renderFlashcard() {
       </p>
 
       ${lookupTipHtml}
+      ${voiceBarHtml}
       ${accentHelperHtml}
       ${typedFeedbackHtml}
 
@@ -446,9 +489,17 @@ export function renderFlashcard() {
     revealBtn.onclick = revealCurrentCard;
 
     const inputs = [...container.querySelectorAll('.cloze-input')];
+    const voiceStatusEl = document.getElementById('chunks-voice-status');
+    const chunksMicBtn = document.getElementById('chunks-mic-btn');
     const syncRevealBtnLabel = () => {
       const anyFilled = appState.typedAnswers.some((v) => String(v || '').trim().length > 0);
       revealBtn.textContent = anyFilled ? 'Check & Reveal Answer (Enter)' : 'Reveal Answer (Space)';
+    };
+
+    const setStatusText = (msg, cls = 'text-slate-500') => {
+      if (!voiceStatusEl) return;
+      voiceStatusEl.className = `text-[11px] font-medium min-h-[16px] ${cls}`;
+      voiceStatusEl.textContent = msg;
     };
 
     inputs.forEach((input) => {
@@ -457,6 +508,9 @@ export function renderFlashcard() {
         appState.activeBlankInputIndex = idx;
       });
       input.addEventListener('input', () => {
+        cancelAutoSubmitCountdown(() => {
+          if (voiceOn) setStatusText('Auto-submit cancelled — press Enter when ready.');
+        });
         appState.typedAnswers[idx] = input.value;
         input.style.width = `${Math.max(16, input.value.length + 3)}ch`;
         syncRevealBtnLabel();
@@ -464,20 +518,100 @@ export function renderFlashcard() {
       input.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
           e.preventDefault();
+          cancelAutoSubmitCountdown();
           if (idx < inputs.length - 1 && !inputs[idx + 1].value.trim()) {
             inputs[idx + 1].focus();
           } else {
             revealCurrentCard();
           }
         } else if (e.key === 'Escape') {
+          cancelAutoSubmitCountdown(() => {
+            if (voiceOn) setStatusText('Auto-submit cancelled — press Enter when ready.');
+          });
           input.blur();
         }
       });
     });
 
+    if (chunksMicBtn) {
+      chunksMicBtn.onclick = () => {
+        cancelAutoSubmitCountdown();
+        const vp = getVoicePrefs();
+        const targetIdx =
+          inputs[appState.activeBlankInputIndex] !== undefined ? appState.activeBlankInputIndex : 0;
+        const targetInput = inputs[targetIdx] || inputs[0];
+        const expCandidate = appState.expectedAnswers[targetIdx] || card.target || '';
+
+        startSingleShotVoiceInput({
+          lang: vp.lang,
+          expectedCandidates: expCandidate ? [expCandidate] : [],
+          onStateChange: (state) => {
+            if (!document.body.contains(chunksMicBtn)) return;
+            if (state === 'listening') {
+              chunksMicBtn.classList.add('ring-2', 'ring-rose-400', 'bg-rose-600', 'text-white');
+              chunksMicBtn.classList.remove('bg-rose-50', 'text-rose-800');
+              chunksMicBtn.textContent = '🛑 Listening... (click to stop)';
+              setStatusText('Listening in Spanish...', 'text-rose-700 font-semibold');
+            } else {
+              chunksMicBtn.classList.remove('ring-2', 'ring-rose-400', 'bg-rose-600', 'text-white');
+              chunksMicBtn.classList.add('bg-rose-50', 'text-rose-800');
+              chunksMicBtn.textContent = `🎙️ Speak Missing Phrase (${vp.lang})`;
+            }
+          },
+          onInterim: (interim) => {
+            if (targetInput && document.body.contains(targetInput)) {
+              targetInput.value = interim;
+              targetInput.style.width = `${Math.max(16, interim.length + 3)}ch`;
+            }
+          },
+          onResult: (finalText) => {
+            if (targetInput && document.body.contains(targetInput)) {
+              targetInput.value = finalText;
+              targetInput.style.width = `${Math.max(16, finalText.length + 3)}ch`;
+              appState.typedAnswers[targetIdx] = finalText;
+              syncRevealBtnLabel();
+
+              const nextEmpty = inputs.find((inp) => !inp.value.trim());
+              if (nextEmpty) {
+                nextEmpty.focus();
+                setStatusText(`Filled blank ${targetIdx + 1}. Speak next blank or press Enter.`, 'text-indigo-700');
+              } else {
+                targetInput.focus();
+                if (!vp.autoSubmit) {
+                  setStatusText('Filled box — review or press Enter to check.', 'text-emerald-700');
+                }
+              }
+            }
+          },
+          onAutoSubmitCountdown: (delaySec) => {
+            const hasEmpty = inputs.some((inp) => !inp.value.trim());
+            if (hasEmpty) return;
+            scheduleAutoSubmitCountdown(
+              delaySec,
+              (secLeft) => {
+                if (secLeft > 0) {
+                  setStatusText(
+                    `Auto-submitting in ${secLeft}s... (type or press Esc to cancel)`,
+                    'text-amber-700 font-semibold'
+                  );
+                }
+              },
+              () => {
+                revealCurrentCard();
+              }
+            );
+          },
+          onError: (msg) => {
+            setStatusText(msg, 'text-rose-700');
+          }
+        });
+      };
+    }
+
     container.querySelectorAll('.accent-char-btn').forEach((btn) => {
       btn.addEventListener('mousedown', (e) => {
         e.preventDefault();
+        cancelAutoSubmitCountdown();
         const ch = btn.dataset.char || '';
         const targetInput = inputs[appState.activeBlankInputIndex] || inputs[0];
         if (!targetInput) return;
@@ -502,6 +636,7 @@ export function renderFlashcard() {
 }
 
 export function revealCurrentCard() {
+  stopSpeechSession();
   const card = appState.deck.find((c) => c.id === appState.currentCardId);
   if (!card || appState.isRevealed) return;
   document.querySelectorAll('#flashcard-area .cloze-input').forEach((input) => {
@@ -679,6 +814,30 @@ export function initStudyChunks() {
   if (lookupCb2) {
     lookupCb2.addEventListener('change', (e) => handleWordLookupToggle(e.target.checked));
   }
+
+  const chunksVoiceCb = document.getElementById('chunks-voice-mode-checkbox');
+  if (chunksVoiceCb) {
+    chunksVoiceCb.checked = Boolean(getVoicePrefs().enabled);
+    chunksVoiceCb.addEventListener('change', (e) => {
+      document.querySelectorAll('#flashcard-area .cloze-input').forEach((input) => {
+        const idx = Number(input.dataset.blankIdx) || 0;
+        appState.typedAnswers[idx] = input.value;
+      });
+      setVoiceModeEnabled(e.target.checked, true);
+    });
+  }
+
+  appHooks.onVoicePrefsChanged = ((prevHook) => () => {
+    if (typeof prevHook === 'function') prevHook();
+    cancelAutoSubmitCountdown();
+    document.querySelectorAll('#flashcard-area .cloze-input').forEach((input) => {
+      const idx = Number(input.dataset.blankIdx) || 0;
+      appState.typedAnswers[idx] = input.value;
+    });
+    if (appState.currentCardId) {
+      renderFlashcard();
+    }
+  })(appHooks.onVoicePrefsChanged);
 
   // Chunk Study Global Shortcuts (ONLY when Tab 1 -> Subtab 1 Chunks is active)
   document.addEventListener('keydown', (e) => {
