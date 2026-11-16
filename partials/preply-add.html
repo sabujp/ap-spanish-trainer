@@ -1,0 +1,86 @@
+<!-- ==================== TAB 2: PREPLY QUICK-ADD ==================== -->
+<section id="tab-add" class="tab-panel hidden space-y-6">
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- Left: Single Phrase Form -->
+    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+      <div class="border-b border-slate-100 pb-3">
+        <h2 class="text-base font-bold text-slate-900">Add Single Preply "Gap Phrase"</h2>
+        <p class="text-xs text-slate-500 mt-0.5">Turn a sentence from your tutor's chat into a contextual cloze card.</p>
+      </div>
+
+      <form id="single-add-form" class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Full Spanish Sentence *</label>
+          <textarea id="add-sentence" rows="2" required placeholder="e.g., A pesar de que la tecnología avanza rápido, persiste la brecha digital." class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none"></textarea>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Target Chunk to Blank Out * <span class="font-normal text-slate-400">(must appear in sentence above)</span></label>
+          <input type="text" id="add-target" required placeholder="e.g., A pesar de que" class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
+        </div>
+
+        <!-- Live Cloze Preview -->
+        <div class="bg-indigo-50/70 border border-indigo-100 rounded-xl p-3">
+          <span class="text-[11px] font-bold uppercase tracking-wider text-indigo-500 block mb-1">Live Card Preview:</span>
+          <p id="add-live-preview" class="text-sm text-slate-700 italic">Type a sentence and target chunk above to preview...</p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">English Meaning / Cue *</label>
+            <input type="text" id="add-hint" required placeholder="e.g., Despite the fact that" class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">AP Theme *</label>
+            <select id="add-theme" class="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+              <option value="Argument & Connectors">Argument &amp; Connectors</option>
+              <option value="Global Challenges">Global Challenges</option>
+              <option value="Science & Technology">Science &amp; Technology</option>
+              <option value="Contemporary Life">Contemporary Life</option>
+              <option value="Personal & Public Identities">Personal &amp; Public Identities</option>
+              <option value="Families & Communities">Families &amp; Communities</option>
+              <option value="Beauty & Aesthetics">Beauty &amp; Aesthetics</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Usage / Dialect Note <span class="font-normal text-slate-400">(optional)</span></label>
+          <input type="text" id="add-notes" placeholder="e.g., Great for AP argumentative essay transitions; triggers indicative here." class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
+        </div>
+
+        <button type="submit" class="w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm shadow-xs transition cursor-pointer">
+          + Save Chunk to Study Deck
+        </button>
+      </form>
+    </div>
+
+    <!-- Right: Bulk Preply Chat Importer -->
+    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs flex flex-col justify-between space-y-4">
+      <div class="space-y-4">
+        <div class="border-b border-slate-100 pb-3">
+          <h2 class="text-base font-bold text-slate-900">Bulk Preply Chat Importer</h2>
+          <p class="text-xs text-slate-500 mt-0.5">Paste multiple lines from a tutoring session using pipe <code class="bg-slate-100 px-1 rounded text-indigo-600">|</code> separators.</p>
+        </div>
+
+        <div class="bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs text-slate-600 space-y-1">
+          <p class="font-semibold text-slate-800">Format (one card per line):</p>
+          <code class="block text-[11px] text-indigo-700 break-all">Full Spanish Sentence | Target Chunk | English Hint | AP Theme</code>
+          <p class="text-[11px] text-slate-500 pt-1">If AP Theme is omitted, it defaults to <strong>Argument &amp; Connectors</strong>.</p>
+        </div>
+
+        <div>
+          <label for="bulk-textarea" class="block text-xs font-semibold text-slate-700 mb-1">Paste Lines Below:</label>
+          <textarea id="bulk-textarea" rows="8" placeholder="Es imprescindible que los jóvenes desarrollen el pensamiento crítico. | Es imprescindible que | It is essential that (+ subjunctive) | Contemporary Life&#10;En cuanto a las energías renovables, Argentina tiene un gran potencial. | En cuanto a | Regarding / As for | Global Challenges" class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-xs font-mono leading-relaxed focus:ring-2 focus:ring-indigo-500 focus:outline-none"></textarea>
+        </div>
+      </div>
+
+      <div class="space-y-2">
+        <button id="bulk-import-btn" type="button" class="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm shadow-xs transition cursor-pointer">
+          Parse &amp; Add All Lines
+        </button>
+        <p id="bulk-feedback" class="text-xs text-center text-slate-500 min-h-[18px]"></p>
+      </div>
+    </div>
+  </div>
+</section>

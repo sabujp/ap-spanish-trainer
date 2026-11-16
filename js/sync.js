@@ -9,6 +9,8 @@ import {
 import {
   appHooks,
   appState,
+  applySharedLevelToPrefsAndUI,
+  resolveUnifiedStudyLevel,
   saveAudioPrefs,
   saveDailyPace,
   saveUserPrefs,
@@ -336,6 +338,7 @@ export async function applyRemoteDeltaPayload(remotePayload) {
   if (remotePayload.userPrefs && typeof remotePayload.userPrefs === 'object') {
     const rPrefs = remotePayload.userPrefs;
     if ((Number(rPrefs.updatedAt) || 0) > (Number(appState.userPrefs.updatedAt) || 0)) {
+      const prevLevel = appState.studyLevel;
       appState.userPrefs = {
         ...appState.userPrefs,
         ...rPrefs,
@@ -343,8 +346,13 @@ export async function applyRemoteDeltaPayload(remotePayload) {
         conjPrefs: { ...appState.userPrefs.conjPrefs, ...(rPrefs.conjPrefs || {}) }
       };
       appState.userPrefs.wordLookupEnabled = Boolean(appState.userPrefs.wordLookupEnabled);
+      const unifiedLevel = resolveUnifiedStudyLevel(appState.userPrefs);
+      applySharedLevelToPrefsAndUI(unifiedLevel);
       saveUserPrefs(false, false);
       syncUserPrefsToUI();
+      if (unifiedLevel !== prevLevel) {
+        appHooks.onSharedLevelChanged(unifiedLevel, 'sync');
+      }
       if (appState.userPrefs.activeTab && ['study', 'add', 'speaking', 'manage'].includes(appState.userPrefs.activeTab)) {
         appHooks.switchTab(appState.userPrefs.activeTab, {
           sync: false,
@@ -717,4 +725,18 @@ export function initGoogleSync() {
   document.getElementById('google-signout-action-btn').onclick = signOutGoogle;
   document.getElementById('drive-push-now-btn').onclick = () => pushDeckToGoogleDrive(false);
   document.getElementById('drive-pull-now-btn').onclick = () => pullAndMergeFromGoogleDrive(false);
+
+  const flushPendingDriveSync = () => {
+    if (appState.driveSyncTimeout && hasValidGoogleToken() && !appState.isDriveSyncing) {
+      clearTimeout(appState.driveSyncTimeout);
+      appState.driveSyncTimeout = null;
+      pushDeckToGoogleDrive(true);
+    }
+  };
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') {
+      flushPendingDriveSync();
+    }
+  });
+  window.addEventListener('pagehide', flushPendingDriveSync);
 }

@@ -10,7 +10,8 @@ import {
   USER_PREFS_KEY,
   VERB_STATS_KEY,
   VOCAB_STATS_KEY,
-  getTodayDateStr
+  getTodayDateStr,
+  normalizeStudyLevel
 } from './constants.js';
 
 // Shared mutable application state
@@ -122,7 +123,8 @@ export const appHooks = {
   switchStudySubTab: () => {},
   hideWordLookupPopover: () => {},
   onVocabStatsUpdated: () => {},
-  onVerbStatsUpdated: () => {}
+  onVerbStatsUpdated: () => {},
+  onSharedLevelChanged: () => {}
 };
 
 // ==================== INDEXEDDB HELPERS ====================
@@ -234,15 +236,57 @@ export function syncStudyModeButtonsUI(mode) {
   }
 }
 
+export function resolveUnifiedStudyLevel(prefsObj) {
+  const p = prefsObj || appState.userPrefs || {};
+  const sLvl = normalizeStudyLevel(p.studyLevel);
+  const vLvl = normalizeStudyLevel(p.vocabPrefs?.level);
+  const cLvl = normalizeStudyLevel(p.conjPrefs?.level);
+  if (p.sharedLevelUnified) return sLvl;
+  if (sLvl !== 'ALL') return sLvl;
+  if (vLvl !== 'ALL') return vLvl;
+  if (cLvl !== 'ALL') return cLvl;
+  return sLvl;
+}
+
+export function applySharedLevelToPrefsAndUI(levelVal) {
+  const lvl = normalizeStudyLevel(levelVal);
+  appState.studyLevel = lvl;
+  appState.userPrefs.studyLevel = lvl;
+  appState.userPrefs.sharedLevelUnified = true;
+  if (!appState.userPrefs.vocabPrefs) appState.userPrefs.vocabPrefs = {};
+  if (!appState.userPrefs.conjPrefs) appState.userPrefs.conjPrefs = {};
+  appState.userPrefs.vocabPrefs.level = lvl;
+  appState.userPrefs.conjPrefs.level = lvl;
+
+  const levelSelect = document.getElementById('study-level-filter');
+  if (levelSelect) levelSelect.value = lvl;
+  const vocabLevel = document.getElementById('vocab-level-filter');
+  if (vocabLevel) vocabLevel.value = lvl;
+  const conjLevel = document.getElementById('conj-level-filter');
+  if (conjLevel) conjLevel.value = lvl;
+  return lvl;
+}
+
+export function setSharedStudyLevel(newLevel, options = {}) {
+  const lvl = applySharedLevelToPrefsAndUI(newLevel);
+  const triggerSync = options.triggerCloudSync !== false;
+  const bumpTs = options.bumpTimestamp !== false;
+  saveUserPrefs(triggerSync, bumpTs);
+  if (options.notify !== false) {
+    appHooks.onSharedLevelChanged(lvl, options.source || 'user');
+  }
+  return lvl;
+}
+
 export function syncUserPrefsToUI() {
   const prefs = appState.userPrefs;
-  appState.studyLevel = prefs.studyLevel || 'ALL';
+  const unifiedLevel = resolveUnifiedStudyLevel(prefs);
+  applySharedLevelToPrefsAndUI(unifiedLevel);
+
   appState.studyTheme = prefs.studyTheme || 'ALL';
   appState.studyMode = prefs.studyMode === 'ALL' ? 'ALL' : 'DUE';
   appState.autoFocusType = Boolean(prefs.autoFocusType);
 
-  const levelSelect = document.getElementById('study-level-filter');
-  if (levelSelect) levelSelect.value = appState.studyLevel;
   const themeSelect = document.getElementById('study-theme-filter');
   if (themeSelect) themeSelect.value = appState.studyTheme;
   syncStudyModeButtonsUI(appState.studyMode);
@@ -265,13 +309,11 @@ export function syncUserPrefsToUI() {
 
   // Sync Vocab Quiz filter controls if present
   const vp = prefs.vocabPrefs || {};
-  const vocabLevel = document.getElementById('vocab-level-filter');
   const vocabTheme = document.getElementById('vocab-theme-filter');
   const vocabDir = document.getElementById('vocab-direction-select');
   const vocabPool = document.getElementById('vocab-pool-select');
   const vocabLen = document.getElementById('vocab-length-select');
   const vocabWeak = document.getElementById('vocab-weak-only-checkbox');
-  if (vocabLevel && vp.level !== undefined) vocabLevel.value = String(vp.level);
   if (vocabTheme && vp.theme !== undefined) vocabTheme.value = String(vp.theme);
   if (vocabDir && vp.direction !== undefined) vocabDir.value = String(vp.direction);
   if (vocabPool && vp.pool !== undefined) vocabPool.value = String(vp.pool);
@@ -280,11 +322,9 @@ export function syncUserPrefsToUI() {
 
   // Sync Conjugation filter controls if present
   const cp = prefs.conjPrefs || {};
-  const conjLevel = document.getElementById('conj-level-filter');
   const conjTense = document.getElementById('conj-tense-select');
   const conjCat = document.getElementById('conj-category-select');
   const conjWeak = document.getElementById('conj-weak-only-checkbox');
-  if (conjLevel && cp.level !== undefined) conjLevel.value = String(cp.level);
   if (conjTense && cp.tense !== undefined) conjTense.value = String(cp.tense);
   if (conjCat && cp.category !== undefined) conjCat.value = String(cp.category);
   if (conjWeak) conjWeak.checked = Boolean(cp.weakOnly);
@@ -305,6 +345,10 @@ export function loadUserPrefs() {
       };
       // Enforce default-off unless explicitly true
       appState.userPrefs.wordLookupEnabled = Boolean(parsed.wordLookupEnabled);
+      const unified = resolveUnifiedStudyLevel(appState.userPrefs);
+      appState.userPrefs.studyLevel = unified;
+      appState.userPrefs.vocabPrefs.level = unified;
+      appState.userPrefs.conjPrefs.level = unified;
     } else {
       const legacyFocus = localStorage.getItem(AUTO_FOCUS_TYPE_KEY);
       if (legacyFocus === 'true') {

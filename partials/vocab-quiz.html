@@ -1,0 +1,62 @@
+<!-- ===== SUB-TAB 2: VOCAB TEST (TYPED ONLY) ===== -->
+<div id="study-subpanel-vocab" class="study-subpanel hidden space-y-5">
+  <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+    <div class="flex flex-wrap items-center gap-2.5">
+      <label for="vocab-level-filter" class="text-xs font-semibold uppercase tracking-wider text-slate-500">Level:</label>
+      <select id="vocab-level-filter" class="bg-emerald-50/70 border border-emerald-200 text-emerald-950 text-xs sm:text-sm rounded-xl px-2.5 py-2 font-semibold focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+        <option value="ALL">All Levels (9th → 12th)</option>
+        <option value="1">Level 1: 9th Grade</option>
+        <option value="2">Level 2: 10th Grade</option>
+        <option value="3">Level 3: 11th Pre-AP</option>
+        <option value="4">Level 4: 12th AP</option>
+      </select>
+
+      <label for="vocab-theme-filter" class="text-xs font-semibold uppercase tracking-wider text-slate-500">Theme:</label>
+      <select id="vocab-theme-filter" class="bg-slate-50 border border-slate-300 text-slate-800 text-xs sm:text-sm rounded-xl px-2.5 py-2 font-medium focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+        <option value="ALL">All AP Themes</option>
+        <option value="Argument & Connectors">Argument &amp; Connectors</option>
+        <option value="Global Challenges">Global Challenges</option>
+        <option value="Science & Technology">Science &amp; Technology</option>
+        <option value="Contemporary Life">Contemporary Life</option>
+        <option value="Personal & Public Identities">Personal &amp; Public Identities</option>
+        <option value="Families & Communities">Families &amp; Communities</option>
+        <option value="Beauty & Aesthetics">Beauty &amp; Aesthetics</option>
+      </select>
+
+      <label for="vocab-direction-select" class="text-xs font-semibold uppercase tracking-wider text-slate-500">Direction:</label>
+      <select id="vocab-direction-select" class="bg-indigo-50/80 border border-indigo-200 text-indigo-950 text-xs sm:text-sm rounded-xl px-2.5 py-2 font-semibold focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+        <option value="mixed">Mixed (ES ↔ EN)</option>
+        <option value="es_en">Spanish → English</option>
+        <option value="en_es">English → Spanish</option>
+      </select>
+    </div>
+
+    <div class="flex flex-wrap items-center gap-2.5">
+      <select id="vocab-pool-select" class="bg-slate-50 border border-slate-300 text-slate-800 text-xs rounded-xl px-2.5 py-2 font-medium focus:ring-2 focus:ring-indigo-500 focus:outline-none" title="Which items to test">
+        <option value="both">Words &amp; AP Phrases</option>
+        <option value="words">Vocabulary Words Only</option>
+        <option value="phrases">AP Connectors &amp; Phrases Only</option>
+      </select>
+
+      <select id="vocab-length-select" class="bg-slate-50 border border-slate-300 text-slate-800 text-xs rounded-xl px-2.5 py-2 font-semibold focus:ring-2 focus:ring-indigo-500 focus:outline-none" title="Questions per test round">
+        <option value="10">10 Questions</option>
+        <option value="20" selected>20 Questions</option>
+        <option value="30">30 Questions</option>
+        <option value="0">Endless</option>
+      </select>
+
+      <label class="inline-flex items-center gap-1.5 text-xs font-medium text-slate-600 cursor-pointer select-none" title="Prioritize words you previously missed">
+        <input type="checkbox" id="vocab-weak-only-checkbox" class="rounded text-indigo-600 focus:ring-indigo-500" />
+        <span>Weak Only</span>
+      </label>
+
+      <button id="vocab-restart-btn" type="button" class="px-3 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-xs transition cursor-pointer">
+        ↻ New Test
+      </button>
+    </div>
+  </div>
+
+  <div id="vocab-quiz-area" class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 sm:p-10 min-h-[340px] flex flex-col justify-between transition-all">
+    <div class="my-auto text-center text-sm text-slate-500">Loading vocabulary dictionary...</div>
+  </div>
+</div>

@@ -6,8 +6,8 @@ import {
   stripSpanishDiacritics
 } from './constants.js';
 import { speakSpanish } from './audio.js';
-import { loadVocabularyPack } from './packs.js';
-import { appHooks, appState, saveUserPrefs, saveVocabStats } from './storage.js';
+import { getActivePhrasePriority, loadVocabularyPack } from './packs.js';
+import { appHooks, appState, saveUserPrefs, saveVocabStats, setSharedStudyLevel } from './storage.js';
 
 const quizState = {
   items: [],
@@ -22,7 +22,8 @@ const quizState = {
   answeredCount: 0,
   loading: false,
   error: '',
-  isSummary: false
+  isSummary: false,
+  builtForLevel: null
 };
 
 function shuffleArray(arr) {
@@ -120,6 +121,9 @@ function buildFilteredVocabPool() {
   const pack = appState.vocabPack;
   if (!pack) return [];
   const prefs = getPrefs();
+  const activeLevel = String(prefs.level || appState.studyLevel || 'ALL');
+  const lvlNum = activeLevel === 'ALL' ? null : Number(activeLevel);
+  const priority = getActivePhrasePriority(activeLevel, prefs.theme);
 
   let rawPool = [];
   if (prefs.pool === 'words') {
@@ -131,10 +135,16 @@ function buildFilteredVocabPool() {
   }
 
   let filtered = rawPool.filter((item) => {
-    const matchLevel = prefs.level === 'ALL' || String(item.level) === String(prefs.level);
+    const inLivePhrase =
+      priority.targetVocabKeys.has(item.key) || priority.sentenceVocabKeys.has(item.key);
+    const matchLevel =
+      activeLevel === 'ALL' ||
+      (Array.isArray(item.levels) ? item.levels.includes(lvlNum) : String(item.level) === activeLevel) ||
+      inLivePhrase;
     const matchTheme =
       prefs.theme === 'ALL' ||
-      (Array.isArray(item.themes) && item.themes.includes(prefs.theme));
+      (Array.isArray(item.themes) && item.themes.includes(prefs.theme)) ||
+      inLivePhrase;
     return matchLevel && matchTheme;
   });
 
@@ -145,7 +155,45 @@ function buildFilteredVocabPool() {
     });
   }
 
-  return filtered;
+  return filtered.map((item) => {
+    const isStudiedPhrase = priority.studiedVocabKeys.has(item.key);
+    const isTargetPhrase =
+      priority.targetVocabKeys.has(item.key) ||
+      (lvlNum === null ? (item.targetLevels || []).length > 0 : (item.targetLevels || []).includes(lvlNum));
+    const isSentencePhrase = priority.sentenceVocabKeys.has(item.key) || (item.phraseFreq || 0) > 0;
+    return {
+      ...item,
+      _isStudiedPhrase: isStudiedPhrase,
+      _isTargetPhrase: isTargetPhrase,
+      _inPhraseTests: isStudiedPhrase || isTargetPhrase || isSentencePhrase
+    };
+  });
+}
+
+function selectWeightedVocabItems(pool, targetLen) {
+  if (pool.length === 0) return [];
+  const studiedOrTarget = shuffleArray(pool.filter((i) => i._isStudiedPhrase || i._isTargetPhrase));
+  const sentenceMatch = shuffleArray(
+    pool.filter((i) => !i._isStudiedPhrase && !i._isTargetPhrase && i._inPhraseTests)
+  );
+  const otherItems = shuffleArray(pool.filter((i) => !i._inPhraseTests));
+  const phraseBacked = [...studiedOrTarget, ...sentenceMatch];
+
+  if (targetLen <= 0 || pool.length <= targetLen) {
+    // Keep phrase-backed items heavily weighted toward the front in endless/small pools
+    return shuffleArray([...phraseBacked.slice(0, Math.ceil(phraseBacked.length * 0.75)), ...otherItems]).concat(
+      phraseBacked.slice(Math.ceil(phraseBacked.length * 0.75))
+    );
+  }
+
+  // Mix ~70% from Phrase Tests (studied & target phrases first) + ~30% from other matching vocab
+  const wantOther = Math.min(otherItems.length, Math.floor(targetLen * 0.3));
+  const wantPhrase = Math.min(phraseBacked.length, targetLen - wantOther);
+  const chosenPhrase = phraseBacked.slice(0, wantPhrase);
+  const chosenOther = otherItems.slice(0, targetLen - chosenPhrase.length);
+  const shortfall = targetLen - (chosenPhrase.length + chosenOther.length);
+  const extraPhrase = shortfall > 0 ? phraseBacked.slice(chosenPhrase.length, chosenPhrase.length + shortfall) : [];
+  return shuffleArray([...chosenPhrase, ...chosenOther, ...extraPhrase]);
 }
 
 export async function startVocabRound(customItems = null) {
@@ -166,12 +214,14 @@ export async function startVocabRound(customItems = null) {
   }
 
   const prefs = getPrefs();
+  const activeLevel = String(prefs.level || appState.studyLevel || 'ALL');
   const pool = Array.isArray(customItems) ? customItems : buildFilteredVocabPool();
-  const shuffled = shuffleArray(pool);
   const targetLen = Number(prefs.length) || 0;
+  const chosen = Array.isArray(customItems) ? shuffleArray(pool) : selectWeightedVocabItems(pool, targetLen);
 
-  quizState.targetLength = customItems ? shuffled.length : targetLen;
-  quizState.items = targetLen > 0 && !customItems ? shuffled.slice(0, targetLen) : shuffled;
+  quizState.builtForLevel = activeLevel;
+  quizState.targetLength = customItems ? chosen.length : targetLen;
+  quizState.items = chosen;
   quizState.index = 0;
   quizState.results = [];
   quizState.answered = false;
@@ -243,7 +293,7 @@ function advanceVocabQuestion() {
   if (quizState.index >= quizState.items.length) {
     if (quizState.targetLength === 0) {
       // Endless mode: reshuffle a fresh batch seamlessly
-      const fresh = shuffleArray(buildFilteredVocabPool());
+      const fresh = selectWeightedVocabItems(buildFilteredVocabPool(), 0);
       if (fresh.length === 0) {
         quizState.isSummary = true;
       } else {
@@ -266,7 +316,7 @@ export function renderVocabQuiz() {
   if (!container) return;
 
   if (quizState.loading) {
-    container.innerHTML = `<div class="my-auto text-center py-10 text-sm text-slate-500">Loading local vocabulary bank (2,489 words &amp; 536 phrases)...</div>`;
+    container.innerHTML = `<div class="my-auto text-center py-10 text-sm text-slate-500">Loading local vocabulary bank (2,492 words &amp; 536 phrases)...</div>`;
     return;
   }
 
@@ -316,13 +366,11 @@ export function renderVocabQuiz() {
     const resetBtn = document.getElementById('vocab-reset-filters-btn');
     if (resetBtn) {
       resetBtn.onclick = () => {
-        prefs.level = 'ALL';
         prefs.theme = 'ALL';
         prefs.pool = 'both';
-        document.getElementById('vocab-level-filter').value = 'ALL';
         document.getElementById('vocab-theme-filter').value = 'ALL';
         document.getElementById('vocab-pool-select').value = 'both';
-        saveUserPrefs(true, true);
+        setSharedStudyLevel('ALL', { source: 'vocab', notify: false });
         startVocabRound();
       };
     }
@@ -397,7 +445,14 @@ export function renderVocabQuiz() {
 
   const item = quizState.items[quizState.index];
   const dir = quizState.currentDirection;
-  const lvlBadge = LEVEL_BADGES[item.level || 1] || LEVEL_BADGES[1];
+  const activeLvlNum = Number(prefs.level || appState.studyLevel);
+  const badgeLvl = activeLvlNum >= 1 && activeLvlNum <= 4 ? activeLvlNum : item.level || 1;
+  const lvlBadge = LEVEL_BADGES[badgeLvl] || LEVEL_BADGES[1];
+  const phraseOriginBadge = item._isStudiedPhrase
+    ? `<span class="px-2.5 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-900 text-xs font-bold" title="Taken directly from cards you studied or added">★ In Your Phrases</span>`
+    : item._inPhraseTests
+      ? `<span class="px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold" title="Appears in the Phrase Tests at this level">✓ In Phrase Tests</span>`
+      : '';
   const progressLabel =
     quizState.targetLength > 0
       ? `Question ${quizState.index + 1} / ${quizState.items.length}`
@@ -459,6 +514,7 @@ export function renderVocabQuiz() {
         <div class="flex flex-wrap items-center gap-1.5">
           <span class="px-2.5 py-1 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-800 text-xs font-bold">${dirLabel}</span>
           <span class="px-2.5 py-1 rounded-full border text-xs font-bold ${lvlBadge.cls}">${lvlBadge.text}</span>
+          ${phraseOriginBadge}
           <span class="px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 text-xs font-semibold">${escapeHtml(item.pos || item.type)}</span>
           <span class="px-2.5 py-1 rounded-full bg-slate-100 text-slate-600 text-xs font-medium">${escapeHtml(themeDisplay)}</span>
         </div>
@@ -572,13 +628,23 @@ export function initVocabQuiz() {
   appHooks.refreshStudySubTabOnSync = ((prevHook) => (subTab) => {
     if (typeof prevHook === 'function') prevHook(subTab);
     if (subTab === 'vocab') {
-      if (quizState.items.length === 0 && !quizState.loading) {
+      const currentLvl = String(getPrefs().level || appState.studyLevel || 'ALL');
+      if ((quizState.items.length === 0 || quizState.builtForLevel !== currentLvl) && !quizState.loading) {
         startVocabRound();
       } else {
         renderVocabQuiz();
       }
     }
   })(appHooks.refreshStudySubTabOnSync);
+
+  appHooks.onSharedLevelChanged = ((prevHook) => (lvl, source) => {
+    if (typeof prevHook === 'function') prevHook(lvl, source);
+    if (appState.userPrefs.activeTab === 'study' && appState.userPrefs.studySubTab === 'vocab') {
+      startVocabRound();
+    } else {
+      quizState.builtForLevel = null;
+    }
+  })(appHooks.onSharedLevelChanged);
 
   appHooks.onVocabStatsUpdated = () => {
     if (appState.userPrefs.studySubTab === 'vocab') {
@@ -597,7 +663,12 @@ export function initVocabQuiz() {
     });
   };
 
-  bindFilter('vocab-level-filter', 'level');
+  const levelEl = document.getElementById('vocab-level-filter');
+  if (levelEl) {
+    levelEl.addEventListener('change', (e) => {
+      setSharedStudyLevel(e.target.value, { source: 'vocab' });
+    });
+  }
   bindFilter('vocab-theme-filter', 'theme');
   bindFilter('vocab-direction-select', 'direction');
   bindFilter('vocab-pool-select', 'pool');

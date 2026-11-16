@@ -1,0 +1,52 @@
+<!-- ===== SUB-TAB 3: CONJUGATION TEST (2-STAGE + FULL VOSOTROS MATRIX) ===== -->
+<div id="study-subpanel-conjugation" class="study-subpanel hidden space-y-5">
+  <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+    <div class="flex flex-wrap items-center gap-2.5">
+      <label for="conj-level-filter" class="text-xs font-semibold uppercase tracking-wider text-slate-500">Level:</label>
+      <select id="conj-level-filter" class="bg-emerald-50/70 border border-emerald-200 text-emerald-950 text-xs sm:text-sm rounded-xl px-2.5 py-2 font-semibold focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+        <option value="ALL">All Levels (9th → 12th)</option>
+        <option value="1">Level 1: 9th Foundations</option>
+        <option value="2">Level 2: 10th Intermediate</option>
+        <option value="3">Level 3: 11th Pre-AP</option>
+        <option value="4">Level 4: 12th AP Mastery</option>
+      </select>
+
+      <label for="conj-tense-select" class="text-xs font-semibold uppercase tracking-wider text-slate-500">Tense:</label>
+      <select id="conj-tense-select" class="bg-indigo-50/80 border border-indigo-200 text-indigo-950 text-xs sm:text-sm rounded-xl px-2.5 py-2 font-semibold focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+        <option value="present">Presente (Present)</option>
+        <option value="preterite">Pretérito (Preterite)</option>
+        <option value="imperfect">Imperfecto (Imperfect)</option>
+        <option value="future">Futuro (Future)</option>
+        <option value="conditional">Condicional (Conditional)</option>
+        <option value="present_subjunctive">Presente de Subjuntivo</option>
+        <option value="imperfect_subjunctive">Imperfecto de Subjuntivo (-ra)</option>
+        <option value="present_perfect">Pretérito Perfecto</option>
+        <option value="mixed">Mixed AP Tenses</option>
+      </select>
+
+      <label for="conj-category-select" class="text-xs font-semibold uppercase tracking-wider text-slate-500">Type:</label>
+      <select id="conj-category-select" class="bg-slate-50 border border-slate-300 text-slate-800 text-xs sm:text-sm rounded-xl px-2.5 py-2 font-medium focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+        <option value="ALL">All Verb Types</option>
+        <option value="regular">Regular</option>
+        <option value="stem-changing">Stem-Changing</option>
+        <option value="spelling-change">Spelling-Change</option>
+        <option value="irregular">Irregular</option>
+        <option value="reflexive">Reflexive</option>
+      </select>
+    </div>
+
+    <div class="flex flex-wrap items-center gap-2.5">
+      <label class="inline-flex items-center gap-1.5 text-xs font-medium text-slate-600 cursor-pointer select-none" title="Focus on verbs where you missed an infinitive or conjugation form">
+        <input type="checkbox" id="conj-weak-only-checkbox" class="rounded text-indigo-600 focus:ring-indigo-500" />
+        <span>Weak Verbs Only</span>
+      </label>
+      <button id="conj-next-btn" type="button" class="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-xs transition cursor-pointer">
+        Next Verb →
+      </button>
+    </div>
+  </div>
+
+  <div id="conjugation-area" class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 sm:p-10 min-h-[380px] flex flex-col justify-between transition-all">
+    <div class="my-auto text-center text-sm text-slate-500">Loading AP verb conjugation bank...</div>
+  </div>
+</div>

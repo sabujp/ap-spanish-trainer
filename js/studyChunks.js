@@ -17,6 +17,7 @@ import {
   getEffectiveDueCards,
   saveDailyPace,
   saveUserPrefs,
+  setSharedStudyLevel,
   syncStudyModeButtonsUI
 } from './storage.js';
 import { hasValidGoogleToken } from './sync.js';
@@ -582,10 +583,15 @@ export function initStudyChunks() {
   document.getElementById('mode-due-btn').onclick = () => setStudyMode('DUE');
   document.getElementById('mode-all-btn').onclick = () => setStudyMode('ALL');
 
+  appHooks.onSharedLevelChanged = ((prevHook) => (lvl, source) => {
+    if (typeof prevHook === 'function') prevHook(lvl, source);
+    if (source !== 'chunks') {
+      selectNextCard({ skipTimestamp: true });
+    }
+  })(appHooks.onSharedLevelChanged);
+
   document.getElementById('study-level-filter').onchange = (e) => {
-    appState.studyLevel = e.target.value;
-    appState.userPrefs.studyLevel = appState.studyLevel;
-    saveUserPrefs(true, true);
+    setSharedStudyLevel(e.target.value, { source: 'chunks' });
     selectNextCard();
   };
 

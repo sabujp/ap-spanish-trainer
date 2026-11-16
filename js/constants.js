@@ -71,9 +71,16 @@ export const IDB_NAME = 'ap_spanish_trainer_db';
 export const IDB_VERSION = 1;
 export const IDB_STORE = 'app_state';
 export const IDB_DECK_KEY = 'deck';
-export const IDB_VOCAB_KEY = 'vocab_pack_v1';
-export const IDB_VERBS_KEY = 'verbs_pack_v1';
+export const IDB_VOCAB_KEY = 'vocab_pack_v2';
+export const IDB_VERBS_KEY = 'verbs_pack_v2';
 export const DAY_MS = 24 * 60 * 60 * 1000;
+
+export const VALID_STUDY_LEVELS = ['ALL', '1', '2', '3', '4'];
+
+export function normalizeStudyLevel(val) {
+  const s = String(val ?? 'ALL').trim();
+  return VALID_STUDY_LEVELS.includes(s) ? s : 'ALL';
+}
 
 export const VALID_AP_THEMES = [
   'Argument & Connectors',

@@ -316,6 +316,186 @@ export async function loadDeck() {
 const META_GRAMMAR_PHRASE_RE =
   /^(conditional|hypothetical|imperfect|preterite|present|subjunctive|gerund|passive|participle|indicative)\b.*(clause|tense|phrase|form)$/i;
 
+const SPANISH_TOKEN_EXTRACT_RE = /[a-záéíóúüñ]+/gi;
+const VERB_REFL_PRONS = new Set(['me', 'te', 'se', 'nos', 'os']);
+let cachedVerbFormIndex = null;
+let cachedVerbPackRef = null;
+
+function cleanPhrasePunctuation(s) {
+  return String(s || '')
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, ' ')
+    .replace(/^[¿¡.,;:!?"'()]+|[¿¡.,;:!?"'()]+$/g, '');
+}
+
+export function getVerbFormLookup(verbsPack) {
+  if (!verbsPack || !Array.isArray(verbsPack.verbs)) {
+    return { single: new Map(), multi: new Map() };
+  }
+  if (cachedVerbPackRef === verbsPack && cachedVerbFormIndex) {
+    return cachedVerbFormIndex;
+  }
+
+  const single = new Map();
+  const multi = new Map();
+  const addForm = (map, form, infinitive) => {
+    if (!form) return;
+    let set = map.get(form);
+    if (!set) {
+      set = new Set();
+      map.set(form, set);
+    }
+    set.add(infinitive);
+  };
+
+  for (const v of verbsPack.verbs) {
+    const inf = normalizeSpanishAnswer(v.infinitive);
+    addForm(single, inf, v.infinitive);
+    if (inf.endsWith('se') && inf.length > 3) {
+      addForm(single, inf.slice(0, -2), v.infinitive);
+    }
+    if (v.gerund) addForm(single, normalizeSpanishAnswer(v.gerund), v.infinitive);
+    if (v.participle) addForm(single, normalizeSpanishAnswer(v.participle), v.infinitive);
+    const tenses = v.tenses || {};
+    for (const forms of Object.values(tenses)) {
+      if (!Array.isArray(forms)) continue;
+      for (const f of forms) {
+        const fn = normalizeSpanishAnswer(f);
+        const parts = fn.split(' ');
+        if (parts.length === 1) {
+          addForm(single, fn, v.infinitive);
+        } else {
+          addForm(multi, fn, v.infinitive);
+          if (parts.length === 2 && VERB_REFL_PRONS.has(parts[0])) {
+            addForm(single, parts[1], v.infinitive);
+          }
+        }
+      }
+    }
+  }
+
+  cachedVerbPackRef = verbsPack;
+  cachedVerbFormIndex = { single, multi };
+  return cachedVerbFormIndex;
+}
+
+// Fast runtime extraction of words, phrases & verbs from user's studied/custom/due Phrase Test cards
+export function getActivePhrasePriority(levelFilter = 'ALL', themeFilter = 'ALL') {
+  const targetVocabKeys = new Set();
+  const studiedVocabKeys = new Set();
+  const sentenceVocabKeys = new Set();
+  const targetVerbs = new Set();
+  const studiedVerbs = new Set();
+  const sentenceVerbs = new Set();
+
+  const vocabPack = appState.vocabPack;
+  const verbsPack = appState.verbsPack;
+  const verbLookup = verbsPack ? getVerbFormLookup(verbsPack) : null;
+
+  const matchingCards = appState.deck.filter((c) => {
+    if (!c) return false;
+    const lvlMatch = levelFilter === 'ALL' || String(c.level || 2) === String(levelFilter);
+    const themeMatch = themeFilter === 'ALL' || c.theme === themeFilter;
+    return lvlMatch && themeMatch;
+  });
+
+  // Always inspect all custom Preply cards & studied cards, plus first 200 upcoming cards for live responsiveness
+  const seenCardIds = new Set();
+  const inspectCards = [];
+  for (const c of matchingCards) {
+    const isCustomOrStudied = !isOfficialPackCard(c) || (c.reps || 0) > 0 || (c.updatedAt || 0) > 0;
+    if (isCustomOrStudied) {
+      seenCardIds.add(c.id);
+      inspectCards.push(c);
+    }
+  }
+  let extraCount = 0;
+  for (const c of matchingCards) {
+    if (extraCount >= 200) break;
+    if (!seenCardIds.has(c.id)) {
+      inspectCards.push(c);
+      extraCount++;
+    }
+  }
+
+  const resolveVocabWordKey = (tok) => {
+    if (!vocabPack) return null;
+    const entry = vocabPack.wordMap.get(tok);
+    if (!entry) return null;
+    const lemNorm = entry.lemma ? normalizeSpanishAnswer(entry.lemma) : tok;
+    const lemEntry = vocabPack.wordMap.get(lemNorm);
+    if (lemEntry && lemEntry.quiz) return lemEntry.key;
+    if (entry.quiz) return entry.key;
+    return null;
+  };
+
+  for (const c of inspectCards) {
+    const isStudiedOrCustom = !isOfficialPackCard(c) || (c.reps || 0) > 0 || (c.updatedAt || 0) > 0;
+    const tgtClean = cleanPhrasePunctuation(c.target);
+    const sentClean = normalizeSpanishAnswer(c.sentence);
+
+    if (vocabPack) {
+      const phraseEntry = vocabPack.phraseMap.get(tgtClean);
+      if (phraseEntry) {
+        targetVocabKeys.add(phraseEntry.key);
+        if (isStudiedOrCustom) studiedVocabKeys.add(phraseEntry.key);
+      }
+
+      const tgtTokens = tgtClean.match(SPANISH_TOKEN_EXTRACT_RE) || [];
+      for (const t of tgtTokens) {
+        const k = resolveVocabWordKey(t);
+        if (k) {
+          targetVocabKeys.add(k);
+          if (isStudiedOrCustom) studiedVocabKeys.add(k);
+        }
+      }
+
+      const sentTokens = sentClean.match(SPANISH_TOKEN_EXTRACT_RE) || [];
+      for (const t of sentTokens) {
+        const k = resolveVocabWordKey(t);
+        if (k) {
+          sentenceVocabKeys.add(k);
+          if (isStudiedOrCustom) studiedVocabKeys.add(k);
+        }
+      }
+    }
+
+    if (verbLookup) {
+      const tgtTokens = tgtClean.match(SPANISH_TOKEN_EXTRACT_RE) || [];
+      for (const t of tgtTokens) {
+        const matched = verbLookup.single.get(t);
+        if (matched) {
+          for (const inf of matched) {
+            targetVerbs.add(inf);
+            if (isStudiedOrCustom) studiedVerbs.add(inf);
+          }
+        }
+      }
+
+      const sentTokens = sentClean.match(SPANISH_TOKEN_EXTRACT_RE) || [];
+      for (const t of sentTokens) {
+        const matched = verbLookup.single.get(t);
+        if (matched) {
+          for (const inf of matched) {
+            sentenceVerbs.add(inf);
+            if (isStudiedOrCustom) studiedVerbs.add(inf);
+          }
+        }
+      }
+    }
+  }
+
+  return {
+    targetVocabKeys,
+    studiedVocabKeys,
+    sentenceVocabKeys,
+    targetVerbs,
+    studiedVerbs,
+    sentenceVerbs
+  };
+}
+
 function indexVocabularyData(raw) {
   const words = raw.words || {};
   const phrases = raw.phrases || {};
@@ -330,7 +510,11 @@ function indexVocabularyData(raw) {
     if (!info || !info.en) continue;
     const norm = normalizeSpanishAnswer(token);
     const bare = stripSpanishDiacritics(norm);
-    const entry = { key: `w:${norm}`, es: token, ...info };
+    const baseLvl = Number(info.level) || 1;
+    const levels = Array.isArray(info.levels) && info.levels.length > 0 ? info.levels.map(Number) : [baseLvl];
+    const targetLevels = Array.isArray(info.targetLevels) ? info.targetLevels.map(Number) : [];
+    const phraseFreq = Number(info.phraseFreq) || 0;
+    const entry = { key: `w:${norm}`, es: token, ...info, levels, targetLevels, phraseFreq };
     wordMap.set(norm, entry);
     if (!wordNormMap.has(bare)) {
       wordNormMap.set(bare, entry);
@@ -343,7 +527,10 @@ function indexVocabularyData(raw) {
         en: info.en,
         pos: info.pos || 'word',
         lemma: info.lemma || token,
-        level: Number(info.level) || 1,
+        level: baseLvl,
+        levels,
+        targetLevels,
+        phraseFreq,
         themes: Array.isArray(info.themes) ? info.themes : []
       });
     }
@@ -353,7 +540,11 @@ function indexVocabularyData(raw) {
     if (!info || !info.en) continue;
     const norm = normalizeSpanishAnswer(key);
     const bare = stripSpanishDiacritics(norm);
-    const entry = { key: `p:${norm}`, es: info.es || key, ...info };
+    const baseLvl = Number(info.level) || 1;
+    const levels = Array.isArray(info.levels) && info.levels.length > 0 ? info.levels.map(Number) : [baseLvl];
+    const targetLevels = Array.isArray(info.targetLevels) ? info.targetLevels.map(Number) : [];
+    const phraseFreq = Number(info.phraseFreq) || 0;
+    const entry = { key: `p:${norm}`, es: info.es || key, ...info, levels, targetLevels, phraseFreq };
     phraseMap.set(norm, entry);
     if (!phraseNormMap.has(bare)) {
       phraseNormMap.set(bare, entry);
@@ -366,7 +557,10 @@ function indexVocabularyData(raw) {
         en: info.en,
         pos: 'phrase',
         lemma: '',
-        level: Number(info.level) || 1,
+        level: baseLvl,
+        levels,
+        targetLevels,
+        phraseFreq,
         themes: Array.isArray(info.themes) ? info.themes : []
       });
     }
@@ -397,7 +591,7 @@ export async function loadVocabularyPack(forceReload = false) {
     try {
       if (!forceReload) {
         const cached = await idbGet(IDB_VOCAB_KEY);
-        if (cached && cached.words && cached.phrases && cached.meta?.version === 1) {
+        if (cached && cached.words && cached.phrases && cached.meta?.version === 2) {
           appState.vocabPack = indexVocabularyData(cached);
           return appState.vocabPack;
         }
@@ -432,7 +626,7 @@ export async function loadVerbsPack(forceReload = false) {
     try {
       if (!forceReload) {
         const cached = await idbGet(IDB_VERBS_KEY);
-        if (cached && Array.isArray(cached.verbs) && cached.meta?.version === 1) {
+        if (cached && Array.isArray(cached.verbs) && cached.meta?.version === 2) {
           appState.verbsPack = cached;
           return appState.verbsPack;
         }

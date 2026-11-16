@@ -8,8 +8,8 @@ import {
   stripSpanishDiacritics
 } from './constants.js';
 import { speakSpanish } from './audio.js';
-import { loadVerbsPack } from './packs.js';
-import { appHooks, appState, saveUserPrefs, saveVerbStats } from './storage.js';
+import { getActivePhrasePriority, loadVerbsPack } from './packs.js';
+import { appHooks, appState, saveUserPrefs, saveVerbStats, setSharedStudyLevel } from './storage.js';
 
 const ALL_TENSE_KEYS = Object.keys(CONJUGATION_TENSE_LABELS);
 
@@ -29,7 +29,8 @@ const conjState = {
   sessionTotalForms: 0,
   sessionVerbsDone: 0,
   loading: false,
-  error: ''
+  error: '',
+  builtForLevel: null
 };
 
 function shuffleArray(arr) {
@@ -57,9 +58,16 @@ function getFilteredVerbs() {
   const pack = appState.verbsPack;
   if (!pack || !Array.isArray(pack.verbs)) return [];
   const prefs = getPrefs();
+  const activeLevel = String(prefs.level || appState.studyLevel || 'ALL');
+  const lvlNum = activeLevel === 'ALL' ? null : Number(activeLevel);
+  const priority = getActivePhrasePriority(activeLevel, 'ALL');
 
-  return pack.verbs.filter((v) => {
-    const matchLevel = prefs.level === 'ALL' || String(v.level) === String(prefs.level);
+  const filtered = pack.verbs.filter((v) => {
+    const inLivePhrase = priority.targetVerbs.has(v.infinitive) || priority.sentenceVerbs.has(v.infinitive);
+    const matchLevel =
+      activeLevel === 'ALL' ||
+      (Array.isArray(v.levels) ? v.levels.includes(lvlNum) : String(v.level) === activeLevel) ||
+      inLivePhrase;
     const matchCat = prefs.category === 'ALL' || v.category === prefs.category;
     if (!matchLevel || !matchCat) return false;
     if (prefs.weakOnly) {
@@ -68,6 +76,43 @@ function getFilteredVerbs() {
     }
     return true;
   });
+
+  return filtered.map((v) => {
+    const isStudiedVerb = priority.studiedVerbs.has(v.infinitive);
+    const isTargetVerb =
+      priority.targetVerbs.has(v.infinitive) ||
+      (lvlNum === null ? (v.targetLevels || []).length > 0 : (v.targetLevels || []).includes(lvlNum));
+    const isSentenceVerb = priority.sentenceVerbs.has(v.infinitive) || (v.phraseFreq || 0) > 0;
+    return {
+      ...v,
+      _isStudiedVerb: isStudiedVerb,
+      _isTargetVerb: isTargetVerb,
+      _inPhraseTests: isStudiedVerb || isTargetVerb || isSentenceVerb
+    };
+  });
+}
+
+function buildWeightedVerbQueue(verbs) {
+  if (!verbs.length) return [];
+  const studiedOrTarget = shuffleArray(verbs.filter((v) => v._isStudiedVerb || v._isTargetVerb));
+  const sentenceMatched = shuffleArray(
+    verbs.filter((v) => !v._isStudiedVerb && !v._isTargetVerb && v._inPhraseTests)
+  );
+  const others = shuffleArray(verbs.filter((v) => !v._inPhraseTests));
+  const prioritized = [...studiedOrTarget, ...sentenceMatched];
+  // Interleave ~4 phrase-test verbs per 1 general verb so phrase verbs anchor practice while keeping all verbs reachable
+  const out = [];
+  let pi = 0;
+  let oi = 0;
+  while (pi < prioritized.length || oi < others.length) {
+    for (let k = 0; k < 4 && pi < prioritized.length; k++) {
+      out.push(prioritized[pi++]);
+    }
+    if (oi < others.length) {
+      out.push(others[oi++]);
+    }
+  }
+  return out;
 }
 
 function pickTenseForVerb() {
@@ -106,10 +151,13 @@ export async function startConjugationDeck(advanceToNext = false) {
     conjState.loading = false;
   }
 
+  const activeLevel = String(getPrefs().level || appState.studyLevel || 'ALL');
+  conjState.builtForLevel = activeLevel;
+
   if (advanceToNext && conjState.queue.length > 0) {
     conjState.queueIndex += 1;
     if (conjState.queueIndex >= conjState.queue.length) {
-      conjState.queue = shuffleArray(getFilteredVerbs());
+      conjState.queue = buildWeightedVerbQueue(getFilteredVerbs());
       conjState.queueIndex = 0;
     }
     setupVerbTurn(conjState.queue[conjState.queueIndex] || null);
@@ -117,7 +165,7 @@ export async function startConjugationDeck(advanceToNext = false) {
     return;
   }
 
-  conjState.queue = shuffleArray(getFilteredVerbs());
+  conjState.queue = buildWeightedVerbQueue(getFilteredVerbs());
   conjState.queueIndex = 0;
   setupVerbTurn(conjState.queue[0] || null);
   renderConjugation();
@@ -287,10 +335,10 @@ export function renderConjugation() {
     const rf = document.getElementById('conj-reset-filters-btn');
     if (rf) {
       rf.onclick = () => {
-        prefs.level = 'ALL';
+        setSharedStudyLevel('ALL', { source: 'conjugation', notify: false });
         prefs.category = 'ALL';
-        document.getElementById('conj-level-filter').value = 'ALL';
-        document.getElementById('conj-category-select').value = 'ALL';
+        const catSel = document.getElementById('conj-category-select');
+        if (catSel) catSel.value = 'ALL';
         saveUserPrefs(true, true);
         startConjugationDeck(false);
       };
@@ -298,7 +346,19 @@ export function renderConjugation() {
     return;
   }
 
-  const lvlBadge = LEVEL_BADGES[verb.level || 1] || LEVEL_BADGES[1];
+  const activeLevel = String(prefs.level || appState.studyLevel || 'ALL');
+  const activeLvlNum = activeLevel === 'ALL' ? null : Number(activeLevel);
+  const badgeLvl =
+    activeLvlNum && Array.isArray(verb.levels) && verb.levels.includes(activeLvlNum)
+      ? activeLvlNum
+      : verb.level || 1;
+  const lvlBadge = LEVEL_BADGES[badgeLvl] || LEVEL_BADGES[1];
+  const phraseOriginBadge =
+    verb._isStudiedVerb || verb._isTargetVerb
+      ? `<span class="px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold" title="Appears directly in Phrase Tests / your studied phrases">★ In Your Phrases</span>`
+      : verb._inPhraseTests
+        ? `<span class="px-2.5 py-1 rounded-full bg-teal-50 border border-teal-200 text-teal-800 text-xs font-bold" title="Appears in Phrase Test sentences">✓ In Phrase Tests</span>`
+        : '';
   const tenseLabel = CONJUGATION_TENSE_LABELS[conjState.activeTense] || conjState.activeTense;
   const catLabel = verb.category ? verb.category.replace('-', ' ') : 'verb';
   const sessionStatsHtml = `
@@ -322,6 +382,7 @@ export function renderConjugation() {
         <div class="flex flex-wrap items-center gap-1.5">
           <span class="px-2.5 py-1 rounded-full bg-indigo-600 text-white text-xs font-bold">Step 1 of 2: Spanish Infinitive</span>
           <span class="px-2.5 py-1 rounded-full border text-xs font-bold ${lvlBadge.cls}">${lvlBadge.text}</span>
+          ${phraseOriginBadge}
           <span class="px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 text-xs font-semibold capitalize">${escapeHtml(catLabel)}</span>
           <span class="px-2.5 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-900 text-xs font-bold">Next Tense: ${escapeHtml(tenseLabel)}</span>
         </div>
@@ -452,6 +513,7 @@ export function renderConjugation() {
       <div class="flex flex-wrap items-center gap-1.5">
         <span class="px-2.5 py-1 rounded-full bg-indigo-600 text-white text-xs font-bold">Step 2 of 2: Full 6-Person Matrix</span>
         <span class="px-2.5 py-1 rounded-full border text-xs font-bold ${lvlBadge.cls}">${lvlBadge.text}</span>
+        ${phraseOriginBadge}
         <span class="px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 text-xs font-semibold capitalize">${escapeHtml(catLabel)}</span>
         ${infPassBanner}
       </div>
@@ -639,13 +701,23 @@ export function initConjugation() {
   appHooks.refreshStudySubTabOnSync = ((prevHook) => (subTab) => {
     if (typeof prevHook === 'function') prevHook(subTab);
     if (subTab === 'conjugation') {
-      if (!conjState.currentVerb && !conjState.loading) {
+      const currentLvl = String(getPrefs().level || appState.studyLevel || 'ALL');
+      if ((!conjState.currentVerb || conjState.builtForLevel !== currentLvl) && !conjState.loading) {
         startConjugationDeck(false);
       } else {
         renderConjugation();
       }
     }
   })(appHooks.refreshStudySubTabOnSync);
+
+  appHooks.onSharedLevelChanged = ((prevHook) => (lvl, source) => {
+    if (typeof prevHook === 'function') prevHook(lvl, source);
+    if (appState.userPrefs.activeTab === 'study' && appState.userPrefs.studySubTab === 'conjugation') {
+      startConjugationDeck(false);
+    } else {
+      conjState.builtForLevel = null;
+    }
+  })(appHooks.onSharedLevelChanged);
 
   appHooks.onVerbStatsUpdated = () => {
     if (appState.userPrefs.studySubTab === 'conjugation') {
@@ -672,7 +744,12 @@ export function initConjugation() {
     });
   };
 
-  bindFilter('conj-level-filter', 'level', false, true);
+  const levelEl = document.getElementById('conj-level-filter');
+  if (levelEl) {
+    levelEl.addEventListener('change', (e) => {
+      setSharedStudyLevel(e.target.value, { source: 'conjugation' });
+    });
+  }
   bindFilter('conj-tense-select', 'tense', false, false);
   bindFilter('conj-category-select', 'category', false, true);
   bindFilter('conj-weak-only-checkbox', 'weakOnly', true, true);
