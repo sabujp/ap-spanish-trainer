@@ -211,8 +211,9 @@
           <select id="study-level-filter" class="bg-emerald-50/70 border border-emerald-200 text-emerald-950 text-sm rounded-xl px-3 py-2 font-semibold focus:ring-2 focus:ring-indigo-500 focus:outline-none">
             <option value="ALL">All Levels (9th → 12th)</option>
             <option value="1">Level 1: 9th Grade Foundations</option>
-            <option value="2">Level 2: 10th/11th Intermediate</option>
-            <option value="3">Level 3: 12th AP Exam Mastery</option>
+            <option value="2">Level 2: 10th Grade Intermediate</option>
+            <option value="3">Level 3: 11th Grade Pre-AP</option>
+            <option value="4">Level 4: 12th Grade AP Mastery</option>
           </select>
 
           <label for="study-theme-filter" class="text-xs font-semibold uppercase tracking-wider text-slate-500">Theme:</label>
@@ -230,13 +231,14 @@
           <!-- Daily New-Card Pace Cap -->
           <div class="flex items-center gap-1.5 bg-indigo-50/80 border border-indigo-100 px-3 py-1.5 rounded-xl text-xs">
             <span class="font-semibold text-indigo-900">New Today:</span>
-            <strong id="daily-new-progress" class="text-indigo-700">0 / 15</strong>
+            <strong id="daily-new-progress" class="text-indigo-700">0 / 20</strong>
             <label for="daily-new-limit-select" class="sr-only">New cards per day limit</label>
             <select id="daily-new-limit-select" class="ml-1 bg-white border border-indigo-200 rounded-lg px-1.5 py-0.5 text-[11px] font-bold text-indigo-800 focus:outline-none" title="Maximum new unstudied cards introduced per day">
               <option value="5">5/day</option>
               <option value="10">10/day</option>
-              <option value="15" selected>15/day</option>
-              <option value="20">20/day</option>
+              <option value="15">15/day</option>
+              <option value="20" selected>20/day</option>
+              <option value="30">30/day</option>
               <option value="9999">Unlimited</option>
             </select>
           </div>
@@ -467,48 +469,52 @@
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <div>
               <span class="inline-block px-2 py-0.5 rounded-md bg-indigo-100 text-indigo-800 text-[10px] font-bold uppercase tracking-wider mb-1">
-                Modular 4-Year Curriculum (500 Phrases / Grade)
+                Modular 4-Year Curriculum (7,300 Phrases / Grade)
               </span>
               <h3 class="text-sm font-bold text-slate-900">Grade-Level JSON Packs (Stored Externally in <code>/packs/</code>)</h3>
-              <p class="text-xs text-slate-600">Phrases live in separate <code>.json</code> files inside your GitHub/Netlify <code>/packs/</code> folder so <code>index.html</code> stays fast and clean. Click any grade pack to merge it into your deck and sync to Google Drive.</p>
+              <p class="text-xs text-slate-600">Phrases live in separate <code>.json</code> files inside your GitHub/Netlify <code>/packs/</code> folder so <code>index.html</code> stays fast and clean. Click any grade pack (20/day × 365 days = 7,300 phrases) to merge it into your deck and sync progress to Google Drive.</p>
             </div>
           </div>
 
           <!-- Hosted / Repo Pack Manifest Buttons -->
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5" id="curriculum-pack-catalog">
-            <button type="button" data-pack-url="./packs/grade9-foundations.json" data-pack-name="9th Grade Foundations (500)" class="load-remote-pack-btn text-left p-3 rounded-xl bg-white hover:bg-emerald-50 border border-emerald-300 transition cursor-pointer shadow-2xs">
+            <button type="button" data-pack-url="./packs/grade9-foundations.json" data-pack-name="9th Grade Foundations (7,300)" class="load-remote-pack-btn text-left p-3 rounded-xl bg-white hover:bg-emerald-50 border border-emerald-300 transition cursor-pointer shadow-2xs">
               <div class="flex items-center justify-between">
                 <span class="text-xs font-bold text-emerald-900">9th Grade: Foundations</span>
                 <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800">Lvl 1</span>
               </div>
-              <div class="text-[11px] text-slate-500 mt-1"><code>./packs/grade9-foundations.json</code></div>
+              <div class="text-[11px] font-medium text-emerald-700 mt-0.5">7,300 phrases • 7 AP themes</div>
+              <div class="text-[11px] text-slate-500 mt-0.5 truncate"><code>./packs/grade9-foundations.json</code></div>
             </button>
-            <button type="button" data-pack-url="./packs/grade10-intermediate.json" data-pack-name="10th Grade Intermediate (500)" class="load-remote-pack-btn text-left p-3 rounded-xl bg-white hover:bg-indigo-50 border border-indigo-200 transition cursor-pointer shadow-2xs">
+            <button type="button" data-pack-url="./packs/grade10-foundations.json" data-pack-name="10th Grade Intermediate (7,300)" class="load-remote-pack-btn text-left p-3 rounded-xl bg-white hover:bg-sky-50 border border-sky-200 transition cursor-pointer shadow-2xs">
               <div class="flex items-center justify-between">
-                <span class="text-xs font-bold text-indigo-900">10th Grade: Intermediate</span>
+                <span class="text-xs font-bold text-sky-900">10th Grade: Intermediate</span>
                 <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-sky-100 text-sky-800">Lvl 2</span>
               </div>
-              <div class="text-[11px] text-slate-500 mt-1"><code>./packs/grade10-intermediate.json</code></div>
+              <div class="text-[11px] font-medium text-sky-700 mt-0.5">7,300 phrases • 7 AP themes</div>
+              <div class="text-[11px] text-slate-500 mt-0.5 truncate"><code>./packs/grade10-foundations.json</code></div>
             </button>
-            <button type="button" data-pack-url="./packs/grade11-pre-ap.json" data-pack-name="11th Grade Pre-AP (500)" class="load-remote-pack-btn text-left p-3 rounded-xl bg-white hover:bg-indigo-50 border border-indigo-200 transition cursor-pointer shadow-2xs">
+            <button type="button" data-pack-url="./packs/grade11-foundations.json" data-pack-name="11th Grade Pre-AP (7,300)" class="load-remote-pack-btn text-left p-3 rounded-xl bg-white hover:bg-indigo-50 border border-indigo-200 transition cursor-pointer shadow-2xs">
               <div class="flex items-center justify-between">
                 <span class="text-xs font-bold text-indigo-900">11th Grade: Pre-AP</span>
-                <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-indigo-100 text-indigo-800">Lvl 2–3</span>
+                <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-indigo-100 text-indigo-800">Lvl 3</span>
               </div>
-              <div class="text-[11px] text-slate-500 mt-1"><code>./packs/grade11-pre-ap.json</code></div>
+              <div class="text-[11px] font-medium text-indigo-700 mt-0.5">7,300 phrases • 7 AP themes</div>
+              <div class="text-[11px] text-slate-500 mt-0.5 truncate"><code>./packs/grade11-foundations.json</code></div>
             </button>
-            <button type="button" data-pack-url="./packs/grade12-ap-mastery.json" data-pack-name="12th Grade AP Mastery (500)" class="load-remote-pack-btn text-left p-3 rounded-xl bg-white hover:bg-indigo-50 border border-indigo-200 transition cursor-pointer shadow-2xs">
+            <button type="button" data-pack-url="./packs/grade12-foundations.json" data-pack-name="12th Grade AP Mastery (7,300)" class="load-remote-pack-btn text-left p-3 rounded-xl bg-white hover:bg-purple-50 border border-purple-200 transition cursor-pointer shadow-2xs">
               <div class="flex items-center justify-between">
-                <span class="text-xs font-bold text-indigo-900">12th Grade: AP Mastery</span>
-                <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-purple-100 text-purple-800">Lvl 3</span>
+                <span class="text-xs font-bold text-purple-900">12th Grade: AP Mastery</span>
+                <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-purple-100 text-purple-800">Lvl 4</span>
               </div>
-              <div class="text-[11px] text-slate-500 mt-1"><code>./packs/grade12-ap-mastery.json</code></div>
+              <div class="text-[11px] font-medium text-purple-700 mt-0.5">7,300 phrases • 7 AP themes</div>
+              <div class="text-[11px] text-slate-500 mt-0.5 truncate"><code>./packs/grade12-foundations.json</code></div>
             </button>
           </div>
 
           <!-- Custom Remote JSON URL Loader -->
           <div class="flex flex-col sm:flex-row gap-2 pt-1">
-            <input type="url" id="remote-pack-url-input" placeholder="https://your-site.netlify.app/packs/grade9-foundations.json" class="flex-1 rounded-xl border border-indigo-200 px-3.5 py-2 text-xs font-mono bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
+            <input type="url" id="remote-pack-url-input" placeholder="https://ap-spanish-trainer.netlify.app/packs/grade9-foundations.json" class="flex-1 rounded-xl border border-indigo-200 px-3.5 py-2 text-xs font-mono bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
             <button type="button" id="fetch-remote-pack-btn" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-xs transition cursor-pointer shrink-0">
               Fetch &amp; Merge URL into Deck
             </button>
@@ -550,6 +556,14 @@
               <!-- Populated dynamically -->
             </tbody>
           </table>
+        </div>
+
+        <!-- Table Pagination Controls -->
+        <div id="manage-table-footer" class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-slate-500 pt-1">
+          <span id="manage-table-count">Showing 0 cards</span>
+          <button type="button" id="manage-load-more-btn" class="hidden px-3.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold transition cursor-pointer">
+            Show 100 More
+          </button>
         </div>
       </div>
     </section>
@@ -623,7 +637,7 @@
 
       <div class="space-y-4 text-xs sm:text-sm text-slate-700 leading-relaxed">
         <div class="bg-indigo-50/70 border border-indigo-100 rounded-2xl p-4">
-          <h4 class="font-bold text-indigo-950 mb-1">1. Daily Spaced Repetition (15 New Chunks/Day)</h4>
+          <h4 class="font-bold text-indigo-950 mb-1">1. Daily Spaced Repetition (20 New Chunks/Day)</h4>
           <p>Instead of memorizing 50 isolated words, study full AP-level sentences with the key phrase blanked out. Rate each card honestly so the SM-2 algorithm schedules reviews right before you forget them:</p>
           <ul class="list-disc pl-5 mt-1.5 space-y-1 text-xs">
             <li><strong>1. Again (Forgot):</strong> Resets progress and shows the card again in <strong>1 minute</strong>.</li>
@@ -748,6 +762,7 @@
 
       const STORAGE_KEY = 'ap_spanish_srs_deck_v1';
       const DELETED_IDS_KEY = 'ap_spanish_deleted_ids_v1';
+      const LOADED_PACKS_KEY = 'ap_spanish_loaded_packs_v1';
       const AUDIO_PREFS_KEY = 'ap_spanish_audio_prefs_v1';
       const DAILY_PACE_KEY = 'ap_spanish_daily_pace_v1';
       const GOOGLE_AUTH_PREFS_KEY = 'ap_spanish_google_auth_v1';
@@ -755,6 +770,16 @@
       const DRIVE_FILE_NAME = 'ap-spanish-progress-v2.json';
       const DRIVE_BACKUP_FILE_NAME = 'ap-spanish-progress-v2.backup.json';
       const DEFAULT_PACK_URL = './packs/grade9-foundations.json';
+      const OFFICIAL_PACK_URLS = [
+        './packs/grade9-foundations.json',
+        './packs/grade10-foundations.json',
+        './packs/grade11-foundations.json',
+        './packs/grade12-foundations.json'
+      ];
+      const IDB_NAME = 'ap_spanish_trainer_db';
+      const IDB_VERSION = 1;
+      const IDB_STORE = 'app_state';
+      const IDB_DECK_KEY = 'deck';
       const DAY_MS = 24 * 60 * 60 * 1000;
 
       // Minimal built-in bootstrap sample (only used if offline/local before external JSON packs are loaded)
@@ -893,6 +918,8 @@
       // App State
       let deck = [];
       let deletedCardIds = new Set();
+      let loadedPackUrls = new Set();
+      let managePageLimit = 100;
       let studyLevel = 'ALL';
       let studyTheme = 'ALL';
       let studyMode = 'DUE'; // 'DUE' | 'ALL'
@@ -909,7 +936,7 @@
       let dailyPace = {
         date: new Date().toISOString().slice(0, 10),
         introducedCount: 0,
-        dailyLimit: 15
+        dailyLimit: 20
       };
 
       let googleAuthState = {
@@ -941,7 +968,89 @@
       let timeRemaining = 120;
       let timerInterval = null;
 
-      // ==================== STORAGE & STATS ====================
+      // ==================== INDEXEDDB + STORAGE & STATS ====================
+      let appDbPromise = null;
+      let idbWriteQueue = Promise.resolve();
+
+      function openAppDb() {
+        if (appDbPromise) return appDbPromise;
+        if (typeof indexedDB === 'undefined') {
+          return Promise.resolve(null);
+        }
+        appDbPromise = new Promise((resolve) => {
+          try {
+            const req = indexedDB.open(IDB_NAME, IDB_VERSION);
+            req.onupgradeneeded = () => {
+              const db = req.result;
+              if (!db.objectStoreNames.contains(IDB_STORE)) {
+                db.createObjectStore(IDB_STORE);
+              }
+            };
+            req.onsuccess = () => resolve(req.result);
+            req.onerror = () => resolve(null);
+          } catch (err) {
+            resolve(null);
+          }
+        });
+        return appDbPromise;
+      }
+
+      async function idbGet(key) {
+        const db = await openAppDb();
+        if (!db) return undefined;
+        return new Promise((resolve) => {
+          try {
+            const tx = db.transaction(IDB_STORE, 'readonly');
+            const store = tx.objectStore(IDB_STORE);
+            const req = store.get(key);
+            req.onsuccess = () => resolve(req.result);
+            req.onerror = () => resolve(undefined);
+          } catch (err) {
+            resolve(undefined);
+          }
+        });
+      }
+
+      async function idbSet(key, value) {
+        const db = await openAppDb();
+        if (!db) return false;
+        return new Promise((resolve) => {
+          try {
+            const tx = db.transaction(IDB_STORE, 'readwrite');
+            const store = tx.objectStore(IDB_STORE);
+            store.put(value, key);
+            tx.oncomplete = () => resolve(true);
+            tx.onerror = () => resolve(false);
+          } catch (err) {
+            resolve(false);
+          }
+        });
+      }
+
+      function isOfficialPackCard(card) {
+        if (!card || !card.id) return false;
+        return /^g(?:9|10|11|12)-(?:boot-)?\d+$/.test(card.id) || Boolean(card.fromOfficialPack);
+      }
+
+      function normalizeOfficialCardLevels(cards) {
+        if (!Array.isArray(cards)) return;
+        cards.forEach((c) => {
+          if (!c || !c.id) return;
+          if (/^g9-/.test(c.id)) c.level = 1;
+          else if (/^g10-/.test(c.id)) c.level = 2;
+          else if (/^g11-/.test(c.id)) c.level = 3;
+          else if (/^g12-/.test(c.id)) c.level = 4;
+        });
+      }
+
+      function saveLoadedPackUrls() {
+        try {
+          localStorage.setItem(LOADED_PACKS_KEY, JSON.stringify([...loadedPackUrls]));
+        } catch (err) {
+          console.error('Failed to save loaded pack URLs:', err);
+        }
+      }
+
       function getTodayDateStr() {
         return new Date().toISOString().slice(0, 10);
       }
@@ -952,10 +1061,10 @@
           if (raw) {
             const parsed = JSON.parse(raw);
             dailyPace = { ...dailyPace, ...parsed };
-            // Upgrade previous default of 10 to 15
-            if (!parsed.upgradedTo15 && dailyPace.dailyLimit === 10) {
-              dailyPace.dailyLimit = 15;
-              dailyPace.upgradedTo15 = true;
+            // Upgrade previous defaults (10 or 15) to 20/day
+            if (!parsed.upgradedTo20 && (dailyPace.dailyLimit === 10 || dailyPace.dailyLimit === 15)) {
+              dailyPace.dailyLimit = 20;
+              dailyPace.upgradedTo20 = true;
               saveDailyPace();
             }
           }
@@ -970,7 +1079,7 @@
         }
         const limitSelect = document.getElementById('daily-new-limit-select');
         if (limitSelect) {
-          limitSelect.value = String(dailyPace.dailyLimit || 15);
+          limitSelect.value = String(dailyPace.dailyLimit || 20);
         }
       }
 
@@ -990,7 +1099,7 @@
           dailyPace.introducedCount = 0;
           saveDailyPace();
         }
-        const limit = Number(dailyPace.dailyLimit) || 15;
+        const limit = Number(dailyPace.dailyLimit) || 20;
         return Math.max(0, limit - (dailyPace.introducedCount || 0));
       }
 
@@ -1016,7 +1125,7 @@
         return [...dueReviews, ...newCardsAvailable];
       }
 
-      function loadDeck() {
+      async function loadDeck() {
         try {
           const rawDeleted = localStorage.getItem(DELETED_IDS_KEY);
           if (rawDeleted) {
@@ -1027,19 +1136,55 @@
         }
 
         try {
+          const rawLoadedPacks = localStorage.getItem(LOADED_PACKS_KEY);
+          if (rawLoadedPacks) {
+            loadedPackUrls = new Set(JSON.parse(rawLoadedPacks));
+          }
+        } catch (err) {
+          console.error('Failed to load loadedPackUrls:', err);
+        }
+
+        // 1. Try IndexedDB first (supports 29,200+ cards cleanly without localStorage 5MB limit)
+        try {
+          const idbDeck = await idbGet(IDB_DECK_KEY);
+          if (Array.isArray(idbDeck) && idbDeck.length > 0) {
+            deck = idbDeck.filter((c) => !deletedCardIds.has(c.id));
+            normalizeOfficialCardLevels(deck);
+            const g9Count = deck.filter((c) => /^g9-\d+$/.test(c.id)).length;
+            if (g9Count > 0 && g9Count < 7000) {
+              // Seamlessly upgrade older 120-card Grade 9 pack to 7,300 cards while keeping review progress
+              fetchAndMergeRemoteJsonPack(DEFAULT_PACK_URL, '9th Grade Foundations (7,300)', true).catch(() => {});
+            }
+            return;
+          }
+        } catch (err) {
+          console.error('Failed to load deck from IndexedDB:', err);
+        }
+
+        // 2. Migrate any legacy localStorage deck into IndexedDB
+        try {
           const raw = localStorage.getItem(STORAGE_KEY);
           if (raw) {
             const parsed = JSON.parse(raw);
             if (Array.isArray(parsed) && parsed.length > 0) {
               deck = parsed.filter((c) => !deletedCardIds.has(c.id));
+              normalizeOfficialCardLevels(deck);
+              const savedToIdb = await idbSet(IDB_DECK_KEY, deck);
+              if (savedToIdb) {
+                localStorage.removeItem(STORAGE_KEY);
+              }
+              const g9Count = deck.filter((c) => /^g9-\d+$/.test(c.id)).length;
+              if (g9Count > 0 && g9Count < 7000) {
+                fetchAndMergeRemoteJsonPack(DEFAULT_PACK_URL, '9th Grade Foundations (7,300)', true).catch(() => {});
+              }
               return;
             }
           }
         } catch (err) {
-          console.error('Failed to load deck from localStorage:', err);
+          console.error('Failed to migrate deck from localStorage:', err);
         }
 
-        // First-time visit: seed with bootstrap sample and auto-fetch ./packs/grade9-foundations.json if hosted
+        // 3. First-time visit: seed bootstrap sample and fetch full Grade 9 pack (7,300 phrases)
         deck = JSON.parse(JSON.stringify(BOOTSTRAP_SAMPLE_DECK))
           .filter((c) => !deletedCardIds.has(c.id))
           .map((c) => ({
@@ -1049,41 +1194,50 @@
           }));
         saveDeck(false);
 
-        fetch(DEFAULT_PACK_URL)
-          .then((res) => (res.ok ? res.json() : null))
-          .then((data) => {
-            if (!data) return;
-            const cardsArray = Array.isArray(data) ? data : data.cards || data.deck;
-            if (Array.isArray(cardsArray) && cardsArray.length > 0) {
-              mergeImportedCardsArray(cardsArray, '9th Grade Foundations', true);
-            }
-          })
-          .catch(() => {
-            // Silently ignore when opened via local file:// without a web server
-          });
+        try {
+          await fetchAndMergeRemoteJsonPack(DEFAULT_PACK_URL, '9th Grade Foundations (7,300)', true);
+        } catch {
+          // Silently ignore when opened via local file:// without a web server
+        }
       }
 
       function saveDeck(triggerCloudSync = true) {
         try {
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(deck));
           localStorage.setItem(DELETED_IDS_KEY, JSON.stringify([...deletedCardIds]));
+          saveLoadedPackUrls();
         } catch (err) {
-          console.error('Failed to save deck:', err);
+          console.error('Failed to save metadata to localStorage:', err);
         }
+
+        const snapshot = deck;
+        idbWriteQueue = idbWriteQueue
+          .then(async () => {
+            const ok = await idbSet(IDB_DECK_KEY, snapshot);
+            if (!ok) {
+              try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(snapshot));
+              } catch (lsErr) {
+                console.error('Fallback localStorage save failed (likely quota exceeded):', lsErr);
+              }
+            }
+          })
+          .catch((err) => {
+            console.error('Failed to persist deck to IndexedDB:', err);
+          });
+
         updateStats();
         if (triggerCloudSync) {
           scheduleDriveAutoSync();
         }
       }
 
-      // Build lightweight delta payload (~2-15 KB) containing ONLY studied progress & custom/imported cards
+      // Build lightweight delta payload (~2-15 KB) containing ONLY studied progress, loadedPackUrls, & user custom cards
       function buildCompactProgressDelta() {
-        const bootstrapIds = new Set(BOOTSTRAP_SAMPLE_DECK.map((c) => c.id));
         const progress = {};
         const customCards = [];
 
         deck.forEach((card) => {
-          const isBootstrap = bootstrapIds.has(card.id);
+          const isOfficial = isOfficialPackCard(card);
           const hasProgress = (card.reps || 0) > 0 || (card.interval || 0) > 0 || (card.updatedAt || 0) > 0;
 
           if (hasProgress) {
@@ -1096,7 +1250,7 @@
             };
           }
 
-          if (!isBootstrap) {
+          if (!isOfficial) {
             customCards.push({
               id: card.id,
               level: card.level || 1,
@@ -1114,10 +1268,24 @@
           }
         });
 
+        // Infer official packs present even if user loaded them before loadedPackUrls existed
+        const packPrefixes = [
+          ['g9-', './packs/grade9-foundations.json'],
+          ['g10-', './packs/grade10-foundations.json'],
+          ['g11-', './packs/grade11-foundations.json'],
+          ['g12-', './packs/grade12-foundations.json']
+        ];
+        for (const [prefix, url] of packPrefixes) {
+          if (!loadedPackUrls.has(url) && deck.some((c) => c.id && c.id.startsWith(prefix) && !c.id.includes('boot'))) {
+            loadedPackUrls.add(url);
+          }
+        }
+
         return {
           schemaVersion: 2,
           updatedAt: Date.now(),
           dailyPace,
+          loadedPackUrls: [...loadedPackUrls],
           deletedIds: [...deletedCardIds],
           progress,
           customCards
@@ -1125,7 +1293,7 @@
       }
 
       // Merge remote delta payload (or legacy v1 full-deck array) safely using per-card updatedAt timestamps
-      function applyRemoteDeltaPayload(remotePayload) {
+      async function applyRemoteDeltaPayload(remotePayload) {
         if (!remotePayload || typeof remotePayload !== 'object') return 0;
         let mergedChanges = 0;
 
@@ -1145,10 +1313,24 @@
               mergedChanges++;
             }
           });
+          normalizeOfficialCardLevels(deck);
           return mergedChanges;
         }
 
         if (remotePayload.schemaVersion !== 2) return 0;
+
+        // 0. Ensure any official grade packs loaded on another device are fetched first
+        if (Array.isArray(remotePayload.loadedPackUrls)) {
+          for (const packUrl of remotePayload.loadedPackUrls) {
+            if (OFFICIAL_PACK_URLS.includes(packUrl) && !loadedPackUrls.has(packUrl)) {
+              try {
+                await fetchAndMergeRemoteJsonPack(packUrl, packUrl, true);
+              } catch (err) {
+                console.warn('Could not auto-fetch remote pack:', packUrl, err);
+              }
+            }
+          }
+        }
 
         // 1. Merge deleted IDs
         if (Array.isArray(remotePayload.deletedIds)) {
@@ -1161,7 +1343,7 @@
           deck = deck.filter((c) => !deletedCardIds.has(c.id));
         }
 
-        // 2. Merge custom / imported cards
+        // 2. Merge custom / imported cards (and legacy pack cards if present in older remote payloads)
         const localById = new Map(deck.map((c) => [c.id, c]));
         const localSentences = new Set(deck.map((c) => c.sentence.toLowerCase().trim()));
         if (Array.isArray(remotePayload.customCards)) {
@@ -1181,6 +1363,7 @@
             }
           });
         }
+        normalizeOfficialCardLevels(deck);
 
         // 3. Merge per-card SRS progress using Last-Write-Wins updatedAt timestamp
         if (remotePayload.progress && typeof remotePayload.progress === 'object') {
@@ -1444,7 +1627,7 @@
             const legacyId = await findDriveFileByName(token, 'ap-spanish-srs-deck.json');
             if (legacyId) {
               const { parsed: legacyData } = await downloadAndValidateDriveJson(token, legacyId);
-              applyRemoteDeltaPayload(legacyData);
+              await applyRemoteDeltaPayload(legacyData);
               saveDeck(false);
             }
             isDriveSyncing = false;
@@ -1476,7 +1659,7 @@
             }
           }
 
-          const mergedChanges = applyRemoteDeltaPayload(remotePayload);
+          const mergedChanges = await applyRemoteDeltaPayload(remotePayload);
           saveDeck(false);
           selectNextCard();
           if (!document.getElementById('tab-manage').classList.contains('hidden')) {
@@ -1510,7 +1693,7 @@
           if (existingId) {
             try {
               const { parsed: remoteLatest, rawText: previousValidJson } = await downloadAndValidateDriveJson(token, existingId);
-              applyRemoteDeltaPayload(remoteLatest);
+              await applyRemoteDeltaPayload(remoteLatest);
               saveDeck(false);
 
               const backupId =
@@ -2302,9 +2485,10 @@
           : '<span class="text-slate-400">Saved locally (Sign in with Google to sync)</span>';
 
         const levelLabels = {
-          1: { text: 'Level 1: Foundations', cls: 'bg-emerald-50 border-emerald-200 text-emerald-800' },
-          2: { text: 'Level 2: Intermediate', cls: 'bg-sky-50 border-sky-200 text-sky-800' },
-          3: { text: 'Level 3: AP Mastery', cls: 'bg-purple-50 border-purple-200 text-purple-800' }
+          1: { text: 'Level 1: 9th Foundations', cls: 'bg-emerald-50 border-emerald-200 text-emerald-800' },
+          2: { text: 'Level 2: 10th Intermediate', cls: 'bg-sky-50 border-sky-200 text-sky-800' },
+          3: { text: 'Level 3: 11th Pre-AP', cls: 'bg-indigo-50 border-indigo-200 text-indigo-800' },
+          4: { text: 'Level 4: 12th AP Mastery', cls: 'bg-purple-50 border-purple-200 text-purple-800' }
         };
         const lvlBadge = levelLabels[card.level || 2] || levelLabels[2];
 
@@ -2556,8 +2740,8 @@
         selectNextCard();
       };
       document.getElementById('daily-new-limit-select').onchange = (e) => {
-        dailyPace.dailyLimit = Number(e.target.value) || 15;
-        dailyPace.upgradedTo15 = true;
+        dailyPace.dailyLimit = Number(e.target.value) || 20;
+        dailyPace.upgradedTo20 = true;
         saveDailyPace();
         selectNextCard();
         showToast(
@@ -2688,9 +2872,13 @@
         document.getElementById('speaking-prompt-es').textContent = currentPrompt.es;
         document.getElementById('speaking-prompt-en').textContent = currentPrompt.en;
 
-        // Draw 3 random chunks from user's deck (preferring connectors/arguments + theme)
-        const shuffled = [...deck].sort(() => Math.random() - 0.5);
-        currentRequiredChunks = shuffled.slice(0, 3);
+        // Draw 3 distinct random chunks in O(1) time (avoids sorting up to 29,200 cards)
+        const pickedIndices = new Set();
+        const maxDraws = Math.min(3, deck.length);
+        while (pickedIndices.size < maxDraws) {
+          pickedIndices.add(Math.floor(Math.random() * deck.length));
+        }
+        currentRequiredChunks = [...pickedIndices].map((i) => deck[i]);
 
         const listEl = document.getElementById('speaking-chunks-list');
         listEl.innerHTML = '';
@@ -2797,8 +2985,11 @@
       };
 
       // ==================== TAB 4: MANAGE & SYNC DECK ====================
-      function renderManageTable() {
+      function renderManageTable(resetLimit = false) {
+        if (resetLimit) managePageLimit = 100;
         const tbody = document.getElementById('manage-table-body');
+        const countEl = document.getElementById('manage-table-count');
+        const loadMoreBtn = document.getElementById('manage-load-more-btn');
         const query = document.getElementById('manage-search').value.trim().toLowerCase();
         const themeFilter = document.getElementById('manage-theme-filter').value;
         const now = Date.now();
@@ -2821,10 +3012,26 @@
               </td>
             </tr>
           `;
+          if (countEl) countEl.textContent = 'Showing 0 of 0 matching cards';
+          if (loadMoreBtn) loadMoreBtn.classList.add('hidden');
           return;
         }
 
-        tbody.innerHTML = filtered
+        const visible = filtered.slice(0, managePageLimit);
+        if (countEl) {
+          countEl.textContent = `Showing ${visible.length.toLocaleString()} of ${filtered.length.toLocaleString()} matching card${filtered.length === 1 ? '' : 's'}`;
+        }
+        if (loadMoreBtn) {
+          if (filtered.length > visible.length) {
+            const nextBatch = Math.min(100, filtered.length - visible.length);
+            loadMoreBtn.textContent = `Show ${nextBatch} More (${(filtered.length - visible.length).toLocaleString()} remaining)`;
+            loadMoreBtn.classList.remove('hidden');
+          } else {
+            loadMoreBtn.classList.add('hidden');
+          }
+        }
+
+        tbody.innerHTML = visible
           .map((card) => {
             const isDue = (card.dueDate || 0) <= now;
             const statusBadge = isDue
@@ -2863,43 +3070,47 @@
             `;
           })
           .join('');
-
-        tbody.querySelectorAll('.tbl-speak-btn').forEach((btn) => {
-          btn.onclick = () => {
-            const card = deck.find((c) => c.id === btn.dataset.speakId);
-            if (card) speakSpanish(card.sentence);
-          };
-        });
-
-        tbody.querySelectorAll('.tbl-reset-btn').forEach((btn) => {
-          btn.onclick = () => {
-            const card = deck.find((c) => c.id === btn.dataset.resetId);
-            if (!card) return;
-            card.interval = 0;
-            card.reps = 0;
-            card.ease = 2.5;
-            card.dueDate = Date.now();
-            card.updatedAt = Date.now();
-            saveDeck();
-            renderManageTable();
-            showToast('Card progress reset to Due Now.', 'info');
-          };
-        });
-
-        tbody.querySelectorAll('.tbl-del-btn').forEach((btn) => {
-          btn.onclick = () => {
-            const delId = btn.dataset.delId;
-            deletedCardIds.add(delId);
-            deck = deck.filter((c) => c.id !== delId);
-            saveDeck();
-            renderManageTable();
-            showToast('Card deleted from deck.', 'info');
-          };
-        });
       }
 
-      document.getElementById('manage-search').addEventListener('input', renderManageTable);
-      document.getElementById('manage-theme-filter').addEventListener('change', renderManageTable);
+      // Single delegated listener on manage table body for O(1) DOM performance
+      document.getElementById('manage-table-body').addEventListener('click', (e) => {
+        const speakBtn = e.target.closest('.tbl-speak-btn');
+        if (speakBtn) {
+          const card = deck.find((c) => c.id === speakBtn.dataset.speakId);
+          if (card) speakSpanish(card.sentence);
+          return;
+        }
+        const resetBtn = e.target.closest('.tbl-reset-btn');
+        if (resetBtn) {
+          const card = deck.find((c) => c.id === resetBtn.dataset.resetId);
+          if (!card) return;
+          card.interval = 0;
+          card.reps = 0;
+          card.ease = 2.5;
+          card.dueDate = Date.now();
+          card.updatedAt = Date.now();
+          saveDeck();
+          renderManageTable();
+          showToast('Card progress reset to Due Now.', 'info');
+          return;
+        }
+        const delBtn = e.target.closest('.tbl-del-btn');
+        if (delBtn) {
+          const delId = delBtn.dataset.delId;
+          deletedCardIds.add(delId);
+          deck = deck.filter((c) => c.id !== delId);
+          saveDeck();
+          renderManageTable();
+          showToast('Card deleted from deck.', 'info');
+        }
+      });
+
+      document.getElementById('manage-load-more-btn').addEventListener('click', () => {
+        managePageLimit += 100;
+        renderManageTable(false);
+      });
+      document.getElementById('manage-search').addEventListener('input', () => renderManageTable(true));
+      document.getElementById('manage-theme-filter').addEventListener('change', () => renderManageTable(true));
 
       // Export JSON
       document.getElementById('export-json-btn').addEventListener('click', () => {
@@ -2917,67 +3128,90 @@
       });
 
       // Import / Merge JSON
-      function mergeImportedCardsArray(imported, sourceLabel = 'deck', silent = false) {
+      function mergeImportedCardsArray(imported, sourceLabel = 'deck', silent = false, options = {}) {
         if (!Array.isArray(imported)) {
           throw new Error('Invalid JSON structure: expected an array of cards.');
         }
-        const existingIds = new Set(deck.map((c) => c.id));
+        const isOfficialPack = Boolean(options.isOfficialPack);
+        const defaultCreatedAt = Number(options.defaultUpdatedAt) || 0;
+        const now = Date.now();
+        const existingById = new Map(deck.map((c) => [c.id, c]));
         const existingSentences = new Set(deck.map((c) => c.sentence.toLowerCase().trim()));
         let mergedCount = 0;
 
         imported.forEach((item) => {
-          if (!item.sentence || !item.target || !item.hint) return;
-          const idExists = item.id && existingIds.has(item.id);
-          const sentenceExists = existingSentences.has(item.sentence.toLowerCase().trim());
-
-          if (!idExists && !sentenceExists) {
-            const newId = item.id || `imp-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
-            deletedCardIds.delete(newId);
-            deck.push({
-              id: newId,
-              level: Number(item.level) || 1,
-              sentence: item.sentence,
-              target: item.target,
-              hint: item.hint,
-              theme: item.theme || 'Argument & Connectors',
-              notes: item.notes || '',
-              interval: Number(item.interval) || 0,
-              ease: Number(item.ease) || 2.5,
-              reps: Number(item.reps) || 0,
-              dueDate: Number(item.dueDate) || Date.now(),
-              updatedAt: Number(item.updatedAt) || Date.now()
-            });
-            existingIds.add(newId);
-            existingSentences.add(item.sentence.toLowerCase().trim());
-            mergedCount++;
+          if (!item || !item.sentence || !item.target || !item.hint) return;
+          const existing = item.id ? existingById.get(item.id) : null;
+          if (existing) {
+            // Upgrade official pack metadata/levels cleanly without overwriting SRS progress
+            if (isOfficialPack && item.level && Number(existing.level) !== Number(item.level)) {
+              existing.level = Number(item.level);
+            }
+            return;
           }
+
+          const sentenceKey = item.sentence.toLowerCase().trim();
+          if (existingSentences.has(sentenceKey)) return;
+
+          const newId = item.id || `imp-${now}-${Math.random().toString(36).slice(2, 6)}`;
+          deletedCardIds.delete(newId);
+          const cardObj = {
+            id: newId,
+            level: Number(item.level) || 1,
+            sentence: item.sentence,
+            target: item.target,
+            hint: item.hint,
+            theme: item.theme || 'Argument & Connectors',
+            notes: item.notes || '',
+            interval: Number(item.interval) || 0,
+            ease: Number(item.ease) || 2.5,
+            reps: Number(item.reps) || 0,
+            dueDate: Number(item.dueDate) || now,
+            updatedAt: Number(item.updatedAt) || defaultCreatedAt
+          };
+          if (isOfficialPack) {
+            cardObj.fromOfficialPack = true;
+          }
+          deck.push(cardObj);
+          existingById.set(newId, cardObj);
+          existingSentences.add(sentenceKey);
+          mergedCount++;
         });
 
-        saveDeck();
-        renderManageTable();
+        saveDeck(!silent);
+        if (!document.getElementById('tab-manage').classList.contains('hidden')) {
+          renderManageTable();
+        }
         selectNextCard();
         if (!silent) {
           const driveNote = hasValidGoogleToken() ? ' & synced to Google Drive' : '';
-          showToast(`Merged ${mergedCount} new card(s) from ${sourceLabel}${driveNote}!`, 'success');
+          showToast(`Merged ${mergedCount.toLocaleString()} new card(s) from ${sourceLabel}${driveNote}!`, 'success');
         }
       }
 
-      async function fetchAndMergeRemoteJsonPack(url, label) {
+      async function fetchAndMergeRemoteJsonPack(url, label, silent = false) {
         if (!url) {
-          showToast('Enter a valid .json URL first.', 'error');
+          if (!silent) showToast('Enter a valid .json URL first.', 'error');
           return;
         }
         try {
-          showToast(`Fetching ${label || url}...`, 'info');
+          if (!silent) showToast(`Fetching ${label || url}...`, 'info');
           const res = await fetch(url);
           if (!res.ok) {
             throw new Error(`File not found (HTTP ${res.status}). Upload ${url} to your GitHub/Netlify /packs/ folder or use Import (.json).`);
           }
           const data = await res.json();
           const cardsArray = Array.isArray(data) ? data : data.cards || data.deck;
-          mergeImportedCardsArray(cardsArray, label || url);
+          const isOfficial = OFFICIAL_PACK_URLS.includes(url);
+          if (isOfficial) {
+            loadedPackUrls.add(url);
+          }
+          mergeImportedCardsArray(cardsArray, label || url, silent, {
+            isOfficialPack: isOfficial,
+            defaultUpdatedAt: isOfficial ? 0 : Date.now()
+          });
         } catch (err) {
-          showToast(err.message, 'error');
+          if (!silent) showToast(err.message, 'error');
         }
       }
 
@@ -2999,8 +3233,8 @@
         reader.onload = (ev) => {
           try {
             const imported = JSON.parse(ev.target.result);
-            const cardsArray = Array.isArray(imported) ? imported : imported.deck;
-            mergeImportedCardsArray(cardsArray, file.name);
+            const cardsArray = Array.isArray(imported) ? imported : imported.cards || imported.deck;
+            mergeImportedCardsArray(cardsArray, file.name, false, { defaultUpdatedAt: Date.now() });
           } catch (err) {
             showToast('Failed to import JSON: ' + err.message, 'error');
           } finally {
@@ -3017,13 +3251,14 @@
           'This clears your local deck back to the starter sample so you can re-import clean grade-level JSON packs. Export a .json backup first if you want to keep custom Preply cards.',
           () => {
             deletedCardIds.clear();
+            loadedPackUrls.clear();
             deck = JSON.parse(JSON.stringify(BOOTSTRAP_SAMPLE_DECK)).map((c) => ({
               ...c,
               dueDate: Date.now(),
               updatedAt: 0
             }));
             saveDeck();
-            renderManageTable();
+            renderManageTable(true);
             selectNextCard();
             showToast('Deck reset! Load any Grade JSON pack above to populate.', 'info');
           }
@@ -3104,18 +3339,20 @@
       });
 
       // ==================== BOOTSTRAP APP ====================
-      loadAudioPrefs();
-      loadAutoFocusTypePref();
-      populateVoices();
-      loadGoogleAuthPrefs();
-      loadDailyPace();
-      loadDeck();
-      updateStats();
-      selectNextCard();
-      generateSpeakingChallenge();
-      if (hasValidGoogleToken()) {
-        pullAndMergeFromGoogleDrive(true);
-      }
+      (async function bootstrapApp() {
+        loadAudioPrefs();
+        loadAutoFocusTypePref();
+        populateVoices();
+        loadGoogleAuthPrefs();
+        loadDailyPace();
+        await loadDeck();
+        updateStats();
+        selectNextCard();
+        generateSpeakingChallenge();
+        if (hasValidGoogleToken()) {
+          await pullAndMergeFromGoogleDrive(true);
+        }
+      })();
     })();
   </script>
 </body>

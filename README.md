@@ -2,12 +2,14 @@
 
 A lightweight, zero-build static web application designed to prepare students for the **AP Spanish Language and Culture** exam from 9th through 12th grade.
 
-Instead of memorizing isolated 50-word translation lists, this app trains high-utility **contextual chunks, argumentative connectors, and thematic vocabulary** across all official College Board AP themes using an **SM-2 Spaced Repetition System (SRS)**.
+**Live Site:** [https://ap-spanish-trainer.netlify.app](https://ap-spanish-trainer.netlify.app) *(automatically updated from the `main` branch)*
+
+Instead of memorizing isolated 50-word translation lists, this app trains high-utility **contextual chunks, argumentative connectors, and thematic vocabulary** across all official College Board AP themes using an **SM-2 Spaced Repetition System (SRS)** backed by IndexedDB.
 
 ## Key Features
 
-- **Contextual Cloze-Deletion Flashcards (SM-2 Algorithm):** Learn phrases inside full, realistic Spanish sentences with customizable daily new-card pacing (default: 15 new chunks/day) and grade-level filtering (`Level 1: 9th Grade Foundations` through `Level 3: AP Exam Mastery`).
-- **Modular JSON Curriculum Packs (`/packs/`):** Phrase packs live in separate `.json` files (`grade9-foundations.json`, `grade10-intermediate.json`, `grade11-pre-ap.json`, `grade12-ap-mastery.json`) so the core app stays fast and expandable.
+- **Contextual Cloze-Deletion Flashcards (SM-2 Algorithm):** Learn phrases inside full, realistic Spanish sentences with customizable daily new-card pacing (default: 20 new chunks/day, 7,300/year) and grade-level filtering (`Level 1: 9th Grade Foundations` through `Level 4: 12th Grade AP Mastery`).
+- **Modular JSON Curriculum Packs (`/packs/`):** 7,300 unique phrases per grade level (**29,200 total**), equally balanced across all 7 AP themes and stored in separate `.json` files (`grade9-foundations.json`, `grade10-foundations.json`, `grade11-foundations.json`, `grade12-foundations.json`) so the core app stays fast and expandable.
 - **Preply Tutor "Gap Phrase" Capture:** Add single sentences or bulk-paste pipe-separated lines (`Spanish sentence | target chunk | English hint | AP Theme`) directly from tutoring chat logs.
 - **2-Minute AP Cultural Comparison Simulator:** Simulates AP Speaking Task 4 with timed prep/speaking modes and 3 randomly drawn learned chunks to weave into your response.
 - **Hybrid Google Neural Audio:** Automatically uses Chrome's built-in `Google español` neural voices over HTTPS, with an optional client-side fallback to Google Cloud Text-to-Speech (`Neural2`).
@@ -18,11 +20,13 @@ Instead of memorizing isolated 50-word translation lists, this app trains high-u
 ```text
 ap-spanish-trainer/
 ├── index.html                        # Single-file web application (HTML + Tailwind CDN + Vanilla JS)
+├── config.js                         # Optional local OAuth Client ID config (injected via Netlify env var)
+├── netlify.toml                      # Netlify build/deploy configuration
 ├── packs/
-│   ├── grade9-foundations.json       # Level 1: 9th Grade Foundations across all 7 AP themes
-│   ├── grade10-intermediate.json     # Level 2: 10th Grade Intermediate (optional expansion)
-│   ├── grade11-pre-ap.json           # Level 2–3: 11th Grade Pre-AP (optional expansion)
-│   └── grade12-ap-mastery.json       # Level 3: 12th Grade AP Exam Mastery (optional expansion)
+│   ├── grade9-foundations.json       # Level 1: 9th Grade Foundations (7,300 phrases across 7 AP themes)
+│   ├── grade10-foundations.json      # Level 2: 10th Grade Intermediate (7,300 phrases across 7 AP themes)
+│   ├── grade11-foundations.json      # Level 3: 11th Grade Pre-AP (7,300 phrases across 7 AP themes)
+│   └── grade12-foundations.json      # Level 4: 12th Grade AP Mastery (7,300 phrases across 7 AP themes)
 ├── README.md
 └── .gitignore
 ```
