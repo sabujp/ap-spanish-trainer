@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Privacy Policy — AP Spanish Chunk Trainer</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+</head>
+<body class="bg-slate-50 text-slate-800 font-['Inter',system-ui,sans-serif] antialiased min-h-screen flex flex-col">
+  <header class="bg-white border-b border-slate-200">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
+      <a href="./index.html" class="flex items-center gap-2.5 text-slate-900 font-extrabold text-base hover:text-indigo-600 transition">
+        <span class="w-8 h-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center text-sm font-extrabold">AP</span>
+        <span>AP Spanish Chunk Trainer</span>
+      </a>
+      <a href="./index.html" class="text-xs font-semibold text-indigo-600 hover:text-indigo-800">← Back to App</a>
+    </div>
+  </header>
+
+  <main class="flex-1 max-w-3xl w-full mx-auto px-4 sm:px-6 py-8">
+    <div class="bg-white rounded-3xl border border-slate-200 shadow-xs p-6 sm:p-10 space-y-6 text-sm text-slate-700 leading-relaxed">
+      <div class="border-b border-slate-100 pb-4">
+        <h1 class="text-2xl font-extrabold text-slate-900">Privacy Policy</h1>
+        <p class="text-xs text-slate-500 mt-1">Effective Date: November 15, 2026 • Application: AP Spanish Chunk Trainer (<code>ap-spanish-trainer.netlify.app</code>)</p>
+      </div>
+
+      <section class="space-y-2">
+        <h2 class="text-base font-bold text-slate-900">1. Zero Server Storage &amp; Zero Data Collection</h2>
+        <p>
+          <strong>AP Spanish Chunk Trainer</strong> is a 100% client-side static web application. We do not operate a backend database, and we do <strong>not</strong> collect, store, read, sell, or transmit your personal information, study history, or custom flashcards to our servers or to any third party.
+        </p>
+      </section>
+
+      <section class="space-y-2">
+        <h2 class="text-base font-bold text-slate-900">2. Local Browser Storage</h2>
+        <p>
+          By default, all spaced-repetition review intervals, daily study counts, custom Preply phrases, and optional audio preferences are saved exclusively inside your own web browser's <code>localStorage</code> on your device.
+        </p>
+      </section>
+
+      <section class="space-y-2">
+        <h2 class="text-base font-bold text-slate-900">3. Google Sign-In &amp; Google Drive AppData Usage</h2>
+        <p>
+          If you optionally choose to click <strong>"Sign in with Google"</strong> to sync your progress across devices, the application requests permission solely for the following Google OAuth scopes:
+        </p>
+        <ul class="list-disc pl-5 space-y-1.5">
+          <li>
+            <strong><code>https://www.googleapis.com/auth/drive.appdata</code>:</strong> Allows the app to create and update only its own hidden application configuration files (<code>ap-spanish-progress-v2.json</code> and its automatic backup) inside your personal Google Drive's isolated AppData folder. The app <strong>cannot</strong> see, read, modify, or delete any of your other Google Drive files, folders, or documents.
+          </li>
+          <li>
+            <strong><code>userinfo.email</code> &amp; <code>userinfo.profile</code>:</strong> Used strictly to display your name/email in the top navigation bar while you are signed in. This information stays in your browser session and is never sent to any external server.
+          </li>
+        </ul>
+        <p>
+          Your newly added phrases and spaced-repetition progress are stored directly in <strong>your own Google Drive</strong> under your full ownership and control. You may revoke access or delete the app's hidden data at any time through your <a href="https://myaccount.google.com/permissions" target="_blank" rel="noopener noreferrer" class="text-indigo-600 underline hover:text-indigo-800">Google Account Permissions</a> or Google Drive settings ("Manage Apps").
+        </p>
+      </section>
+
+      <section class="space-y-2">
+        <h2 class="text-base font-bold text-slate-900">4. Optional Text-to-Speech Services</h2>
+        <p>
+          Audio playback uses your browser's built-in speech synthesis by default. If you voluntarily enter your own Google Cloud Text-to-Speech API key in Audio Settings, that key is stored solely in your browser's <code>localStorage</code> and sent directly from your browser to Google's Text-to-Speech API when you play a sentence.
+        </p>
+      </section>
+
+      <section class="space-y-2">
+        <h2 class="text-base font-bold text-slate-900">5. Google API Services User Data Policy</h2>
+        <p>
+          AP Spanish Chunk Trainer's use and transfer to any other app of information received from Google APIs adheres to the <a href="https://developers.google.com/terms/api-services-user-data-policy" target="_blank" rel="noopener noreferrer" class="text-indigo-600 underline hover:text-indigo-800">Google API Services User Data Policy</a>, including the Limited Use requirements.
+        </p>
+      </section>
+
+      <section class="space-y-2">
+        <h2 class="text-base font-bold text-slate-900">6. Contact</h2>
+        <p>
+          If you have any questions about this Privacy Policy, please contact the site maintainer via the project's GitHub repository: <a href="https://github.com/sabujp/ap-spanish-trainer" target="_blank" rel="noopener noreferrer" class="text-indigo-600 underline hover:text-indigo-800">github.com/sabujp/ap-spanish-trainer</a>.
+        </p>
+      </section>
+    </div>
+  </main>
+
+  <footer class="max-w-3xl w-full mx-auto px-4 sm:px-6 py-6 text-center text-xs text-slate-500">
+    <a href="./index.html" class="hover:text-slate-800 underline">Home</a> •
+    <a href="./privacy.html" class="hover:text-slate-800 underline">Privacy Policy</a> •
+    <a href="./tos.html" class="hover:text-slate-800 underline">Terms of Service</a>
+  </footer>
+</body>
+</html>
