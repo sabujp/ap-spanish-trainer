@@ -1,0 +1,3 @@
+[build]
+  publish = "."
+  command = 'if [ -n "$GOOGLE_CLIENT_ID" ]; then printf "window.APP_CONFIG = {\n  googleClientId: \"%s\"\n};\n" "$GOOGLE_CLIENT_ID" > config.js; fi'

@@ -31,8 +31,8 @@ ap-spanish-trainer/
 
 1. Push this repository to GitHub.
 2. In **Netlify**, select **Add new site → Import an existing project → Deploy with GitHub** and select this repo.
-3. Leave **Build command** blank and set **Publish directory** to `.` (root).
-4. *(Optional)* To enable **Google Drive Sync** across devices, enable the **Google Drive API** in Google Cloud Console, create a Web OAuth 2.0 Client ID with your Netlify URL under **Authorized JavaScript origins**, and paste the Client ID into the app's **Google Drive Sync** modal.
+3. Netlify automatically picks up `netlify.toml` (publishes `.`).
+4. *(Optional)* To enable **Google Drive Sync** across devices, enable the **Google Drive API** in Google Cloud Console, create a Web OAuth 2.0 Client ID with your Netlify URL under **Authorized JavaScript origins**, and either add `GOOGLE_CLIENT_ID` in **Netlify → Site configuration → Environment variables** (recommended so your Client ID stays out of GitHub) or paste it into `config.js`.
 
 ## License
 
