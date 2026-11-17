@@ -31,6 +31,9 @@ export const THEME_MODE_LABELS = {
 };
 
 export const LEVEL_BADGES = {
+  [-2]: { text: '6th Grade: Starter', cls: 'bg-teal-50 border-teal-200 text-teal-800' },
+  [-1]: { text: '7th Grade: Basics', cls: 'bg-cyan-50 border-cyan-200 text-cyan-800' },
+  0: { text: '8th Grade: Bridge', cls: 'bg-lime-50 border-lime-200 text-lime-800' },
   1: { text: 'Level 1: 9th Foundations', cls: 'bg-emerald-50 border-emerald-200 text-emerald-800' },
   2: { text: 'Level 2: 10th Intermediate', cls: 'bg-sky-50 border-sky-200 text-sky-800' },
   3: { text: 'Level 3: 11th Pre-AP', cls: 'bg-indigo-50 border-indigo-200 text-indigo-800' },
@@ -68,6 +71,9 @@ export const VOICE_RECOGNITION_LANGS = [
 ];
 
 export const OFFICIAL_PACK_CATALOG = [
+  { url: './packs/grade6-foundations.json', label: '6th Grade Starter (7,300)', regex: /^g6-\d+$/ },
+  { url: './packs/grade7-foundations.json', label: '7th Grade Basics (7,300)', regex: /^g7-\d+$/ },
+  { url: './packs/grade8-foundations.json', label: '8th Grade Bridge (7,300)', regex: /^g8-\d+$/ },
   { url: './packs/grade9-foundations.json', label: '9th Grade Foundations (7,300)', regex: /^g9-\d+$/ },
   { url: './packs/grade10-foundations.json', label: '10th Grade Intermediate (7,300)', regex: /^g10-\d+$/ },
   { url: './packs/grade11-foundations.json', label: '11th Grade Pre-AP (7,300)', regex: /^g11-\d+$/ },
@@ -79,15 +85,27 @@ export const IDB_NAME = 'ap_spanish_trainer_db';
 export const IDB_VERSION = 1;
 export const IDB_STORE = 'app_state';
 export const IDB_DECK_KEY = 'deck';
-export const IDB_VOCAB_KEY = 'vocab_pack_v2';
-export const IDB_VERBS_KEY = 'verbs_pack_v2';
+export const IDB_VOCAB_KEY = 'vocab_pack_v3';
+export const IDB_VERBS_KEY = 'verbs_pack_v3';
 export const DAY_MS = 24 * 60 * 60 * 1000;
 
-export const VALID_STUDY_LEVELS = ['ALL', '1', '2', '3', '4'];
+export const VALID_STUDY_LEVELS = ['ALL', '-2', '-1', '0', '1', '2', '3', '4'];
 
 export function normalizeStudyLevel(val) {
   const s = String(val ?? 'ALL').trim();
   return VALID_STUDY_LEVELS.includes(s) ? s : 'ALL';
+}
+
+export function parseLevelNumber(val, fallback = 1) {
+  if (val === undefined || val === null || val === '') return fallback;
+  const n = Number(val);
+  return Number.isFinite(n) ? n : fallback;
+}
+
+export function isValidLevelNumber(val) {
+  if (val === undefined || val === null || val === '') return false;
+  const n = Number(val);
+  return Number.isFinite(n) && n >= -2 && n <= 4;
 }
 
 export const VALID_AP_THEMES = [

@@ -7,6 +7,7 @@ import {
   escapeRegExp,
   getTodayDateStr,
   normalizeSpanishAnswer,
+  parseLevelNumber,
   stripSpanishDiacritics
 } from './constants.js';
 import { speakSpanish } from './audio.js';
@@ -176,7 +177,7 @@ export function getFilteredStudyQueue() {
       .filter(
         (card) =>
           (appState.studyTheme === 'ALL' || card.theme === appState.studyTheme) &&
-          (appState.studyLevel === 'ALL' || String(card.level || 2) === String(appState.studyLevel))
+          (appState.studyLevel === 'ALL' || String(parseLevelNumber(card.level, 2)) === String(appState.studyLevel))
       )
       .sort((a, b) => (a.dueDate || 0) - (b.dueDate || 0));
   }
@@ -387,7 +388,7 @@ export function renderFlashcard() {
     ? '<span class="text-sky-700 font-semibold">☁️ Auto-saving to Google Drive</span>'
     : '<span class="text-slate-400">Saved locally (Sign in with Google to sync)</span>';
 
-  const lvlBadge = LEVEL_BADGES[card.level || 2] || LEVEL_BADGES[2];
+  const lvlBadge = LEVEL_BADGES[parseLevelNumber(card.level, 2)] || LEVEL_BADGES[2];
   const lookupTipHtml = lookupOn
     ? `<div class="text-[11px] text-indigo-600 font-medium">💡 Word Lookup ON — hover or highlight any Spanish word above for English meaning</div>`
     : '';

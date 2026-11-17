@@ -4,7 +4,9 @@ import {
   LEVEL_BADGES,
   SPANISH_ACCENT_CHARS,
   escapeHtml,
+  isValidLevelNumber,
   normalizeSpanishAnswer,
+  parseLevelNumber,
   stripSpanishDiacritics
 } from './constants.js';
 import { speakSpanish } from './audio.js';
@@ -68,8 +70,8 @@ function getFilteredVerbs() {
   const pack = appState.verbsPack;
   if (!pack || !Array.isArray(pack.verbs)) return [];
   const prefs = getPrefs();
-  const activeLevel = String(prefs.level || appState.studyLevel || 'ALL');
-  const lvlNum = activeLevel === 'ALL' ? null : Number(activeLevel);
+  const activeLevel = String(prefs.level ?? (appState.studyLevel || 'ALL'));
+  const lvlNum = activeLevel === 'ALL' ? null : parseLevelNumber(activeLevel, null);
   const priority = getActivePhrasePriority(activeLevel, 'ALL');
 
   const filtered = pack.verbs.filter((v) => {
@@ -162,7 +164,7 @@ export async function startConjugationDeck(advanceToNext = false) {
     conjState.loading = false;
   }
 
-  const activeLevel = String(getPrefs().level || appState.studyLevel || 'ALL');
+  const activeLevel = String(getPrefs().level ?? (appState.studyLevel || 'ALL'));
   conjState.builtForLevel = activeLevel;
 
   if (advanceToNext && conjState.queue.length > 0) {
@@ -298,7 +300,7 @@ export function renderConjugation() {
   if (!container) return;
 
   if (conjState.loading) {
-    container.innerHTML = `<div class="my-auto text-center py-10 text-sm text-slate-500">Loading all 397 AP verbs from phrase packs...</div>`;
+    container.innerHTML = `<div class="my-auto text-center py-10 text-sm text-slate-500">Loading all 414 verbs from phrase packs...</div>`;
     return;
   }
 
@@ -327,7 +329,7 @@ export function renderConjugation() {
         <h3 class="text-lg font-extrabold text-slate-900">No Matching Verbs</h3>
         <p class="text-xs sm:text-sm text-slate-500 leading-relaxed">
           ${prefs.weakOnly
-            ? 'You have no weak verbs in this filter yet! Uncheck "Weak Verbs Only" to practice all 397 verbs.'
+            ? 'You have no weak verbs in this filter yet! Uncheck "Weak Verbs Only" to practice all 414 verbs.'
             : 'No verbs match the selected Level and Verb Type filters.'}
         </p>
         <div class="flex flex-wrap justify-center gap-2">
@@ -360,12 +362,12 @@ export function renderConjugation() {
     return;
   }
 
-  const activeLevel = String(prefs.level || appState.studyLevel || 'ALL');
-  const activeLvlNum = activeLevel === 'ALL' ? null : Number(activeLevel);
+  const activeLevel = String(prefs.level ?? (appState.studyLevel || 'ALL'));
+  const activeLvlNum = activeLevel === 'ALL' ? null : parseLevelNumber(activeLevel, null);
   const badgeLvl =
-    activeLvlNum && Array.isArray(verb.levels) && verb.levels.includes(activeLvlNum)
+    isValidLevelNumber(activeLvlNum) && Array.isArray(verb.levels) && verb.levels.includes(activeLvlNum)
       ? activeLvlNum
-      : verb.level || 1;
+      : parseLevelNumber(verb.level, 1);
   const lvlBadge = LEVEL_BADGES[badgeLvl] || LEVEL_BADGES[1];
   const phraseOriginBadge =
     verb._isStudiedVerb || verb._isTargetVerb
@@ -951,7 +953,7 @@ export function initConjugation() {
   appHooks.refreshStudySubTabOnSync = ((prevHook) => (subTab) => {
     if (typeof prevHook === 'function') prevHook(subTab);
     if (subTab === 'conjugation') {
-      const currentLvl = String(getPrefs().level || appState.studyLevel || 'ALL');
+      const currentLvl = String(getPrefs().level ?? (appState.studyLevel || 'ALL'));
       if ((!conjState.currentVerb || conjState.builtForLevel !== currentLvl) && !conjState.loading) {
         startConjugationDeck(false);
       } else {

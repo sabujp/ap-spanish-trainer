@@ -26,15 +26,39 @@
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
         <div>
           <span class="inline-block px-2 py-0.5 rounded-md bg-indigo-100 text-indigo-800 text-[10px] font-bold uppercase tracking-wider mb-1">
-            Modular 4-Year Curriculum (7,300 Phrases / Grade • 29,200 Total)
+            Modular 7-Year Curriculum (7,300 Phrases / Grade • 51,100 Total)
           </span>
           <h3 class="text-sm font-bold text-slate-900">Grade-Level JSON Packs (Stored Externally in <code>/packs/</code>)</h3>
-          <p class="text-xs text-slate-600">All 4 grade packs (20/day × 365 days = 7,300 phrases per grade, 29,200 total) load automatically into your local IndexedDB deck. You can also reload any grade pack below or merge custom JSON URLs.</p>
+          <p class="text-xs text-slate-600">All 7 grade packs (6th–12th grade, 7,300 phrases per grade, 51,100 total) load automatically into your local IndexedDB deck. You can also reload any grade pack below or merge custom JSON URLs.</p>
         </div>
       </div>
 
       <!-- Hosted / Repo Pack Manifest Buttons -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5" id="curriculum-pack-catalog">
+        <button type="button" data-pack-url="./packs/grade6-foundations.json" data-pack-name="6th Grade Starter (7,300)" class="load-remote-pack-btn text-left p-3 rounded-xl bg-white hover:bg-teal-50 border border-teal-300 transition cursor-pointer shadow-2xs">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-teal-900">6th Grade: Starter</span>
+            <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-teal-100 text-teal-800">6th</span>
+          </div>
+          <div class="text-[11px] font-medium text-teal-700 mt-0.5">7,300 phrases • 7 AP themes</div>
+          <div class="text-[11px] text-slate-500 mt-0.5 truncate"><code>./packs/grade6-foundations.json</code></div>
+        </button>
+        <button type="button" data-pack-url="./packs/grade7-foundations.json" data-pack-name="7th Grade Basics (7,300)" class="load-remote-pack-btn text-left p-3 rounded-xl bg-white hover:bg-cyan-50 border border-cyan-300 transition cursor-pointer shadow-2xs">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-cyan-900">7th Grade: Basics</span>
+            <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-cyan-100 text-cyan-800">7th</span>
+          </div>
+          <div class="text-[11px] font-medium text-cyan-700 mt-0.5">7,300 phrases • 7 AP themes</div>
+          <div class="text-[11px] text-slate-500 mt-0.5 truncate"><code>./packs/grade7-foundations.json</code></div>
+        </button>
+        <button type="button" data-pack-url="./packs/grade8-foundations.json" data-pack-name="8th Grade Bridge (7,300)" class="load-remote-pack-btn text-left p-3 rounded-xl bg-white hover:bg-lime-50 border border-lime-300 transition cursor-pointer shadow-2xs">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-lime-900">8th Grade: Bridge</span>
+            <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-lime-100 text-lime-800">8th</span>
+          </div>
+          <div class="text-[11px] font-medium text-lime-700 mt-0.5">7,300 phrases • 7 AP themes</div>
+          <div class="text-[11px] text-slate-500 mt-0.5 truncate"><code>./packs/grade8-foundations.json</code></div>
+        </button>
         <button type="button" data-pack-url="./packs/grade9-foundations.json" data-pack-name="9th Grade Foundations (7,300)" class="load-remote-pack-btn text-left p-3 rounded-xl bg-white hover:bg-emerald-50 border border-emerald-300 transition cursor-pointer shadow-2xs">
           <div class="flex items-center justify-between">
             <span class="text-xs font-bold text-emerald-900">9th Grade: Foundations</span>

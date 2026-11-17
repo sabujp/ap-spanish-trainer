@@ -11,6 +11,7 @@ import {
   VERBS_PACK_URL,
   VOCAB_PACK_URL,
   normalizeSpanishAnswer,
+  parseLevelNumber,
   stripSpanishDiacritics
 } from './constants.js';
 import { appHooks, appState, enqueueIdbWrite, idbGet, idbSet } from './storage.js';
@@ -21,14 +22,17 @@ let verbsLoadPromise = null;
 
 export function isOfficialPackCard(card) {
   if (!card || !card.id) return false;
-  return /^g(?:9|10|11|12)-(?:boot-)?\d+$/.test(card.id) || Boolean(card.fromOfficialPack);
+  return /^g(?:6|7|8|9|10|11|12)-(?:boot-)?\d+$/.test(card.id) || Boolean(card.fromOfficialPack);
 }
 
 export function normalizeOfficialCardLevels(cards) {
   if (!Array.isArray(cards)) return;
   cards.forEach((c) => {
     if (!c || !c.id) return;
-    if (/^g9-/.test(c.id)) c.level = 1;
+    if (/^g6-/.test(c.id)) c.level = -2;
+    else if (/^g7-/.test(c.id)) c.level = -1;
+    else if (/^g8-/.test(c.id)) c.level = 0;
+    else if (/^g9-/.test(c.id)) c.level = 1;
     else if (/^g10-/.test(c.id)) c.level = 2;
     else if (/^g11-/.test(c.id)) c.level = 3;
     else if (/^g12-/.test(c.id)) c.level = 4;
@@ -112,7 +116,7 @@ export function mergeImportedCardsArray(imported, sourceLabel = 'deck', silent =
     if (respectDeleted && item.id && appState.deletedCardIds.has(item.id)) return;
     const existing = item.id ? existingById.get(item.id) : null;
     if (existing) {
-      if (isOfficialPack && item.level && Number(existing.level) !== Number(item.level)) {
+      if (isOfficialPack && Number.isFinite(Number(item.level)) && item.level !== undefined && item.level !== null && Number(existing.level) !== Number(item.level)) {
         existing.level = Number(item.level);
       }
       return;
@@ -125,7 +129,7 @@ export function mergeImportedCardsArray(imported, sourceLabel = 'deck', silent =
     appState.deletedCardIds.delete(newId);
     const cardObj = {
       id: newId,
-      level: Number(item.level) || 1,
+      level: parseLevelNumber(item.level, 1),
       sentence: item.sentence,
       target: item.target,
       hint: item.hint,
@@ -395,7 +399,7 @@ export function getActivePhrasePriority(levelFilter = 'ALL', themeFilter = 'ALL'
 
   const matchingCards = appState.deck.filter((c) => {
     if (!c) return false;
-    const lvlMatch = levelFilter === 'ALL' || String(c.level || 2) === String(levelFilter);
+    const lvlMatch = levelFilter === 'ALL' || String(parseLevelNumber(c.level, 2)) === String(levelFilter);
     const themeMatch = themeFilter === 'ALL' || c.theme === themeFilter;
     return lvlMatch && themeMatch;
   });
@@ -510,7 +514,7 @@ function indexVocabularyData(raw) {
     if (!info || !info.en) continue;
     const norm = normalizeSpanishAnswer(token);
     const bare = stripSpanishDiacritics(norm);
-    const baseLvl = Number(info.level) || 1;
+    const baseLvl = parseLevelNumber(info.level, 1);
     const levels = Array.isArray(info.levels) && info.levels.length > 0 ? info.levels.map(Number) : [baseLvl];
     const targetLevels = Array.isArray(info.targetLevels) ? info.targetLevels.map(Number) : [];
     const phraseFreq = Number(info.phraseFreq) || 0;
@@ -540,7 +544,7 @@ function indexVocabularyData(raw) {
     if (!info || !info.en) continue;
     const norm = normalizeSpanishAnswer(key);
     const bare = stripSpanishDiacritics(norm);
-    const baseLvl = Number(info.level) || 1;
+    const baseLvl = parseLevelNumber(info.level, 1);
     const levels = Array.isArray(info.levels) && info.levels.length > 0 ? info.levels.map(Number) : [baseLvl];
     const targetLevels = Array.isArray(info.targetLevels) ? info.targetLevels.map(Number) : [];
     const phraseFreq = Number(info.phraseFreq) || 0;
@@ -591,7 +595,7 @@ export async function loadVocabularyPack(forceReload = false) {
     try {
       if (!forceReload) {
         const cached = await idbGet(IDB_VOCAB_KEY);
-        if (cached && cached.words && cached.phrases && cached.meta?.version === 2) {
+        if (cached && cached.words && cached.phrases && cached.meta?.version === 3) {
           appState.vocabPack = indexVocabularyData(cached);
           return appState.vocabPack;
         }
@@ -626,7 +630,7 @@ export async function loadVerbsPack(forceReload = false) {
     try {
       if (!forceReload) {
         const cached = await idbGet(IDB_VERBS_KEY);
-        if (cached && Array.isArray(cached.verbs) && cached.meta?.version === 2) {
+        if (cached && Array.isArray(cached.verbs) && cached.meta?.version === 3) {
           appState.verbsPack = cached;
           return appState.verbsPack;
         }

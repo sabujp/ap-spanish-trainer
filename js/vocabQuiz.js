@@ -2,7 +2,9 @@ import {
   LEVEL_BADGES,
   SPANISH_ACCENT_CHARS,
   escapeHtml,
+  isValidLevelNumber,
   normalizeSpanishAnswer,
+  parseLevelNumber,
   stripSpanishDiacritics
 } from './constants.js';
 import { speakSpanish } from './audio.js';
@@ -132,8 +134,8 @@ function buildFilteredVocabPool() {
   const pack = appState.vocabPack;
   if (!pack) return [];
   const prefs = getPrefs();
-  const activeLevel = String(prefs.level || appState.studyLevel || 'ALL');
-  const lvlNum = activeLevel === 'ALL' ? null : Number(activeLevel);
+  const activeLevel = String(prefs.level ?? (appState.studyLevel || 'ALL'));
+  const lvlNum = activeLevel === 'ALL' ? null : parseLevelNumber(activeLevel, null);
   const priority = getActivePhrasePriority(activeLevel, prefs.theme);
 
   let rawPool = [];
@@ -226,7 +228,7 @@ export async function startVocabRound(customItems = null) {
   }
 
   const prefs = getPrefs();
-  const activeLevel = String(prefs.level || appState.studyLevel || 'ALL');
+  const activeLevel = String(prefs.level ?? (appState.studyLevel || 'ALL'));
   const pool = Array.isArray(customItems) ? customItems : buildFilteredVocabPool();
   const targetLen = Number(prefs.length) || 0;
   const chosen = Array.isArray(customItems) ? shuffleArray(pool) : selectWeightedVocabItems(pool, targetLen);
@@ -333,7 +335,7 @@ export function renderVocabQuiz() {
   if (!container) return;
 
   if (quizState.loading) {
-    container.innerHTML = `<div class="my-auto text-center py-10 text-sm text-slate-500">Loading local vocabulary bank (2,492 words &amp; 536 phrases)...</div>`;
+    container.innerHTML = `<div class="my-auto text-center py-10 text-sm text-slate-500">Loading local vocabulary bank (6,931 words &amp; 827 phrases)...</div>`;
     return;
   }
 
@@ -462,8 +464,9 @@ export function renderVocabQuiz() {
 
   const item = quizState.items[quizState.index];
   const dir = quizState.currentDirection;
-  const activeLvlNum = Number(prefs.level || appState.studyLevel);
-  const badgeLvl = activeLvlNum >= 1 && activeLvlNum <= 4 ? activeLvlNum : item.level || 1;
+  const activeLvlStr = String(prefs.level ?? (appState.studyLevel || 'ALL'));
+  const activeLvlNum = activeLvlStr === 'ALL' ? null : parseLevelNumber(activeLvlStr, null);
+  const badgeLvl = isValidLevelNumber(activeLvlNum) ? activeLvlNum : parseLevelNumber(item.level, 1);
   const lvlBadge = LEVEL_BADGES[badgeLvl] || LEVEL_BADGES[1];
   const phraseOriginBadge = item._isStudiedPhrase
     ? `<span class="px-2.5 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-900 text-xs font-bold" title="Taken directly from cards you studied or added">★ In Your Phrases</span>`
@@ -771,7 +774,7 @@ export function initVocabQuiz() {
   appHooks.refreshStudySubTabOnSync = ((prevHook) => (subTab) => {
     if (typeof prevHook === 'function') prevHook(subTab);
     if (subTab === 'vocab') {
-      const currentLvl = String(getPrefs().level || appState.studyLevel || 'ALL');
+      const currentLvl = String(getPrefs().level ?? (appState.studyLevel || 'ALL'));
       if ((quizState.items.length === 0 || quizState.builtForLevel !== currentLvl) && !quizState.loading) {
         startVocabRound();
       } else {

@@ -144,7 +144,7 @@ export function buildCompactProgressDelta() {
     if (!isOfficial) {
       customCards.push({
         id: card.id,
-        level: card.level || 1,
+        level: card.level ?? 1,
         sentence: card.sentence,
         target: card.target,
         hint: card.hint,
@@ -160,6 +160,9 @@ export function buildCompactProgressDelta() {
   });
 
   const packPrefixes = [
+    ['g6-', './packs/grade6-foundations.json'],
+    ['g7-', './packs/grade7-foundations.json'],
+    ['g8-', './packs/grade8-foundations.json'],
     ['g9-', './packs/grade9-foundations.json'],
     ['g10-', './packs/grade10-foundations.json'],
     ['g11-', './packs/grade11-foundations.json'],

@@ -1,6 +1,6 @@
 # AP Spanish Trainer
 
-A lightweight, zero-build static web application designed to prepare students for the **AP Spanish Language and Culture** exam from 9th through 12th grade.
+A lightweight, zero-build static web application designed to prepare students for the **AP Spanish Language and Culture** exam from 6th through 12th grade.
 
 **Live Site:** [https://ap-spanish-trainer.netlify.app](https://ap-spanish-trainer.netlify.app) *(automatically updated from the `main` branch)*
 
@@ -9,11 +9,11 @@ Instead of memorizing isolated 50-word translation lists, this app trains high-u
 ## Key Features
 
 - **Three Study Modes Under Tab 1 (`Study`):**
-  1. **Chunk / Phrase Tests (SM-2 SRS):** Learn phrases inside full AP-level sentences with customizable daily pacing (default: 20 new chunks/day, 7,300/year), grade-level filtering, optional **Word Lookup** (default Off; hover or highlight any Spanish word for an instant local English definition + audio), and optional **Speaking Detection Mode** (`🎙️ Voice Mode`).
-  2. **Vocab Test (Type or Speak):** Forward (`ES → EN`), backward (`EN → ES`), or mixed typed/spoken recall quizzes built from `packs/vocabulary.json` (`2,492` unique words & `536` AP phrases), prioritizing words and phrases from the Phrase Tests alongside additional matching vocabulary.
-  3. **Conjugation Test (Full 6-Person Matrix w/ `vosotros`):** 2-stage verb drill across all `397` verbs extracted from the phrase packs (`packs/verbs.json`): English infinitive → type or speak Spanish infinitive → complete the full 6-person conjugation matrix across 8 AP tenses (with automatic pronoun prefix trimming in Voice Mode).
+  1. **Chunk / Phrase Tests (SM-2 SRS):** Learn phrases inside full contextual sentences with customizable daily pacing (default: 20 new chunks/day, 7,300/year), grade-level filtering (6th–12th grade), optional **Word Lookup** (default Off; hover or highlight any Spanish word for an instant local English definition + audio), and optional **Speaking Detection Mode** (`🎙️ Voice Mode`).
+  2. **Vocab Test (Type or Speak):** Forward (`ES → EN`), backward (`EN → ES`), or mixed typed/spoken recall quizzes built from `packs/vocabulary.json` (`6,931` total words with `1,444` quiz words & `827` AP/starter phrases), prioritizing words and phrases from the Phrase Tests alongside additional matching vocabulary.
+  3. **Conjugation Test (Full 6-Person Matrix w/ `vosotros`):** 2-stage verb drill across all `414` verbs extracted from the phrase packs (`packs/verbs.json`): English infinitive → type or speak Spanish infinitive → complete the full 6-person conjugation matrix (with `vosotros` across all grade levels) across 8 tenses (with automatic pronoun prefix trimming in Voice Mode).
 - **Speaking Detection Mode (`🎙️ Voice Mode`):** Speak Spanish or English answers directly into input boxes with automatic Spanish accent restoration (`autoAccents: true` by default), default **fill-box & wait-for-Enter** behavior, or configurable **Auto-Submit After Silence** (default `3s`, `1`–`10`s), saved to Google Drive.
-- **Modular JSON Curriculum Packs (`/packs/`):** 7,300 unique phrases per grade level (**29,200 total**), balanced across all 7 AP themes (`grade9-foundations.json` through `grade12-foundations.json`), plus `vocabulary.json` and `verbs.json`.
+- **Modular JSON Curriculum Packs (`/packs/`):** 7,300 unique phrases per grade level (**51,100 total** across 7 grades), balanced across all 7 AP themes (`grade6-foundations.json` through `grade12-foundations.json`), plus `vocabulary.json` and `verbs.json`.
 - **Preply Tutor "Gap Phrase" Capture:** Add single sentences or bulk-paste pipe-separated lines (`Spanish sentence | target chunk | English hint | AP Theme`) directly from tutoring chat logs.
 - **AP Cultural Comparison Simulator (`2:00`, `4:00`, or Custom Duration) + Translation & Grading:** Simulates AP Speaking Task 4 with live continuous microphone transcription, audio playback, **Spanish → English translation first** (Chrome on-device `Translator` API when available + local AP phrase/conjugated-verb dictionary), followed by automated **AP 1–5 rubric grading**, optional Chrome Gemini Nano feedback, and a 1-click prompt copy bridge to `gemini.google.com` — **zero Gemini API keys required**.
 - **Hybrid Google Neural Audio & Multi-Theme Accessibility:** Chrome built-in `Google español` neural voices + optional Google Cloud TTS (`Neural2`), plus Light, Dark, Midnight, Sepia, High Contrast, and Colorblind-Friendly modes.
@@ -41,7 +41,7 @@ ap-spanish-trainer/
 │   ├── storage.js                    # IndexedDB wrapper, shared state, user preferences, telemetry
 │   ├── ui.js                         # Navigation tabs, Study sub-tabs, Settings/Help/Confirm modals
 │   ├── audio.js                      # Hybrid Web Speech + Google Cloud TTS engine
-│   ├── packs.js                      # 4-grade deck loader + IndexedDB-cached vocabulary & verb indices
+│   ├── packs.js                      # 7-grade deck loader + IndexedDB-cached vocabulary & verb indices
 │   ├── sync.js                       # Google Sign-In OAuth + Google Drive AppData delta sync
 │   ├── speechInput.js                # Speaking Detection Mode (Web Speech API, auto-accents, auto-submit)
 │   ├── speakingAnalyzer.js           # Zero-API-key ES->EN translator & AP Task 4 speech grader
@@ -56,12 +56,15 @@ ap-spanish-trainer/
 ├── _headers                          # Cache headers for Cloudflare Pages & Netlify (/packs/* 7d cache)
 ├── netlify.toml                      # Netlify build/deploy configuration
 ├── packs/
+│   ├── grade6-foundations.json       # 6th Grade: Starter (7,300 phrases)
+│   ├── grade7-foundations.json       # 7th Grade: Basics (7,300 phrases)
+│   ├── grade8-foundations.json       # 8th Grade: Bridge (7,300 phrases)
 │   ├── grade9-foundations.json       # Level 1: 9th Grade Foundations (7,300 phrases)
 │   ├── grade10-foundations.json      # Level 2: 10th Grade Intermediate (7,300 phrases)
 │   ├── grade11-foundations.json      # Level 3: 11th Grade Pre-AP (7,300 phrases)
 │   ├── grade12-foundations.json      # Level 4: 12th Grade AP Mastery (7,300 phrases)
-│   ├── vocabulary.json               # Local browser dictionary (2,492 words + 536 phrases)
-│   └── verbs.json                    # Full 6-person verb conjugation bank (397 verbs w/ vosotros)
+│   ├── vocabulary.json               # Local browser dictionary (6,931 words + 827 phrases)
+│   └── verbs.json                    # Full 6-person verb conjugation bank (414 verbs w/ vosotros)
 ├── README.md
 └── .gitignore
 ```

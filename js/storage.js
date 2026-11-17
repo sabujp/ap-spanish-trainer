@@ -11,7 +11,8 @@ import {
   VERB_STATS_KEY,
   VOCAB_STATS_KEY,
   getTodayDateStr,
-  normalizeStudyLevel
+  normalizeStudyLevel,
+  parseLevelNumber
 } from './constants.js';
 
 // Shared mutable application state
@@ -483,7 +484,7 @@ export function getEffectiveDueCards(themeFilter = 'ALL', levelFilter = 'ALL') {
   const themeCards = appState.deck.filter(
     (c) =>
       (themeFilter === 'ALL' || c.theme === themeFilter) &&
-      (levelFilter === 'ALL' || String(c.level || 2) === String(levelFilter))
+      (levelFilter === 'ALL' || String(parseLevelNumber(c.level, 2)) === String(levelFilter))
   );
 
   const dueReviews = themeCards
